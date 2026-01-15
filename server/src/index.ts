@@ -1,9 +1,11 @@
 import express from "express";
 import dotenv from "dotenv";
 import pool from "./db"
+import lessonRoutes from "./routes/lessons";
 dotenv.config();
 
 const app = express();
+app.use(express.json());  
 
 app.get("/db-test", async (_req, res) => {
   try {
@@ -15,10 +17,11 @@ app.get("/db-test", async (_req, res) => {
   }
 });
 
-
 app.get("/", (_req, res) => {
   res.send("Server running");
 });
+
+app.use("/lesson", lessonRoutes);
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
