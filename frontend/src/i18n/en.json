@@ -1,0 +1,112 @@
+{
+  "auth": {
+    "login": {
+      "title": "Log In",
+      "subtitle": "Sign in to your account",
+      "email": "Email Address",
+      "password": "Password",
+      "emailPlaceholder": "Enter your email",
+      "passwordPlaceholder": "Enter your password",
+      "submit": "Log In",
+      "submitting": "Logging In...",
+      "googleSignIn": "Sign in with Google",
+      "googleSigningIn": "Signing in...",
+      "switchToSignup": "Don't have an account?",
+      "signUp": "Sign Up",
+      "or": "OR"
+    },
+    "signup": {
+      "title": "Create Account",
+      "subtitle": "Sign up to get started",
+      "email": "Email Address",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "emailPlaceholder": "Enter your email",
+      "passwordPlaceholder": "Enter your password (min 6 characters)",
+      "confirmPasswordPlaceholder": "Confirm your password",
+      "submit": "Create Account",
+      "submitting": "Creating Account...",
+      "googleSignUp": "Sign up with Google",
+      "googleSigningUp": "Signing up...",
+      "switchToLogin": "Already have an account?",
+      "logIn": "Log In",
+      "or": "OR"
+    },
+    "errors": {
+      "loginFailed": "Failed to log in. Please try again.",
+      "userNotFound": "No account found with this email. Please sign up first.",
+      "wrongPassword": "Incorrect password. Please try again.",
+      "invalidEmail": "Please enter a valid email address.",
+      "invalidCredential": "Invalid email or password. Please try again.",
+      "tooManyRequests": "Too many failed attempts. Please try again later.",
+      "googleSignInFailed": "Failed to sign in with Google. Please try again.",
+      "popupClosed": "Sign-in popup was closed. Please try again.",
+      "popupBlocked": "Popup was blocked by browser. Please allow popups and try again.",
+      "popupCancelled": "Only one popup request is allowed at a time.",
+      "signupFailed": "Failed to create account. Please try again.",
+      "emailInUse": "This email is already registered. Please log in instead.",
+      "weakPassword": "Password is too weak. Please choose a stronger password.",
+      "passwordsNoMatch": "Passwords do not match. Please try again.",
+      "passwordTooShort": "Password must be at least 6 characters long.",
+      "googleSignUpFailed": "Failed to sign up with Google. Please try again.",
+      "signupPopupClosed": "Sign-up popup was closed. Please try again.",
+      "signupPopupBlocked": "Popup was blocked by browser. Please allow popups and try again."
+    },
+    "success": {
+      "accountCreated": "Account created successfully! You can now log in."
+    }
+  },
+  "app": {
+    "loading": "Loading...",
+    "welcome": "Welcome!",
+    "loggedInAs": "You are logged in as:",
+    "logOut": "Log Out",
+    "back": "Back"
+  },
+  "settings": {
+    "title": "Settings",
+    "interfaceLanguage": "Interface Language",
+    "learningDirection": "Learning Direction",
+    "english": "English",
+    "hindi": "Hindi",
+    "englishToHindi": "English → Hindi",
+    "hindiToEnglish": "Hindi → English",
+    "learningInfo": {
+      "enToHi": "You are learning Hindi from English",
+      "hiToEn": "You are learning English from Hindi"
+    }
+  },
+  "home": {
+    "title": "Home",
+    "welcome": "Welcome back!",
+    "interfaceLanguage": "Interface Language",
+    "learningDirection": "Learning Direction",
+    "stats": {
+      "title": "Your Progress",
+      "lessonsStarted": "Lessons Started",
+      "lessonsCompleted": "Lessons Completed",
+      "lastActivity": "Last Activity"
+    },
+    "lastActivityPlaceholder": "No activity yet"
+  },
+  "navigation": {
+    "home": "Home",
+    "lessons": "Lessons",
+    "settings": "Settings",
+    "logout": "Log Out"
+  },
+  "lessons": {
+    "title": "Lesson Selection",
+    "selectLesson": "Select a lesson to begin",
+    "noLessons": "No lessons available",
+    "startLesson": "Start Lesson"
+  },
+  "learning": {
+    "title": "Learning",
+    "placeholder": {
+      "enToHi": "You are learning Hindi from English",
+      "hiToEn": "You are learning English from Hindi"
+    },
+    "comingSoon": "Lesson content coming soon!"
+  }
+}

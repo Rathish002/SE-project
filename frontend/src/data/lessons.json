@@ -1,0 +1,57 @@
+[
+  {
+    "id": 1,
+    "title": {
+      "en": "Greetings and Basic Phrases",
+      "hi": "अभिवादन और बुनियादी वाक्यांश"
+    },
+    "description": {
+      "en": "Learn how to greet people and use basic phrases in everyday conversations.",
+      "hi": "लोगों को अभिवादन करना और रोजमर्रा की बातचीत में बुनियादी वाक्यांशों का उपयोग करना सीखें।"
+    }
+  },
+  {
+    "id": 2,
+    "title": {
+      "en": "Numbers and Counting",
+      "hi": "संख्या और गिनती"
+    },
+    "description": {
+      "en": "Master numbers from 1 to 100 and learn to count in different contexts.",
+      "hi": "1 से 100 तक की संख्याओं में महारत हासिल करें और विभिन्न संदर्भों में गिनती करना सीखें।"
+    }
+  },
+  {
+    "id": 3,
+    "title": {
+      "en": "Family and Relationships",
+      "hi": "परिवार और रिश्ते"
+    },
+    "description": {
+      "en": "Learn vocabulary related to family members and relationships.",
+      "hi": "परिवार के सदस्यों और रिश्तों से संबंधित शब्दावली सीखें।"
+    }
+  },
+  {
+    "id": 4,
+    "title": {
+      "en": "Food and Dining",
+      "hi": "भोजन और भोजन"
+    },
+    "description": {
+      "en": "Explore food vocabulary and phrases for ordering and dining.",
+      "hi": "भोजन की शब्दावली और ऑर्डर करने और भोजन करने के लिए वाक्यांशों का अन्वेषण करें।"
+    }
+  },
+  {
+    "id": 5,
+    "title": {
+      "en": "Daily Activities",
+      "hi": "दैनिक गतिविधियाँ"
+    },
+    "description": {
+      "en": "Learn to talk about your daily routine and activities.",
+      "hi": "अपनी दैनिक दिनचर्या और गतिविधियों के बारे में बात करना सीखें।"
+    }
+  }
+]

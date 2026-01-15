@@ -1,0 +1,112 @@
+{
+  "auth": {
+    "login": {
+      "title": "लॉग इन करें",
+      "subtitle": "अपने खाते में साइन इन करें",
+      "email": "ईमेल पता",
+      "password": "पासवर्ड",
+      "emailPlaceholder": "अपना ईमेल दर्ज करें",
+      "passwordPlaceholder": "अपना पासवर्ड दर्ज करें",
+      "submit": "लॉग इन करें",
+      "submitting": "लॉग इन हो रहा है...",
+      "googleSignIn": "Google के साथ साइन इन करें",
+      "googleSigningIn": "साइन इन हो रहा है...",
+      "switchToSignup": "खाता नहीं है?",
+      "signUp": "साइन अप करें",
+      "or": "या"
+    },
+    "signup": {
+      "title": "खाता बनाएं",
+      "subtitle": "शुरू करने के लिए साइन अप करें",
+      "email": "ईमेल पता",
+      "password": "पासवर्ड",
+      "confirmPassword": "पासवर्ड की पुष्टि करें",
+      "emailPlaceholder": "अपना ईमेल दर्ज करें",
+      "passwordPlaceholder": "अपना पासवर्ड दर्ज करें (न्यूनतम 6 अक्षर)",
+      "confirmPasswordPlaceholder": "अपने पासवर्ड की पुष्टि करें",
+      "submit": "खाता बनाएं",
+      "submitting": "खाता बनाया जा रहा है...",
+      "googleSignUp": "Google के साथ साइन अप करें",
+      "googleSigningUp": "साइन अप हो रहा है...",
+      "switchToLogin": "पहले से खाता है?",
+      "logIn": "लॉग इन करें",
+      "or": "या"
+    },
+    "errors": {
+      "loginFailed": "लॉग इन करने में विफल। कृपया पुनः प्रयास करें।",
+      "userNotFound": "इस ईमेल से कोई खाता नहीं मिला। कृपया पहले साइन अप करें।",
+      "wrongPassword": "गलत पासवर्ड। कृपया पुनः प्रयास करें।",
+      "invalidEmail": "कृपया एक वैध ईमेल पता दर्ज करें।",
+      "invalidCredential": "अमान्य ईमेल या पासवर्ड। कृपया पुनः प्रयास करें।",
+      "tooManyRequests": "बहुत सारे असफल प्रयास। कृपया बाद में पुनः प्रयास करें।",
+      "googleSignInFailed": "Google के साथ साइन इन करने में विफल। कृपया पुनः प्रयास करें।",
+      "popupClosed": "साइन-इन पॉपअप बंद कर दिया गया था। कृपया पुनः प्रयास करें।",
+      "popupBlocked": "ब्राउज़र द्वारा पॉपअप अवरुद्ध कर दिया गया। कृपया पॉपअप की अनुमति दें और पुनः प्रयास करें।",
+      "popupCancelled": "एक समय में केवल एक पॉपअप अनुरोध की अनुमति है।",
+      "signupFailed": "खाता बनाने में विफल। कृपया पुनः प्रयास करें।",
+      "emailInUse": "यह ईमेल पहले से पंजीकृत है। कृपया इसके बजाय लॉग इन करें।",
+      "weakPassword": "पासवर्ड बहुत कमजोर है। कृपया एक मजबूत पासवर्ड चुनें।",
+      "passwordsNoMatch": "पासवर्ड मेल नहीं खाते। कृपया पुनः प्रयास करें।",
+      "passwordTooShort": "पासवर्ड कम से कम 6 अक्षर का होना चाहिए।",
+      "googleSignUpFailed": "Google के साथ साइन अप करने में विफल। कृपया पुनः प्रयास करें।",
+      "signupPopupClosed": "साइन-अप पॉपअप बंद कर दिया गया था। कृपया पुनः प्रयास करें।",
+      "signupPopupBlocked": "ब्राउज़र द्वारा पॉपअप अवरुद्ध कर दिया गया। कृपया पॉपअप की अनुमति दें और पुनः प्रयास करें।"
+    },
+    "success": {
+      "accountCreated": "खाता सफलतापूर्वक बनाया गया! अब आप लॉग इन कर सकते हैं।"
+    }
+  },
+  "app": {
+    "loading": "लोड हो रहा है...",
+    "welcome": "स्वागत है!",
+    "loggedInAs": "आप इस रूप में लॉग इन हैं:",
+    "logOut": "लॉग आउट करें",
+    "back": "वापस"
+  },
+  "settings": {
+    "title": "सेटिंग्स",
+    "interfaceLanguage": "इंटरफ़ेस भाषा",
+    "learningDirection": "सीखने की दिशा",
+    "english": "अंग्रेजी",
+    "hindi": "हिंदी",
+    "englishToHindi": "अंग्रेजी → हिंदी",
+    "hindiToEnglish": "हिंदी → अंग्रेजी",
+    "learningInfo": {
+      "enToHi": "आप अंग्रेजी से हिंदी सीख रहे हैं",
+      "hiToEn": "आप हिंदी से अंग्रेजी सीख रहे हैं"
+    }
+  },
+  "home": {
+    "title": "होम",
+    "welcome": "वापसी पर स्वागत है!",
+    "interfaceLanguage": "इंटरफ़ेस भाषा",
+    "learningDirection": "सीखने की दिशा",
+    "stats": {
+      "title": "आपकी प्रगति",
+      "lessonsStarted": "शुरू किए गए पाठ",
+      "lessonsCompleted": "पूर्ण किए गए पाठ",
+      "lastActivity": "अंतिम गतिविधि"
+    },
+    "lastActivityPlaceholder": "अभी तक कोई गतिविधि नहीं"
+  },
+  "navigation": {
+    "home": "होम",
+    "lessons": "पाठ",
+    "settings": "सेटिंग्स",
+    "logout": "लॉग आउट करें"
+  },
+  "lessons": {
+    "title": "पाठ चयन",
+    "selectLesson": "शुरू करने के लिए एक पाठ चुनें",
+    "noLessons": "कोई पाठ उपलब्ध नहीं",
+    "startLesson": "पाठ शुरू करें"
+  },
+  "learning": {
+    "title": "सीखना",
+    "placeholder": {
+      "enToHi": "आप अंग्रेजी से हिंदी सीख रहे हैं",
+      "hiToEn": "आप हिंदी से अंग्रेजी सीख रहे हैं"
+    },
+    "comingSoon": "पाठ सामग्री जल्दी आ रही है!"
+  }
+}

@@ -1,0 +1,109 @@
+/* Settings page styling
+   Simple, accessible design for specially-abled learners */
+
+.settings-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 20px;
+}
+
+.settings-box {
+  background-color: white;
+  border-radius: 8px;
+  padding: 40px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.settings-box h1 {
+  margin: 0 0 30px 0;
+  font-size: 28px;
+  color: #333;
+  text-align: center;
+}
+
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.settings-group label {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+.settings-select {
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.settings-select:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+.settings-select:hover {
+  border-color: #bbb;
+}
+
+.learning-info {
+  margin-top: 30px;
+  padding: 15px;
+  background-color: #f0f7ff;
+  border-radius: 4px;
+  border: 1px solid #cce5ff;
+  text-align: center;
+}
+
+.learning-info p {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
+
+.settings-actions {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+
+.settings-back-button {
+  padding: 12px 30px;
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+  background-color: #6c757d;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.settings-back-button:hover {
+  background-color: #5a6268;
+}
+
+/* Simple responsive design */
+@media (max-width: 480px) {
+  .settings-box {
+    padding: 30px 20px;
+  }
+  
+  .settings-box h1 {
+    font-size: 24px;
+  }
+}
