@@ -2,6 +2,7 @@
 // Allows users to create a new account with email and password
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { createUserWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { auth, googleProvider } from '../firebase';
 import './Auth.css';
@@ -11,6 +12,8 @@ interface SignupProps {
 }
 
 const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
+  const { t } = useTranslation();
+  
   // State for form inputs
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -31,14 +34,14 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
 
     // Validation: Check if passwords match
     if (password !== confirmPassword) {
-      setError('Passwords do not match. Please try again.');
+      setError(t('auth.errors.passwordsNoMatch'));
       setLoading(false);
       return;
     }
 
     // Validation: Check password length
     if (password.length < 6) {
-      setError('Password must be at least 6 characters long.');
+      setError(t('auth.errors.passwordTooShort'));
       setLoading(false);
       return;
     }
@@ -46,21 +49,21 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
     try {
       // Create user account with Firebase
       await createUserWithEmailAndPassword(auth, email, password);
-      setSuccess('Account created successfully! You can now log in.');
+      setSuccess(t('auth.success.accountCreated'));
       // Clear form
       setEmail('');
       setPassword('');
       setConfirmPassword('');
     } catch (err: any) {
       // Handle different Firebase error codes
-      let errorMessage = 'Failed to create account. Please try again.';
+      let errorMessage = t('auth.errors.signupFailed');
       
       if (err.code === 'auth/email-already-in-use') {
-        errorMessage = 'This email is already registered. Please log in instead.';
+        errorMessage = t('auth.errors.emailInUse');
       } else if (err.code === 'auth/invalid-email') {
-        errorMessage = 'Please enter a valid email address.';
+        errorMessage = t('auth.errors.invalidEmail');
       } else if (err.code === 'auth/weak-password') {
-        errorMessage = 'Password is too weak. Please choose a stronger password.';
+        errorMessage = t('auth.errors.weakPassword');
       }
       
       setError(errorMessage);
@@ -81,14 +84,14 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
       // Success: onAuthStateChanged in App.tsx will handle the state update
     } catch (err: any) {
       // Handle different Firebase error codes
-      let errorMessage = 'Failed to sign up with Google. Please try again.';
+      let errorMessage = t('auth.errors.googleSignUpFailed');
       
       if (err.code === 'auth/popup-closed-by-user') {
-        errorMessage = 'Sign-up popup was closed. Please try again.';
+        errorMessage = t('auth.errors.signupPopupClosed');
       } else if (err.code === 'auth/popup-blocked') {
-        errorMessage = 'Popup was blocked by browser. Please allow popups and try again.';
+        errorMessage = t('auth.errors.signupPopupBlocked');
       } else if (err.code === 'auth/cancelled-popup-request') {
-        errorMessage = 'Only one popup request is allowed at a time.';
+        errorMessage = t('auth.errors.popupCancelled');
       }
       
       setError(errorMessage);
@@ -100,53 +103,53 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
   return (
     <div className="auth-container">
       <div className="auth-box">
-        <h1>Create Account</h1>
-        <p className="auth-subtitle">Sign up to get started</p>
+        <h1>{t('auth.signup.title')}</h1>
+        <p className="auth-subtitle">{t('auth.signup.subtitle')}</p>
 
         <form onSubmit={handleSubmit} className="auth-form">
           {/* Email input */}
           <div className="form-group">
-            <label htmlFor="signup-email">Email Address</label>
+            <label htmlFor="signup-email">{t('auth.signup.email')}</label>
             <input
               id="signup-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              placeholder={t('auth.signup.emailPlaceholder')}
               required
-              disabled={loading}
-              aria-label="Email address"
+              disabled={loading || googleLoading}
+              aria-label={t('auth.signup.email')}
             />
           </div>
 
           {/* Password input */}
           <div className="form-group">
-            <label htmlFor="signup-password">Password</label>
+            <label htmlFor="signup-password">{t('auth.signup.password')}</label>
             <input
               id="signup-password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password (min 6 characters)"
+              placeholder={t('auth.signup.passwordPlaceholder')}
               required
-              disabled={loading}
-              aria-label="Password"
+              disabled={loading || googleLoading}
+              aria-label={t('auth.signup.password')}
               minLength={6}
             />
           </div>
 
           {/* Confirm password input */}
           <div className="form-group">
-            <label htmlFor="signup-confirm-password">Confirm Password</label>
+            <label htmlFor="signup-confirm-password">{t('auth.signup.confirmPassword')}</label>
             <input
               id="signup-confirm-password"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Confirm your password"
+              placeholder={t('auth.signup.confirmPasswordPlaceholder')}
               required
-              disabled={loading}
-              aria-label="Confirm password"
+              disabled={loading || googleLoading}
+              aria-label={t('auth.signup.confirmPassword')}
               minLength={6}
             />
           </div>
@@ -162,15 +165,15 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
             type="submit" 
             className="auth-button"
             disabled={loading || googleLoading}
-            aria-label="Create account"
+            aria-label={t('auth.signup.submit')}
           >
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {loading ? t('auth.signup.submitting') : t('auth.signup.submit')}
           </button>
         </form>
 
         {/* Divider */}
         <div className="auth-divider">
-          <span>OR</span>
+          <span>{t('auth.signup.or')}</span>
         </div>
 
         {/* Google sign-up button */}
@@ -179,22 +182,22 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
           onClick={handleGoogleSignUp}
           className="google-button"
           disabled={loading || googleLoading}
-          aria-label="Sign up with Google"
+          aria-label={t('auth.signup.googleSignUp')}
         >
-          {googleLoading ? 'Signing up...' : 'Sign up with Google'}
+          {googleLoading ? t('auth.signup.googleSigningUp') : t('auth.signup.googleSignUp')}
         </button>
 
         {/* Switch to login */}
         <div className="auth-switch">
-          <p>Already have an account?</p>
+          <p>{t('auth.signup.switchToLogin')}</p>
           <button 
             type="button"
             onClick={onSwitchToLogin}
             className="switch-button"
-            disabled={loading}
-            aria-label="Switch to login page"
+            disabled={loading || googleLoading}
+            aria-label={t('auth.signup.logIn')}
           >
-            Log In
+            {t('auth.signup.logIn')}
           </button>
         </div>
       </div>
