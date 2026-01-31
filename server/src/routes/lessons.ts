@@ -1,9 +1,9 @@
 import express from "express"
 import pool from "../db"
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 const router = Router();
 
-router.get("/:id", async (req, res) => {
+router.get("/:id", async (req: Request, res: Response) => {
   const lessonId = req.params.id;
 
   try {

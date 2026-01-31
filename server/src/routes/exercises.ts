@@ -39,8 +39,8 @@ router.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
-// POST /exercise/exercise-progress
-router.post("/exercise-progress", async (req: Request, res: Response) => {
+// POST /exercise/progress
+router.post("/progress", async (req: Request, res: Response) => {
   const { userId, exerciseId, currentStep, completedSteps, isCompleted } =
     req.body;
 
@@ -72,7 +72,8 @@ router.post("/exercise-progress", async (req: Request, res: Response) => {
 
     res.json({
       message: "Progress saved",
-      progress: upsertResult.rows[0]
+      progress: upsertResult.rows[0],
+      timestamp: new Date().toISOString()
     });
   } catch (err) {
     console.error("Progress save error:", err);
