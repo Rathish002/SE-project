@@ -130,8 +130,8 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
             className="settings-select"
             aria-label={t('settings.learningDirection')}
           >
-            <option value="hi-to-en">{t('settings.englishToHindi')}</option>
-            <option value="en-to-hi">{t('settings.hindiToEnglish')}</option>
+            <option value="hi-to-en">{t('settings.hindiToEnglish')}</option>
+            <option value="en-to-hi">{t('settings.englishToHindi')}</option>
           </select>
         </div>
 

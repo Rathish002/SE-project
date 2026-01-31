@@ -10,8 +10,10 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  font-size: 18px;
-  color: #666;
+  font-size: var(--base-font-size, 16px);
+  color: var(--text-secondary);
+  background-color: var(--bg-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Welcome box for logged-in users */
@@ -104,4 +106,16 @@
 .main-content {
   min-height: calc(100vh - 60px);
   padding-top: 0;
+  background-color: var(--bg-primary);
+  transition: background-color 0.3s ease;
+}
+
+/* Focus mode - hide navigation */
+.app-container.focus-mode .navigation {
+  display: none;
+}
+
+/* Ensure focus mode resets on page load */
+.app-container {
+  transition: all 0.3s ease;
 }

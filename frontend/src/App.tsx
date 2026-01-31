@@ -7,12 +7,15 @@ import { useTranslation } from 'react-i18next';
 import { auth } from './firebase';
 import { initializeLanguageSettings } from './utils/languageManager';
 import { AccessibilityProvider } from './contexts/AccessibilityContext';
+import { initializeUserProfile } from './services/userService';
+import { setUserOnline, setUserOffline } from './services/presenceService';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Home from './components/Home';
 import LessonSelection from './components/LessonSelection';
 import Learning from './components/Learning';
 import UnifiedSettings from './components/UnifiedSettings';
+import Collaboration from './components/Collaboration';
 import Navigation, { Page } from './components/Navigation';
 import './i18n/i18n'; // Initialize i18n
 import './App.css';
@@ -35,6 +38,10 @@ function App() {
   // State for loading (checking auth state)
   const [loading, setLoading] = useState<boolean>(true);
 
+  // State for focus mode (distraction-free mode)
+  // Always starts as false on page load/refresh
+  const [focusMode, setFocusMode] = useState<boolean>(false);
+
   // Initialize language settings from LocalStorage on app start
   useEffect(() => {
     const { interfaceLanguage } = initializeLanguageSettings();
@@ -44,14 +51,32 @@ function App() {
   // Monitor authentication state changes
   useEffect(() => {
     // onAuthStateChanged returns an unsubscribe function
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        // Initialize user profile and presence
+        try {
+          await initializeUserProfile(currentUser);
+          await setUserOnline(currentUser.uid);
+        } catch (error) {
+          console.error('Error initializing user profile:', error);
+        }
+      } else {
+        // User logged out - set offline if there was a previous user
+        if (user) {
+          try {
+            await setUserOffline(user.uid);
+          } catch (error) {
+            console.error('Error setting user offline:', error);
+          }
+        }
+      }
       setUser(currentUser);
       setLoading(false);
     });
 
     // Cleanup: unsubscribe when component unmounts
     return () => unsubscribe();
-  }, []);
+  }, [user]);
 
   // Show loading state while checking authentication
   if (loading) {
@@ -66,6 +91,10 @@ function App() {
   const handleNavigate = (page: Page) => {
     setCurrentPage(page);
     setSelectedLessonId(null); // Clear selected lesson when navigating
+    // Reset focus mode when navigating away from lesson/collaboration pages
+    if (page !== 'lessons' && page !== 'collaboration') {
+      setFocusMode(false);
+    }
   };
 
   // Handle lesson selection
@@ -77,6 +106,7 @@ function App() {
   const handleBackFromLearning = () => {
     setSelectedLessonId(null);
     setCurrentPage('lessons');
+    setFocusMode(false); // Reset focus mode when leaving lesson
   };
 
   // Handle lesson navigation (previous/next)
@@ -86,6 +116,13 @@ function App() {
 
   // Handle logout
   const handleLogout = async () => {
+    if (user) {
+      try {
+        await setUserOffline(user.uid);
+      } catch (error) {
+        console.error('Error setting user offline:', error);
+      }
+    }
     await auth.signOut();
     setCurrentPage('home');
     setSelectedLessonId(null);
@@ -97,41 +134,57 @@ function App() {
     if (selectedLessonId !== null) {
       return (
         <AccessibilityProvider>
-          <div className="app-container">
-            <Navigation
-              currentPage="lessons"
-              onNavigate={handleNavigate}
-              onLogout={handleLogout}
-            />
+          <div className={`app-container ${focusMode ? 'focus-mode' : ''}`}>
+            {!focusMode && (
+          <Navigation
+            currentPage="lessons"
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          />
+            )}
           <Learning
             lessonId={selectedLessonId}
             onBack={handleBackFromLearning}
-            onNavigateLesson={handleNavigateLesson}
+              onNavigateLesson={handleNavigateLesson}
+              focusMode={focusMode}
+              onFocusModeChange={setFocusMode}
           />
-          </div>
+        </div>
         </AccessibilityProvider>
       );
     }
 
     // Show main pages with navigation
+    // Focus mode only applies to lesson/collaboration pages
+    const isFocusModePage = currentPage === 'collaboration';
+    
     return (
       <AccessibilityProvider>
-        <div className="app-container">
-          <Navigation
-            currentPage={currentPage}
-            onNavigate={handleNavigate}
-            onLogout={handleLogout}
-          />
-          <div className="main-content">
-            {currentPage === 'home' && <Home />}
-            {currentPage === 'lessons' && (
-              <LessonSelection onSelectLesson={handleSelectLesson} />
+        <div className={`app-container ${isFocusModePage && focusMode ? 'focus-mode' : ''}`}>
+          {!(isFocusModePage && focusMode) && (
+        <Navigation
+          currentPage={currentPage}
+          onNavigate={handleNavigate}
+          onLogout={handleLogout}
+        />
+          )}
+        <div className="main-content">
+            {currentPage === 'home' && <Home currentUser={user} />}
+          {currentPage === 'lessons' && (
+            <LessonSelection onSelectLesson={handleSelectLesson} />
+          )}
+            {currentPage === 'collaboration' && user && (
+              <Collaboration 
+                currentUser={user}
+                focusMode={focusMode}
+                onFocusModeChange={setFocusMode}
+              />
             )}
-            {currentPage === 'settings' && (
+          {currentPage === 'settings' && (
               <UnifiedSettings onBack={() => handleNavigate('home')} />
-            )}
-          </div>
+          )}
         </div>
+      </div>
       </AccessibilityProvider>
     );
   }
@@ -139,13 +192,13 @@ function App() {
   // If user is not logged in, show Login or Signup
   return (
     <AccessibilityProvider>
-      <div className="app-container">
-        {showSignup ? (
-          <Signup onSwitchToLogin={() => setShowSignup(false)} />
-        ) : (
-          <Login onSwitchToSignup={() => setShowSignup(true)} />
-        )}
-      </div>
+    <div className="app-container">
+      {showSignup ? (
+        <Signup onSwitchToLogin={() => setShowSignup(false)} />
+      ) : (
+        <Login onSwitchToSignup={() => setShowSignup(true)} />
+      )}
+    </div>
     </AccessibilityProvider>
   );
 }

@@ -208,8 +208,8 @@ main#app {
 #content {
   padding: 16px;
   border-radius: 6px;
-  background: #fff;
-  border: 1px solid #eee;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
   min-height: 320px;
   max-height: 600px;
   overflow-y: auto;
@@ -217,6 +217,7 @@ main#app {
   font-size: var(--base-font-size, 16px);
   line-height: 1.6;
   color: var(--text-primary);
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 #content:focus {
@@ -378,17 +379,18 @@ main#app {
   color: var(--keyword-fg);
 }
 
-/* Distraction-free - matches epic1 */
-.distraction-free header .nav,
-.distraction-free #keywords {
+/* Distraction-free (Focus Mode) - handled by app-container.focus-mode */
+.app-container.focus-mode header .nav,
+.app-container.focus-mode #keywords,
+.app-container.focus-mode .keywords-sidebar {
   display: none;
 }
 
-.distraction-free header .controls {
+.app-container.focus-mode header .controls {
   visibility: hidden;
 }
 
-.distraction-free main#app {
+.app-container.focus-mode main#app {
   grid-template-columns: 1fr;
   transition: all 0.2s;
 }
@@ -401,20 +403,21 @@ main#app {
   padding: 10px 12px;
   border-radius: 8px;
   background: var(--accent);
-  color: var(--bg);
+  color: var(--bg-primary);
   border: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px var(--shadow);
   cursor: pointer;
   display: none;
   font-size: var(--base-font-size, 16px);
   font-weight: 600;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .exit-distraction:focus {
   outline: 3px solid rgba(255, 255, 255, 0.4);
 }
 
-.distraction-free .exit-distraction {
+.app-container.focus-mode .exit-distraction {
   display: block;
 }
 

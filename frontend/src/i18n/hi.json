@@ -83,22 +83,10 @@
     "saveSuccess": "सेटिंग्स सफलतापूर्वक सहेजी गईं!",
     "resetSuccess": "सेटिंग्स डिफ़ॉल्ट पर रीसेट हो गईं!"
   },
-  "home": {
-    "title": "होम",
-    "welcome": "वापसी पर स्वागत है!",
-    "interfaceLanguage": "इंटरफ़ेस भाषा",
-    "learningDirection": "सीखने की दिशा",
-    "stats": {
-      "title": "आपकी प्रगति",
-      "lessonsStarted": "शुरू किए गए पाठ",
-      "lessonsCompleted": "पूर्ण किए गए पाठ",
-      "lastActivity": "अंतिम गतिविधि"
-    },
-    "lastActivityPlaceholder": "अभी तक कोई गतिविधि नहीं"
-  },
   "navigation": {
     "home": "होम",
     "lessons": "पाठ",
+    "collaboration": "सहयोग",
     "settings": "सेटिंग्स",
     "accessibility": "पहुंच",
     "logout": "लॉग आउट करें"
@@ -113,6 +101,8 @@
     "title": "पाठ",
     "loading": "पाठ लोड हो रहा है...",
     "error": "पाठ लोड करने में विफल",
+    "errorTitle": "पाठ उपलब्ध नहीं",
+    "errorMessage": "पाठ लोड करने में असमर्थ। बैकएंड सेवा उपलब्ध नहीं हो सकती है। कृपया पुनः प्रयास करें या पाठ चयन पर वापस जाएं।",
     "skipToContent": "सामग्री पर जाएं",
     "instructions": "महत्वपूर्ण निर्देश",
     "keywords": "मुख्य शब्द",
@@ -184,6 +174,77 @@
       "fontSize": "फ़ॉन्ट आकार",
       "audioSpeed": "ऑडियो गति",
       "contrast": "कंट्रास्ट मोड"
+    }
+  },
+  "error": {
+    "title": "कुछ गलत हो गया",
+    "generic": "एक अप्रत्याशित त्रुटि हुई। कृपया पुनः प्रयास करें।",
+    "retry": "पुनः प्रयास करें",
+    "goBack": "वापस जाएं"
+  },
+  "collaboration": {
+    "title": "सहयोग",
+    "loading": "लोड हो रहा है...",
+    "search": {
+      "title": "मित्र खोजें",
+      "placeholder": "ईमेल पता दर्ज करें",
+      "search": "खोजें",
+      "searching": "खोज रहे हैं...",
+      "empty": "कृपया एक ईमेल पता दर्ज करें",
+      "noResults": "इस ईमेल के साथ कोई उपयोगकर्ता नहीं मिला",
+      "error": "उपयोगकर्ताओं को खोजने में त्रुटि",
+      "sendRequest": "अनुरोध भेजें",
+      "sending": "भेज रहे हैं...",
+      "requestError": "मित्र अनुरोध भेजने में त्रुटि"
+    },
+    "friends": {
+      "title": "मित्र",
+      "empty": "अभी तक कोई मित्र नहीं। मित्र जोड़ने के लिए उपयोगकर्ताओं को खोजें।",
+      "online": "ऑनलाइन",
+      "offline": "ऑफलाइन",
+      "startChat": "चैट"
+    },
+    "requests": {
+      "title": "मित्र अनुरोध",
+      "accept": "स्वीकार करें",
+      "reject": "अस्वीकार करें",
+      "acceptError": "मित्र अनुरोध स्वीकार करने में त्रुटि",
+      "rejectError": "मित्र अनुरोध अस्वीकार करने में त्रुटि"
+    },
+    "conversations": {
+      "title": "वार्तालाप",
+      "empty": "अभी तक कोई वार्तालाप नहीं। एक मित्र के साथ चैट शुरू करें!"
+    },
+    "chat": {
+      "connected": "कनेक्टेड",
+      "reconnecting": "पुनः कनेक्ट हो रहा है...",
+      "noMessages": "अभी तक कोई संदेश नहीं। बातचीत शुरू करें!",
+      "participants": "प्रतिभागी",
+      "you": "आप",
+      "inputPlaceholder": "एक संदेश टाइप करें...",
+      "send": "भेजें",
+      "sending": "भेज रहे हैं...",
+      "sendError": "संदेश भेजने में त्रुटि",
+      "startError": "चैट शुरू करने में त्रुटि",
+      "unknownUser": "अज्ञात उपयोगकर्ता"
+    }
+  },
+  "home": {
+    "title": "होम",
+    "welcome": "वापसी पर स्वागत है!",
+    "interfaceLanguage": "इंटरफेस भाषा",
+    "learningDirection": "सीखने की दिशा",
+    "stats": {
+      "title": "आपकी प्रगति",
+      "lessonsStarted": "शुरू किए गए पाठ",
+      "lessonsCompleted": "पूर्ण किए गए पाठ",
+      "lastActivity": "अंतिम गतिविधि"
+    },
+    "lastActivityPlaceholder": "अभी तक कोई गतिविधि नहीं",
+    "collaboration": {
+      "title": "हाल की सहयोग गतिविधि",
+      "lastConversation": "अंतिम वार्तालाप",
+      "lastFriend": "अंतिम मित्र"
     }
   }
 }
