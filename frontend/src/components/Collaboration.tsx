@@ -215,7 +215,7 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
                     <div className="conversation-item-header">
                       <span className="conversation-item-name">
                         {conversation.type === 'group'
-                          ? conversation.participantNames.join(', ')
+                          ? conversation.groupName || 'Group Chat'
                           : conversation.participantNames.find(name => name !== currentUser.displayName) || 'User'
                         }
                       </span>
