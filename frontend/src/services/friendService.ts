@@ -122,12 +122,12 @@ export async function acceptFriendRequest(
 
   await setDoc(friend1Ref, {
     uid: toUid,
-    addedAt: new Date(),
+    addedAt: serverTimestamp(),
   });
 
   await setDoc(friend2Ref, {
     uid: fromUid,
-    addedAt: new Date(),
+    addedAt: serverTimestamp(),
   });
 
   // Remove request
