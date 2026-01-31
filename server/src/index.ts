@@ -2,6 +2,9 @@ import express from "express";
 import dotenv from "dotenv";
 import pool from "./db"
 import lessonRoutes from "./routes/lessons";
+import evaluationRoutes from "./routes/evaluation";
+import exerciseRoutes from "./routes/exercises";
+
 dotenv.config();
 
 const app = express();
@@ -34,6 +37,8 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/lesson", lessonRoutes);
+app.use("/evaluation", evaluationRoutes);
+app.use("/exercise", exerciseRoutes);
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
