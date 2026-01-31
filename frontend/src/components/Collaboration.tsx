@@ -10,6 +10,7 @@ import FriendSearch from './FriendSearch';
 import FriendList from './FriendList';
 import FriendRequests from './FriendRequests';
 import ChatUI from './ChatUI';
+import GroupChatCreate from './GroupChatCreate';
 import { 
   subscribeToFriends, 
   subscribeToFriendRequests,
@@ -37,6 +38,7 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showGroupCreate, setShowGroupCreate] = useState(false);
 
   // Subscribe to friends
   useEffect(() => {
@@ -128,22 +130,47 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
     );
   }
 
+  // Show group create modal if needed
+  if (showGroupCreate && currentUser?.uid) {
+    return (
+      <GroupChatCreate
+        currentUid={currentUser.uid}
+        onGroupCreated={(conversationId) => {
+          setShowGroupCreate(false);
+          setActiveConversationId(conversationId);
+        }}
+        onCancel={() => setShowGroupCreate(false)}
+      />
+    );
+  }
+
   // Show landing page
   return (
     <div className="collaboration-landing">
       <div className="collaboration-header">
         <h1>{t('collaboration.title')}</h1>
-        {!focusMode && (
-          <label className="collaboration-focus-toggle">
-            <input
-              type="checkbox"
-              checked={focusMode}
-              onChange={(e) => onFocusModeChange(e.target.checked)}
-              aria-label={t('learning.accessibility.distractionFree')}
-            />
-            {t('learning.accessibility.distractionFree')}
-          </label>
-        )}
+        <div className="header-controls">
+          {!focusMode && (
+            <label className="collaboration-focus-toggle">
+              <input
+                type="checkbox"
+                checked={focusMode}
+                onChange={(e) => onFocusModeChange(e.target.checked)}
+                aria-label={t('learning.accessibility.distractionFree')}
+              />
+              {t('learning.accessibility.distractionFree')}
+            </label>
+          )}
+          {friends.length > 0 && !focusMode && (
+            <button
+              className="create-group-btn"
+              onClick={() => setShowGroupCreate(true)}
+              title="Create a new group chat"
+            >
+              ➕ Create Group
+            </button>
+          )}
+        </div>
       </div>
 
       {loading ? (

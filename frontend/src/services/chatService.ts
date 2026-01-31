@@ -36,6 +36,7 @@ export interface Conversation {
   participants: string[];
   participantNames: string[];
   lastMessage?: Message;
+  groupName?: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
@@ -101,10 +102,15 @@ export async function createGroupConversation(
   participantUids: string[],
   groupName: string
 ): Promise<string> {
-  const allParticipants = [creatorUid, ...participantUids];
-  const participantNames: string[] = [];
+  // Ensure creator and all participants are unique and included
+  const uniqueParticipants = Array.from(new Set([creatorUid, ...participantUids]));
+  
+  if (uniqueParticipants.length < 2) {
+    throw new Error('Group must have at least 2 participants');
+  }
 
-  for (const uid of allParticipants) {
+  const participantNames: string[] = [];
+  for (const uid of uniqueParticipants) {
     const profile = await getUserProfile(uid);
     participantNames.push(profile?.name || 'User');
   }
@@ -114,9 +120,10 @@ export async function createGroupConversation(
 
   await setDoc(newDocRef, {
     type: 'group' as const,
-    participants: allParticipants,
+    participants: uniqueParticipants,
     participantNames,
-    groupName,
+    groupName: groupName.trim(),
+    createdBy: creatorUid,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
@@ -216,6 +223,7 @@ export function subscribeToConversations(
         participants: data.participants,
         participantNames: data.participantNames || [],
         lastMessage,
+        groupName: data.groupName,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
       });
@@ -249,6 +257,7 @@ export async function getConversation(conversationId: string): Promise<Conversat
     type: data.type,
     participants: data.participants,
     participantNames: data.participantNames || [],
+    groupName: data.groupName,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
   };

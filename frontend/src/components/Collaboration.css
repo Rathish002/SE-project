@@ -11,12 +11,23 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .collaboration-header h1 {
   font-size: var(--heading-1, 32px);
   color: var(--text-primary);
   margin: 0;
+  flex: 1;
+  min-width: 200px;
+}
+
+.header-controls {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .collaboration-focus-toggle {
@@ -26,10 +37,33 @@
   font-size: var(--base-font-size, 16px);
   color: var(--text-primary);
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .collaboration-focus-toggle input[type="checkbox"] {
   cursor: pointer;
+}
+
+.create-group-btn {
+  padding: 10px 16px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.create-group-btn:hover {
+  background-color: #1976d2;
+  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+}
+
+.create-group-btn:active {
+  transform: scale(0.98);
 }
 
 .collaboration-loading {

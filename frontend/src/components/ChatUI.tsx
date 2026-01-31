@@ -14,6 +14,7 @@ import {
   type Conversation,
 } from '../services/chatService';
 import { subscribeToFriends, type Friend } from '../services/friendService';
+import GroupMembers from './GroupMembers';
 import { doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import './ChatUI.css';
@@ -69,6 +70,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
             type: data.type,
             participants: data.participants,
             participantNames: data.participantNames || [],
+            groupName: data.groupName,
             createdAt: data.createdAt,
             updatedAt: data.updatedAt,
           });
@@ -178,18 +180,31 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         </div>
 
         <div className="chat-sidebar">
-          <h3 className="chat-sidebar-title">{t('collaboration.chat.participants')}</h3>
-          <div className="chat-participants">
+          {/* For group chats, show GroupMembers component */}
+          {conversation?.type === 'group' ? (
+            <GroupMembers
+              conversationId={conversationId}
+              participants={conversation.participants}
+              participantNames={conversation.participantNames}
+              groupName={conversation.groupName || 'Group'}
+              currentUid={currentUser!.uid}
+            />
+          ) : (
+            <>
+              <h3 className="chat-sidebar-title">{t('collaboration.chat.participants')}</h3>
+              <div className="chat-participants">
                 {participants.map((participant) => (
-              <div key={participant.uid} className="chat-participant">
-                <span className={`chat-participant-status ${participant.online ? 'online' : 'offline'}`}></span>
-                <span className="chat-participant-name">{participant.name}</span>
-                {participant.uid === currentUser!.uid && (
-                  <span className="chat-participant-you">({t('collaboration.chat.you')})</span>
-                )}
+                  <div key={participant.uid} className="chat-participant">
+                    <span className={`chat-participant-status ${participant.online ? 'online' : 'offline'}`}></span>
+                    <span className="chat-participant-name">{participant.name}</span>
+                    {participant.uid === currentUser!.uid && (
+                      <span className="chat-participant-you">({t('collaboration.chat.you')})</span>
+                    )}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
         </div>
       </div>
 
