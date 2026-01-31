@@ -15,8 +15,8 @@ import {
   InterfaceLanguage,
   LearningDirection,
 } from '../utils/languageManager';
-import { getUserProfile, updateUserName } from '../services/userService';
-import { onAuthStateChanged } from 'firebase/auth';
+import { getUserProfile, updateUserName, changePassword, deleteUserAccount } from '../services/userService';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../firebase';
 import type { ThemeMode, FontSize, AudioSpeed } from '../types/accessibility';
 import './UnifiedSettings.css';
@@ -46,6 +46,21 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
   const [showResetMessage, setShowResetMessage] = useState(false);
   const [username, setUsername] = useState<string>('');
   const [uid, setUid] = useState<string | null>(null);
+
+  // Password change modal
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordMessage, setPasswordMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+
+  // Delete account modal
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteMessage, setDeleteMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // Update i18n language when interface language changes
   useEffect(() => {
@@ -84,6 +99,71 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
       resetToDefaults();
       setShowResetMessage(true);
       setTimeout(() => setShowResetMessage(false), 3000);
+    }
+  };
+
+  // Handle change password
+  const handleChangePassword = async () => {
+    if (!newPassword || !currentPassword) {
+      setPasswordMessage({ type: 'error', text: 'Please fill in all password fields' });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage({ type: 'error', text: 'New passwords do not match' });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordMessage({ type: 'error', text: 'Password must be at least 6 characters' });
+      return;
+    }
+
+    try {
+      setPasswordLoading(true);
+      const currentUser = auth.currentUser;
+      if (!currentUser) throw new Error('User not logged in');
+
+      await changePassword(currentUser, currentPassword, newPassword);
+      setPasswordMessage({ type: 'success', text: 'Password changed successfully' });
+      
+      // Reset form
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setTimeout(() => {
+        setShowChangePassword(false);
+        setPasswordMessage(null);
+      }, 2000);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to change password';
+      setPasswordMessage({ type: 'error', text: message });
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
+  // Handle delete account
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== 'DELETE' || !deletePassword) {
+      setDeleteMessage({ type: 'error', text: 'Please confirm deletion and enter your password' });
+      return;
+    }
+
+    try {
+      setDeleteLoading(true);
+      const currentUser = auth.currentUser;
+      if (!currentUser) throw new Error('User not logged in');
+
+      await deleteUserAccount(currentUser, deletePassword);
+      
+      // Redirect to login after successful deletion
+      await signOut(auth);
+      window.location.href = '/';
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to delete account';
+      setDeleteMessage({ type: 'error', text: message });
+      setDeleteLoading(false);
     }
   };
 
@@ -323,6 +403,163 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
               })()}
             </span>
           </label>
+        </div>
+      </section>
+
+      {/* Account Security Section */}
+      <section className="settings-section card">
+        <h2>Account & Security</h2>
+        <p className="section-description">Manage your account security and preferences</p>
+
+        {/* Change Password */}
+        <div className="settings-subsection">
+          <h3>Change Password</h3>
+          <button
+            className="button button-secondary"
+            onClick={() => setShowChangePassword(!showChangePassword)}
+          >
+            {showChangePassword ? 'Cancel' : 'Change Password'}
+          </button>
+
+          {showChangePassword && (
+            <div className="modal-form">
+              <div className="settings-group">
+                <label htmlFor="current-password">Current Password</label>
+                <input
+                  id="current-password"
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  className="settings-input"
+                  placeholder="Enter your current password"
+                  disabled={passwordLoading}
+                />
+              </div>
+
+              <div className="settings-group">
+                <label htmlFor="new-password">New Password</label>
+                <input
+                  id="new-password"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="settings-input"
+                  placeholder="Enter new password (min 6 characters)"
+                  disabled={passwordLoading}
+                />
+              </div>
+
+              <div className="settings-group">
+                <label htmlFor="confirm-password">Confirm New Password</label>
+                <input
+                  id="confirm-password"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="settings-input"
+                  placeholder="Confirm new password"
+                  disabled={passwordLoading}
+                />
+              </div>
+
+              <button
+                className="button button-primary"
+                onClick={handleChangePassword}
+                disabled={passwordLoading}
+              >
+                {passwordLoading ? 'Updating...' : 'Update Password'}
+              </button>
+
+              {passwordMessage && (
+                <div className={`status-message ${passwordMessage.type}`}>
+                  {passwordMessage.text}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Delete Account */}
+        <div className="settings-subsection danger-zone">
+          <h3 style={{ color: '#d32f2f' }}>Delete Account</h3>
+          <p className="section-description" style={{ color: '#d32f2f' }}>
+            This action cannot be undone. All your data will be permanently deleted.
+          </p>
+          <button
+            className="button button-danger"
+            onClick={() => setShowDeleteModal(!showDeleteModal)}
+            style={{
+              backgroundColor: '#d32f2f',
+              color: 'white',
+              border: 'none',
+              padding: '10px 20px',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+            }}
+          >
+            {showDeleteModal ? 'Cancel' : 'Delete Account'}
+          </button>
+
+          {showDeleteModal && (
+            <div className="modal-form danger-form">
+              <p style={{ marginBottom: '15px', color: '#d32f2f', fontWeight: 'bold' }}>
+                ⚠️ Warning: This will permanently delete your account and all associated data.
+              </p>
+
+              <div className="settings-group">
+                <label htmlFor="confirm-delete">
+                  Type "DELETE" to confirm:
+                </label>
+                <input
+                  id="confirm-delete"
+                  type="text"
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value.toUpperCase())}
+                  className="settings-input"
+                  placeholder="Type DELETE"
+                  disabled={deleteLoading}
+                />
+              </div>
+
+              <div className="settings-group">
+                <label htmlFor="delete-password">Enter your password to confirm:</label>
+                <input
+                  id="delete-password"
+                  type="password"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  className="settings-input"
+                  placeholder="Enter password"
+                  disabled={deleteLoading}
+                />
+              </div>
+
+              <button
+                className="button button-danger"
+                onClick={handleDeleteAccount}
+                disabled={deleteLoading || deleteConfirmText !== 'DELETE' || !deletePassword}
+                style={{
+                  backgroundColor: '#d32f2f',
+                  color: 'white',
+                  border: 'none',
+                  padding: '10px 20px',
+                  borderRadius: '4px',
+                  cursor: deleteLoading || deleteConfirmText !== 'DELETE' ? 'not-allowed' : 'pointer',
+                  fontWeight: 'bold',
+                  opacity: deleteLoading || deleteConfirmText !== 'DELETE' ? 0.6 : 1,
+                }}
+              >
+                {deleteLoading ? 'Deleting...' : 'Permanently Delete My Account'}
+              </button>
+
+              {deleteMessage && (
+                <div className={`status-message ${deleteMessage.type}`}>
+                  {deleteMessage.text}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </section>
 

@@ -4,8 +4,8 @@
  * Uses Firebase Auth UID as the unique identifier
  */
 
-import { User } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
+import { User, updatePassword, reauthenticateWithCredential, EmailAuthProvider, deleteUser } from 'firebase/auth';
+import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs, deleteDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export interface UserProfile {
@@ -112,5 +112,71 @@ export async function updateUserName(uid: string, newName: string): Promise<void
     }
   } catch (e) {
     console.warn('Failed to propagate username to conversations', e);
+  }
+}
+/**
+ * Change user password
+ * Requires the current password for reauthentication
+ */
+export async function changePassword(user: User, currentPassword: string, newPassword: string): Promise<void> {
+  if (!user.email) {
+    throw new Error('User email not found');
+  }
+
+  // Reauthenticate user
+  const credential = EmailAuthProvider.credential(user.email, currentPassword);
+  await reauthenticateWithCredential(user, credential);
+
+  // Update password
+  await updatePassword(user, newPassword);
+}
+
+/**
+ * Delete user account
+ * Requires reauthentication and deletes all user data from Firestore
+ */
+export async function deleteUserAccount(user: User, password: string): Promise<void> {
+  if (!user.email) {
+    throw new Error('User email not found');
+  }
+
+  try {
+    // Reauthenticate user
+    const credential = EmailAuthProvider.credential(user.email, password);
+    await reauthenticateWithCredential(user, credential);
+
+    // Delete user data from Firestore
+    const uid = user.uid;
+
+    // Delete user profile
+    const userRef = doc(db, 'users', uid);
+    await deleteDoc(userRef);
+
+    // Delete user's friend list
+    try {
+      const friendsRef = collection(db, 'friends', uid, 'list');
+      const friendSnaps = await getDocs(friendsRef);
+      for (const snap of friendSnaps.docs) {
+        await deleteDoc(snap.ref);
+      }
+    } catch (e) {
+      console.warn('Error deleting friend list:', e);
+    }
+
+    // Delete user's presence
+    try {
+      const presenceRef = doc(db, 'presence', uid);
+      await deleteDoc(presenceRef);
+    } catch (e) {
+      console.warn('Error deleting presence:', e);
+    }
+
+    // Delete user from Firebase Auth
+    await deleteUser(user);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('auth/wrong-password')) {
+      throw new Error('Invalid password');
+    }
+    throw error;
   }
 }
