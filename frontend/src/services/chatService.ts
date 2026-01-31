@@ -9,6 +9,7 @@ import {
   setDoc,
   getDoc,
   getDocs,
+  deleteDoc,
   query,
   where,
   orderBy,
@@ -152,6 +153,63 @@ export async function sendMessage(
   // Update conversation timestamp
   const conversationRef = doc(db, 'conversations', conversationId);
   await setDoc(conversationRef, { updatedAt: serverTimestamp() }, { merge: true });
+}
+
+/**
+ * Leave a group chat by removing the user from participants
+ */
+export async function leaveGroupChat(
+  conversationId: string,
+  uid: string
+): Promise<void> {
+  const conversationRef = doc(db, 'conversations', conversationId);
+  const conversationSnap = await getDoc(conversationRef);
+
+  if (!conversationSnap.exists()) {
+    throw new Error('Conversation not found');
+  }
+
+  const data = conversationSnap.data();
+  
+  if (data.type !== 'group') {
+    throw new Error('Can only leave group chats');
+  }
+
+  // Remove user from participants
+  const participants: string[] = data.participants || [];
+  const participantNames: string[] = data.participantNames || [];
+  
+  const userIndex = participants.indexOf(uid);
+  if (userIndex === -1) {
+    throw new Error('User is not a member of this group');
+  }
+
+  // Remove participant
+  participants.splice(userIndex, 1);
+  participantNames.splice(userIndex, 1);
+
+  // If group is empty, delete it. Otherwise, update it.
+  if (participants.length === 0) {
+    // Delete all messages first
+    const messagesRef = collection(db, 'conversations', conversationId, 'messages');
+    const messagesSnap = await getDocs(messagesRef);
+    for (const msgDoc of messagesSnap.docs) {
+      await deleteDoc(msgDoc.ref);
+    }
+    // Delete the conversation
+    await deleteDoc(conversationRef);
+  } else {
+    // Update participants
+    await setDoc(
+      conversationRef,
+      {
+        participants,
+        participantNames,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  }
 }
 
 /**

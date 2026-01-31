@@ -10,7 +10,7 @@ import {
   sendFriendRequest,
   type Friend,
 } from '../services/friendService';
-import { getUserProfile, type UserProfile } from '../services/userService';
+import { leaveGroupChat } from '../services/chatService';
 import './GroupMembers.css';
 
 interface GroupMembersProps {
@@ -19,6 +19,7 @@ interface GroupMembersProps {
   participantNames: string[];
   groupName: string;
   currentUid: string;
+  onLeaveGroup?: () => void;
 }
 
 interface ParticipantInfo {
@@ -34,6 +35,7 @@ const GroupMembers: React.FC<GroupMembersProps> = ({
   participantNames,
   groupName,
   currentUid,
+  onLeaveGroup,
 }) => {
   const { t } = useTranslation();
 
@@ -100,6 +102,28 @@ const GroupMembers: React.FC<GroupMembersProps> = ({
     }
   };
 
+  // Handle leave group
+  const handleLeaveGroup = async () => {
+    if (!window.confirm('Are you sure you want to leave this group?')) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await leaveGroupChat(conversationId, currentUid);
+      setMessage({ type: 'success', text: 'You left the group' });
+      setTimeout(() => {
+        if (onLeaveGroup) {
+          onLeaveGroup();
+        }
+      }, 1000);
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : 'Failed to leave group';
+      setMessage({ type: 'error', text: errorMsg });
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="group-members">
       <div className="members-header">
@@ -144,6 +168,18 @@ const GroupMembers: React.FC<GroupMembersProps> = ({
             )}
           </div>
         ))}
+      </div>
+
+      {/* Leave Group Button */}
+      <div className="leave-group-section">
+        <button
+          className="leave-group-btn"
+          onClick={handleLeaveGroup}
+          disabled={isLoading}
+          title="Leave this group chat"
+        >
+          Leave Group
+        </button>
       </div>
     </div>
   );

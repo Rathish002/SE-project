@@ -188,6 +188,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
               participantNames={conversation.participantNames}
               groupName={conversation.groupName || 'Group'}
               currentUid={currentUser!.uid}
+              onLeaveGroup={onBack}
             />
           ) : (
             <>

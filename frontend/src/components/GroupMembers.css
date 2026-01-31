@@ -143,6 +143,36 @@
   opacity: 0.6;
 }
 
+/* Leave Group Section */
+.leave-group-section {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border, #eee);
+}
+
+.leave-group-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.leave-group-btn:hover:not(:disabled) {
+  background-color: #d32f2f;
+}
+
+.leave-group-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .member-item {
