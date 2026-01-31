@@ -25,7 +25,7 @@ import { saveActivity } from '../utils/activityTracker';
 import './Collaboration.css';
 
 interface CollaborationProps {
-  currentUser: User;
+  currentUser: User | null;
   focusMode: boolean;
   onFocusModeChange: (enabled: boolean) => void;
 }
@@ -40,34 +40,38 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
 
   // Subscribe to friends
   useEffect(() => {
+    if (!currentUser?.uid) return;
     const unsubscribe = subscribeToFriends(currentUser.uid, (newFriends) => {
       setFriends(newFriends);
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, [currentUser.uid]);
+  }, [currentUser?.uid]);
 
   // Subscribe to friend requests
   useEffect(() => {
+    if (!currentUser?.uid) return;
     const unsubscribe = subscribeToFriendRequests(currentUser.uid, (requests) => {
       setFriendRequests(requests);
     });
 
     return () => unsubscribe();
-  }, [currentUser.uid]);
+  }, [currentUser?.uid]);
 
   // Subscribe to conversations
   useEffect(() => {
+    if (!currentUser?.uid) return;
     const unsubscribe = subscribeToConversations(currentUser.uid, (newConversations) => {
       setConversations(newConversations);
     });
 
     return () => unsubscribe();
-  }, [currentUser.uid]);
+  }, [currentUser?.uid]);
 
   const handleStartChat = async (friendUid: string) => {
     try {
+      if (!currentUser?.uid) return;
       const conversationId = await getOrCreateDirectConversation(currentUser.uid, friendUid);
       setActiveConversationId(conversationId);
       
@@ -78,6 +82,13 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
         lastFriendUid: friendUid,
         lastFriendName: friend?.name,
       });
+      // update lastActive on user action
+      try {
+        const { updateLastActive } = await import('../services/presenceService');
+        if (currentUser?.uid) await updateLastActive(currentUser.uid);
+      } catch (e) {
+        // ignore presence update failures
+      }
     } catch (error: any) {
       console.error('Error starting chat:', error);
       alert(t('collaboration.chat.startError'));
@@ -96,6 +107,15 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
   const handleBackToLanding = () => {
     setActiveConversationId(null);
   };
+
+  // If auth not ready or no user, show loading
+  if (!currentUser) {
+    return (
+      <div className="collaboration-loading">
+        <p>{t('collaboration.loading')}</p>
+      </div>
+    );
+  }
 
   // Show chat UI if conversation is active
   if (activeConversationId) {

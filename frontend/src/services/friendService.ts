@@ -95,7 +95,6 @@ export async function sendFriendRequest(
   }
 
   // Create request document with auto-generated ID
-  const requestsRef = collection(db, 'friendRequests');
   const requestRef = doc(requestsRef);
   
   await setDoc(requestRef, {

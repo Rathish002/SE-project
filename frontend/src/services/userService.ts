@@ -5,7 +5,7 @@
  */
 
 import { User } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export interface UserProfile {
@@ -84,4 +84,33 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
   };
+}
+
+/**
+ * Update a user's display name and propagate to conversations participantNames.
+ * This keeps the name tied to the uid and updates participant displays in real time.
+ */
+export async function updateUserName(uid: string, newName: string): Promise<void> {
+  const userRef = doc(db, 'users', uid);
+  await setDoc(userRef, { name: newName, updatedAt: serverTimestamp() }, { merge: true });
+
+  // Propagate to conversations where this user is a participant
+  try {
+    const conversationsRef = collection(db, 'conversations');
+    const q = query(conversationsRef, where('participants', 'array-contains', uid));
+    const snaps = await getDocs(q);
+    for (const snap of snaps.docs) {
+      const data = snap.data();
+      const participants: string[] = data.participants || [];
+      const participantNames: string[] = data.participantNames || [];
+      const idx = participants.indexOf(uid);
+      if (idx !== -1) {
+        participantNames[idx] = newName;
+        const convRef = doc(conversationsRef, snap.id);
+        await setDoc(convRef, { participantNames, updatedAt: serverTimestamp() }, { merge: true });
+      }
+    }
+  } catch (e) {
+    console.warn('Failed to propagate username to conversations', e);
+  }
 }

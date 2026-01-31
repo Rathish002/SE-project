@@ -15,6 +15,9 @@ import {
   InterfaceLanguage,
   LearningDirection,
 } from '../utils/languageManager';
+import { getUserProfile, updateUserName } from '../services/userService';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../firebase';
 import type { ThemeMode, FontSize, AudioSpeed } from '../types/accessibility';
 import './UnifiedSettings.css';
 
@@ -41,6 +44,8 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
   // Accessibility feedback
   const [showSaveMessage, setShowSaveMessage] = useState(false);
   const [showResetMessage, setShowResetMessage] = useState(false);
+  const [username, setUsername] = useState<string>('');
+  const [uid, setUid] = useState<string | null>(null);
 
   // Update i18n language when interface language changes
   useEffect(() => {
@@ -65,6 +70,10 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
   // Handle save
   const handleSave = () => {
     saveCurrentPreferences();
+    // Save username if changed
+    if (uid) {
+      updateUserName(uid, username).catch((e) => console.warn('Failed to update username', e));
+    }
     setShowSaveMessage(true);
     setTimeout(() => setShowSaveMessage(false), 3000);
   };
@@ -77,6 +86,26 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
       setTimeout(() => setShowResetMessage(false), 3000);
     }
   };
+
+  // Load current user's profile for username editing
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUid(user.uid);
+        try {
+          const profile = await getUserProfile(user.uid);
+          setUsername(profile?.name || '');
+        } catch (e) {
+          console.warn('Failed to load user profile', e);
+        }
+      } else {
+        setUid(null);
+        setUsername('');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const themeOptions: { value: ThemeMode; label: string; icon: string }[] = [
     { value: 'light', label: t('accessibility.theme.light'), icon: '☀️' },
@@ -98,6 +127,25 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
         <h1>{t('settings.title')}</h1>
         <p>{t('settings.subtitle')}</p>
       </header>
+
+      {/* Username Editing */}
+      <section className="settings-section card">
+        <h2>{t('settings.profileSection', 'Profile')}</h2>
+        <div className="settings-group">
+          <label htmlFor="username">{t('settings.username', 'Username')}</label>
+          <input
+            id="username"
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="settings-input"
+            placeholder={t('settings.usernamePlaceholder')}
+            aria-label={t('settings.username')}
+            disabled={!uid}
+          />
+          {!uid && <p className="settings-note">{t('settings.loginToEdit')}</p>}
+        </div>
+      </section>
 
       {/* Language Settings Section */}
       <section className="settings-section card">

@@ -5,11 +5,12 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { searchUsersByEmail, sendFriendRequest, type UserProfile } from '../services/friendService';
+import { searchUsersByEmail, sendFriendRequest } from '../services/friendService';
+import type { UserProfile } from '../services/userService';
 import './FriendSearch.css';
 
 interface FriendSearchProps {
-  currentUid: string;
+  currentUid?: string | null;
   onRequestSent?: () => void;
 }
 
@@ -32,6 +33,10 @@ const FriendSearch: React.FC<FriendSearchProps> = ({ currentUid, onRequestSent }
     setResults([]);
 
     try {
+      if (!currentUid) {
+        setError(t('collaboration.search.authMissing'));
+        return;
+      }
       const found = await searchUsersByEmail(searchEmail.trim(), currentUid);
       setResults(found);
       if (found.length === 0) {
@@ -49,6 +54,7 @@ const FriendSearch: React.FC<FriendSearchProps> = ({ currentUid, onRequestSent }
     setError(null);
 
     try {
+      if (!currentUid) throw new Error('Auth not ready');
       await sendFriendRequest(currentUid, toUid);
       setResults([]);
       setSearchEmail('');

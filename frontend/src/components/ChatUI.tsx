@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Chat UI Component
  * Real-time chat interface for conversations
  */
@@ -20,7 +20,7 @@ import './ChatUI.css';
 
 interface ChatUIProps {
   conversationId: string;
-  currentUser: User;
+  currentUser: User | null;
   onBack: () => void;
 }
 
@@ -107,8 +107,16 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
 
     setSending(true);
     try {
-      await sendMessage(conversationId, currentUser.uid, messageText);
+      if (!currentUser?.uid) return;
+      await sendMessage(conversationId, currentUser!.uid, messageText);
       setMessageText('');
+      // update lastActive on user action
+      try {
+        const { updateLastActive } = await import('../services/presenceService');
+        await updateLastActive(currentUser!.uid);
+      } catch (e) {
+        // ignore
+      }
     } catch (error: any) {
       console.error('Error sending message:', error);
       alert(t('collaboration.chat.sendError'));
@@ -127,13 +135,13 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
     <div className="chat-ui">
       <div className="chat-header">
         <button className="chat-back-button" onClick={onBack}>
-          ← {t('app.back')}
+          â† {t('app.back')}
         </button>
         <div className="chat-header-info">
           <h2 className="chat-title">
             {conversation?.type === 'group' 
               ? conversation.participantNames.join(', ')
-              : conversation?.participantNames.find(name => name !== currentUser.displayName) || t('collaboration.chat.unknownUser')
+              : conversation?.participantNames.find(name => name !== currentUser!.displayName) || t('collaboration.chat.unknownUser')
             }
           </h2>
           <div className="chat-status">
@@ -156,7 +164,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
             messages.map((message) => (
               <div
                 key={message.id}
-                className={`chat-message ${message.senderUid === currentUser.uid ? 'own' : 'other'}`}
+                className={`chat-message ${message.senderUid === currentUser!.uid ? 'own' : 'other'}`}
               >
                 <div className="chat-message-header">
                   <span className="chat-message-sender">{message.senderName}</span>
@@ -172,11 +180,11 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         <div className="chat-sidebar">
           <h3 className="chat-sidebar-title">{t('collaboration.chat.participants')}</h3>
           <div className="chat-participants">
-            {participants.map((participant) => (
+                {participants.map((participant) => (
               <div key={participant.uid} className="chat-participant">
                 <span className={`chat-participant-status ${participant.online ? 'online' : 'offline'}`}></span>
                 <span className="chat-participant-name">{participant.name}</span>
-                {participant.uid === currentUser.uid && (
+                {participant.uid === currentUser!.uid && (
                   <span className="chat-participant-you">({t('collaboration.chat.you')})</span>
                 )}
               </div>

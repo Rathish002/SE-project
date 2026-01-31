@@ -3,7 +3,7 @@
  * Tracks user online/offline status in real-time
  */
 
-import { doc, setDoc, serverTimestamp, onDisconnect } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../firebase';
 
 /**
@@ -17,12 +17,6 @@ export async function setUserOnline(uid: string): Promise<void> {
     online: true,
     lastActive: serverTimestamp(),
   }, { merge: true });
-
-  // Set offline when user disconnects
-  await onDisconnect(presenceRef).set({
-    online: false,
-    lastActive: serverTimestamp(),
-  });
 }
 
 /**
@@ -36,4 +30,13 @@ export async function setUserOffline(uid: string): Promise<void> {
     online: false,
     lastActive: serverTimestamp(),
   }, { merge: true });
+}
+
+/**
+ * Update lastActive timestamp without changing online flag.
+ * Use this on user actions to indicate activity.
+ */
+export async function updateLastActive(uid: string): Promise<void> {
+  const presenceRef = doc(db, 'presence', uid);
+  await setDoc(presenceRef, { lastActive: serverTimestamp() }, { merge: true });
 }

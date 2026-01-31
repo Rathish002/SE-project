@@ -216,10 +216,10 @@ export function subscribeToConversations(
       });
     }
 
-    // Sort by updatedAt descending (most recent first)
+    // Sort by updatedAt descending (most recent first) using toMillis()
     conversations.sort((a, b) => {
-      const aTime = a.updatedAt?.toMillis?.() || a.updatedAt?._seconds * 1000 || 0;
-      const bTime = b.updatedAt?.toMillis?.() || b.updatedAt?._seconds * 1000 || 0;
+      const aTime = a.updatedAt?.toMillis?.() || 0;
+      const bTime = b.updatedAt?.toMillis?.() || 0;
       return bTime - aTime;
     });
 
