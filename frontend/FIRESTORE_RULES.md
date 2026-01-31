@@ -16,65 +16,83 @@ These rules enable full collaboration features including friend requests, chats,
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    
-    // Users collection - only user can write their own profile
+
+    /* =========================
+       USERS
+       ========================= */
     match /users/{uid} {
       allow read: if request.auth != null;
-      allow write: if request.auth.uid == uid;
+      allow write: if request.auth != null &&
+        request.auth.uid == uid;
     }
 
-    // Friend requests collection
-    match /friendRequests/{document=**} {
-      // User can read requests where they are sender or recipient
-      allow read: if request.auth != null && 
-        (resource.data.toUid == request.auth.uid || 
-         resource.data.fromUid == request.auth.uid);
-      // User can create a request from themselves
-      allow create: if request.auth != null && 
+    /* =========================
+       FRIEND REQUESTS
+       ========================= */
+    match /friendRequests/{requestId} {
+      allow read: if request.auth != null &&
+        (resource.data.fromUid == request.auth.uid ||
+         resource.data.toUid == request.auth.uid);
+
+      allow create: if request.auth != null &&
         request.resource.data.fromUid == request.auth.uid;
-      // User can update/delete their own requests
-      allow update, delete: if request.auth != null && 
-        (resource.data.fromUid == request.auth.uid || 
+
+      allow update, delete: if request.auth != null &&
+        (resource.data.fromUid == request.auth.uid ||
          resource.data.toUid == request.auth.uid);
     }
 
-    // Friends collection - users can read and modify their own friends list
-    match /friends/{uid} {
-      // Read their own friends
-      allow read: if request.auth.uid == uid;
+    /* =========================
+       FRIEND LIST
+       ========================= */
+    match /friends/{uid}/list/{friendUid} {
+      allow read: if request.auth != null &&
+        request.auth.uid == uid;
       
-      match /list/{document=**} {
-        // Only the user can write to their own friends list
-        allow read: if request.auth.uid == uid;
-        allow write: if request.auth.uid == uid;
-      }
+      allow write: if request.auth != null &&
+        request.auth.uid == uid;
     }
 
-    // Conversations - users can read/write those they participate in
+    /* =========================
+       CONVERSATIONS
+       ========================= */
     match /conversations/{convId} {
-      allow read: if request.auth != null && 
-        request.auth.uid in resource.data.participants;
-      allow create: if request.auth != null && 
-        request.auth.uid in request.resource.data.participants;
-      allow update: if request.auth != null && 
+      allow create: if request.auth != null &&
+        request.auth.uid in request.resource.data.participants &&
+        request.resource.data.participants.size() >= 2;
+
+      allow read: if request.auth != null &&
         request.auth.uid in resource.data.participants;
       
-      // Messages in conversations
-      match /messages/{msgId} {
-        allow read: if request.auth != null && 
-          request.auth.uid in get(/databases/$(database)/documents/conversations/$(convId)).data.participants;
-        allow create: if request.auth != null && 
-          request.auth.uid in get(/databases/$(database)/documents/conversations/$(convId)).data.participants;
-      }
+      allow update: if request.auth != null &&
+        request.auth.uid in resource.data.participants;
+      
+      allow delete: if request.auth != null &&
+        request.auth.uid in resource.data.participants;
     }
 
-    // Presence - users can read all, but only write their own
+    /* =========================
+       MESSAGES
+       ========================= */
+    match /conversations/{convId}/messages/{msgId} {
+      allow read, write: if request.auth != null &&
+        request.auth.uid in
+        get(/databases/$(database)/documents/conversations/$(convId))
+          .data.participants;
+    }
+
+    /* =========================
+       PRESENCE
+       ========================= */
     match /presence/{uid} {
       allow read: if request.auth != null;
-      allow write: if request.auth.uid == uid;
+      allow write: if request.auth != null &&
+        request.auth.uid == uid;
     }
 
-    // Default deny all other access
+    /* =========================
+       DEFAULT DENY
+       ========================= */
     match /{document=**} {
       allow read, write: if false;
     }

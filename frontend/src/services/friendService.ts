@@ -109,30 +109,35 @@ export async function sendFriendRequest(
 
 /**
  * Accept friend request
- * Creates bidirectional friendship and removes request
+ * 
+ * Secure bidirectional friendship pattern:
+ * 1. Recipient (toUid) writes their own friend list entry
+ * 2. Update request to "accepted" status
+ * 3. Sender (fromUid) listens for status change and writes their own entry
+ * 
+ * This maintains security: each user only writes their own list
  */
 export async function acceptFriendRequest(
   requestId: string,
   fromUid: string,
   toUid: string
 ): Promise<void> {
-  // Create friendship in both directions
-  const friend1Ref = doc(db, 'friends', fromUid, 'list', toUid);
-  const friend2Ref = doc(db, 'friends', toUid, 'list', fromUid);
-
-  await setDoc(friend1Ref, {
-    uid: toUid,
-    addedAt: serverTimestamp(),
-  });
-
-  await setDoc(friend2Ref, {
+  // Step 1: Recipient writes to their own friend list
+  const recipientFriendRef = doc(db, 'friends', toUid, 'list', fromUid);
+  await setDoc(recipientFriendRef, {
     uid: fromUid,
     addedAt: serverTimestamp(),
   });
 
-  // Remove request
+  // Step 2: Update request status - triggers sender's listener
   const requestRef = doc(db, 'friendRequests', requestId);
-  await deleteDoc(requestRef);
+  await setDoc(requestRef, { 
+    status: 'accepted',
+    acceptedAt: serverTimestamp(),
+  }, { merge: true });
+
+  // Step 3: Sender will automatically write their own list when they 
+  // detect the status change (see setupAcceptanceListener)
 }
 
 /**
@@ -141,6 +146,43 @@ export async function acceptFriendRequest(
 export async function rejectFriendRequest(requestId: string): Promise<void> {
   const requestRef = doc(db, 'friendRequests', requestId);
   await setDoc(requestRef, { status: 'rejected' }, { merge: true });
+}
+
+/**
+ * Setup acceptance listener for sent requests
+ * 
+ * When sender sees their outgoing request is "accepted",
+ * automatically writes their own friend list entry.
+ * This completes the bidirectional friendship securely.
+ */
+export function setupAcceptanceListener(uid: string): () => void {
+  const requestsRef = collection(db, 'friendRequests');
+  // Query for requests sent BY this user
+  const q = query(
+    requestsRef,
+    where('fromUid', '==', uid),
+    where('status', '==', 'accepted')
+  );
+
+  return onSnapshot(q, async (snapshot: QuerySnapshot<DocumentData>) => {
+    // For each accepted request, write to sender's own friend list
+    for (const docSnap of snapshot.docs) {
+      const data = docSnap.data();
+      const toUid = data.toUid;
+
+      // Write to sender's friend list (the sender's own list - always allowed)
+      const senderFriendRef = doc(db, 'friends', uid, 'list', toUid);
+      
+      // Check if already in list to avoid re-writing
+      const existing = await getDoc(senderFriendRef);
+      if (!existing.exists()) {
+        await setDoc(senderFriendRef, {
+          uid: toUid,
+          addedAt: serverTimestamp(),
+        });
+      }
+    }
+  });
 }
 
 /**

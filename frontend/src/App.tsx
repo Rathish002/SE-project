@@ -9,6 +9,7 @@ import { initializeLanguageSettings } from './utils/languageManager';
 import { AccessibilityProvider } from './contexts/AccessibilityContext';
 import { initializeUserProfile } from './services/userService';
 import { setUserOnline, setUserOffline } from './services/presenceService';
+import { setupAcceptanceListener } from './services/friendService';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Home from './components/Home';
@@ -57,6 +58,12 @@ function App() {
         try {
           await initializeUserProfile(currentUser);
           await setUserOnline(currentUser.uid);
+          
+          // Setup listener for friend request acceptance (completes bidirectional adds)
+          const unsubscribeAcceptance = setupAcceptanceListener(currentUser.uid);
+          
+          // Store unsubscriber for cleanup
+          (window as any).__unsubscribeAcceptance = unsubscribeAcceptance;
         } catch (error) {
           console.error('Error initializing user profile:', error);
         }
@@ -65,6 +72,11 @@ function App() {
         if (user) {
           try {
             await setUserOffline(user.uid);
+            
+            // Cleanup acceptance listener
+            if ((window as any).__unsubscribeAcceptance) {
+              (window as any).__unsubscribeAcceptance();
+            }
           } catch (error) {
             console.error('Error setting user offline:', error);
           }
@@ -75,7 +87,12 @@ function App() {
     });
 
     // Cleanup: unsubscribe when component unmounts
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      if ((window as any).__unsubscribeAcceptance) {
+        (window as any).__unsubscribeAcceptance();
+      }
+    };
   }, [user]);
 
   // Show loading state while checking authentication

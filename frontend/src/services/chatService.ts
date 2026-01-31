@@ -47,6 +47,10 @@ export async function getOrCreateDirectConversation(
   user1Uid: string,
   user2Uid: string
 ): Promise<string> {
+  if (!user1Uid || !user2Uid) {
+    throw new Error('Both user IDs are required');
+  }
+
   // Check if conversation already exists
   const conversationsRef = collection(db, 'conversations');
   const q = query(
@@ -71,6 +75,7 @@ export async function getOrCreateDirectConversation(
   const user1Profile = await getUserProfile(user1Uid);
   const user2Profile = await getUserProfile(user2Uid);
 
+  // Ensure both users are in participants array and user1 is first (creator)
   const conversationData = {
     type: 'direct' as const,
     participants: [user1Uid, user2Uid],
