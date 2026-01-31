@@ -65,6 +65,8 @@
   },
   "settings": {
     "title": "Settings",
+    "subtitle": "Customize your language, learning direction, and accessibility preferences",
+    "languageSection": "Language & Learning",
     "interfaceLanguage": "Interface Language",
     "learningDirection": "Learning Direction",
     "english": "English",
@@ -74,7 +76,12 @@
     "learningInfo": {
       "enToHi": "You are learning Hindi from English",
       "hiToEn": "You are learning English from Hindi"
-    }
+    },
+    "save": "Save Preferences",
+    "reset": "Reset to Default",
+    "resetConfirm": "Are you sure you want to reset all settings to defaults?",
+    "saveSuccess": "Settings saved successfully!",
+    "resetSuccess": "Settings reset to defaults!"
   },
   "home": {
     "title": "Home",
@@ -93,6 +100,7 @@
     "home": "Home",
     "lessons": "Lessons",
     "settings": "Settings",
+    "accessibility": "Accessibility",
     "logout": "Log Out"
   },
   "lessons": {
@@ -102,11 +110,80 @@
     "startLesson": "Start Lesson"
   },
   "learning": {
-    "title": "Learning",
-    "placeholder": {
-      "enToHi": "You are learning Hindi from English",
-      "hiToEn": "You are learning English from Hindi"
+    "title": "Lessons",
+    "loading": "Loading lesson...",
+    "error": "Failed to load lesson",
+    "skipToContent": "Skip to content",
+    "instructions": "Important Instructions",
+    "keywords": "Keywords",
+    "playInstructions": "Play Instructions",
+    "controls": {
+      "play": "Play",
+      "pause": "Pause",
+      "stop": "Stop",
+      "speed": "Speed",
+      "autoScroll": "Auto-scroll",
+      "scrollSpeed": "Scroll speed"
     },
-    "comingSoon": "Lesson content coming soon!"
+    "accessibility": {
+      "dyslexiaFont": "Dyslexia font",
+      "highContrast": "High contrast",
+      "distractionFree": "Distraction-free",
+      "exitDistraction": "Exit focus mode"
+    },
+    "navigation": {
+      "previous": "Back",
+      "next": "Next"
+    }
+  },
+  "accessibility": {
+    "title": "Accessibility Settings",
+    "subtitle": "Customize your experience with visual and audio preferences",
+    "save": "Save Preferences",
+    "reset": "Reset to Default",
+    "resetConfirm": "Are you sure you want to reset all accessibility settings to defaults?",
+    "saveSuccess": "Preferences saved successfully!",
+    "resetSuccess": "Settings reset to defaults!",
+    "theme": {
+      "title": "Theme Selection",
+      "description": "Choose a theme that works best for your visual needs",
+      "light": "Light Mode",
+      "dark": "Dark Mode",
+      "highContrast": "High Contrast Mode"
+    },
+    "fontSize": {
+      "title": "Font Size",
+      "description": "Adjust text size for better readability",
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large",
+      "preview": "Preview: The quick brown fox jumps over the lazy dog."
+    },
+    "audioSpeed": {
+      "title": "Audio Speed",
+      "description": "Control playback speed for audio content",
+      "slider": "Audio speed slider"
+    },
+    "contrast": {
+      "title": "Contrast Mode",
+      "description": "Enable enhanced contrast for better visibility",
+      "toggle": "Toggle contrast mode",
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "distractionFree": {
+      "title": "Distraction-Free Mode",
+      "description": "Hide navigation and sidebar for focused reading",
+      "toggle": "Toggle distraction-free mode",
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "summary": {
+      "title": "Current Settings",
+      "theme": "Theme",
+      "fontSize": "Font Size",
+      "audioSpeed": "Audio Speed",
+      "contrast": "Contrast Mode"
+    }
   }
 }

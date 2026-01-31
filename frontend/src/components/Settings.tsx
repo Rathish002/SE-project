@@ -15,9 +15,10 @@ import './Settings.css';
 
 interface SettingsProps {
   onBack?: () => void;
+  onNavigateToAccessibility?: () => void;
 }
 
-const Settings: React.FC<SettingsProps> = ({ onBack }) => {
+const Settings: React.FC<SettingsProps> = ({ onBack, onNavigateToAccessibility }) => {
   const { t, i18n } = useTranslation();
   
   // State for current settings
@@ -87,8 +88,8 @@ const Settings: React.FC<SettingsProps> = ({ onBack }) => {
             className="settings-select"
             aria-label={t('settings.learningDirection')}
           >
-            <option value="en-to-hi">{t('settings.englishToHindi')}</option>
-            <option value="hi-to-en">{t('settings.hindiToEnglish')}</option>
+            <option value="hi-to-en">{t('settings.englishToHindi')}</option>
+            <option value="en-to-hi">{t('settings.hindiToEnglish')}</option>
           </select>
         </div>
 
@@ -97,9 +98,18 @@ const Settings: React.FC<SettingsProps> = ({ onBack }) => {
           <p>{getLearningInfo()}</p>
         </div>
         
-        {/* Back button if onBack prop is provided */}
-        {onBack && (
-          <div className="settings-actions">
+        {/* Action buttons */}
+        <div className="settings-actions">
+          {onNavigateToAccessibility && (
+            <button
+              onClick={onNavigateToAccessibility}
+              className="settings-button settings-button-primary"
+              aria-label={t('navigation.accessibility')}
+            >
+              {t('navigation.accessibility')}
+            </button>
+          )}
+          {onBack && (
             <button
               onClick={onBack}
               className="settings-back-button"
@@ -107,8 +117,8 @@ const Settings: React.FC<SettingsProps> = ({ onBack }) => {
             >
               {t('app.back')}
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

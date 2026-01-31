@@ -4,53 +4,38 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { getLearningDirection } from '../utils/languageManager';
-import lessonsData from '../data/lessons.json';
+import { getAvailableLessonIds, fetchLesson } from '../services/lessonService';
 import './LessonSelection.css';
-
-interface Lesson {
-  id: number;
-  title: {
-    en: string;
-    hi: string;
-  };
-  description: {
-    en: string;
-    hi: string;
-  };
-}
 
 interface LessonSelectionProps {
   onSelectLesson: (lessonId: number) => void;
 }
 
 const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const learningDir = getLearningDirection();
-  const currentLang = i18n.language;
-  
-  // Get lesson title based on learning direction
-  const getLessonTitle = (lesson: Lesson): string => {
-    // If learning English from Hindi, show English title
-    // If learning Hindi from English, show Hindi title
-    if (learningDir === 'hi-to-en') {
-      return lesson.title.en;
-    } else {
-      return lesson.title.hi;
-    }
-  };
-  
-  // Get lesson description based on learning direction
-  const getLessonDescription = (lesson: Lesson): string => {
-    // If learning English from Hindi, show English description
-    // If learning Hindi from English, show Hindi description
-    if (learningDir === 'hi-to-en') {
-      return lesson.description.en;
-    } else {
-      return lesson.description.hi;
-    }
-  };
+  const [lessons, setLessons] = React.useState<Array<{ id: number; title: string }>>([]);
+  const [loading, setLoading] = React.useState(true);
 
-  const lessons = lessonsData as Lesson[];
+  // Load lesson titles
+  React.useEffect(() => {
+    const loadLessons = async () => {
+      try {
+        const lessonIds = getAvailableLessonIds();
+        const lessonPromises = lessonIds.map(async (id) => {
+          const data = await fetchLesson(id, learningDir);
+          return { id, title: data.lesson.title };
+        });
+        const loadedLessons = await Promise.all(lessonPromises);
+        setLessons(loadedLessons);
+      } catch (error) {
+        console.error('Error loading lessons:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadLessons();
+  }, [learningDir]);
 
   return (
     <div className="lesson-selection-container">
@@ -58,7 +43,11 @@ const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => 
         <h1>{t('lessons.title')}</h1>
         <p className="lesson-selection-subtitle">{t('lessons.selectLesson')}</p>
         
-        {lessons.length === 0 ? (
+        {loading ? (
+          <div className="no-lessons">
+            <p>{t('app.loading')}</p>
+          </div>
+        ) : lessons.length === 0 ? (
           <div className="no-lessons">
             <p>{t('lessons.noLessons')}</p>
           </div>
@@ -66,12 +55,11 @@ const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => 
           <div className="lessons-list">
             {lessons.map((lesson) => (
               <div key={lesson.id} className="lesson-card">
-                <h2 className="lesson-title">{getLessonTitle(lesson)}</h2>
-                <p className="lesson-description">{getLessonDescription(lesson)}</p>
+                <h2 className="lesson-title">{lesson.title}</h2>
                 <button
                   className="lesson-start-button"
                   onClick={() => onSelectLesson(lesson.id)}
-                  aria-label={`${t('lessons.startLesson')}: ${getLessonTitle(lesson)}`}
+                  aria-label={`${t('lessons.startLesson')}: ${lesson.title}`}
                 >
                   {t('lessons.startLesson')}
                 </button>

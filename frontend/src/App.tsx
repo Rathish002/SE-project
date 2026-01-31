@@ -6,12 +6,13 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
 import { auth } from './firebase';
 import { initializeLanguageSettings } from './utils/languageManager';
+import { AccessibilityProvider } from './contexts/AccessibilityContext';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Home from './components/Home';
 import LessonSelection from './components/LessonSelection';
 import Learning from './components/Learning';
-import Settings from './components/Settings';
+import UnifiedSettings from './components/UnifiedSettings';
 import Navigation, { Page } from './components/Navigation';
 import './i18n/i18n'; // Initialize i18n
 import './App.css';
@@ -78,6 +79,11 @@ function App() {
     setCurrentPage('lessons');
   };
 
+  // Handle lesson navigation (previous/next)
+  const handleNavigateLesson = (newLessonId: number) => {
+    setSelectedLessonId(newLessonId);
+  };
+
   // Handle logout
   const handleLogout = async () => {
     await auth.signOut();
@@ -90,50 +96,57 @@ function App() {
     // Show learning page if a lesson is selected
     if (selectedLessonId !== null) {
       return (
-        <div className="app-container">
-          <Navigation
-            currentPage="lessons"
-            onNavigate={handleNavigate}
-            onLogout={handleLogout}
-          />
+        <AccessibilityProvider>
+          <div className="app-container">
+            <Navigation
+              currentPage="lessons"
+              onNavigate={handleNavigate}
+              onLogout={handleLogout}
+            />
           <Learning
             lessonId={selectedLessonId}
             onBack={handleBackFromLearning}
+            onNavigateLesson={handleNavigateLesson}
           />
-        </div>
+          </div>
+        </AccessibilityProvider>
       );
     }
 
     // Show main pages with navigation
     return (
-      <div className="app-container">
-        <Navigation
-          currentPage={currentPage}
-          onNavigate={handleNavigate}
-          onLogout={handleLogout}
-        />
-        <div className="main-content">
-          {currentPage === 'home' && <Home />}
-          {currentPage === 'lessons' && (
-            <LessonSelection onSelectLesson={handleSelectLesson} />
-          )}
-          {currentPage === 'settings' && (
-            <Settings onBack={() => handleNavigate('home')} />
-          )}
+      <AccessibilityProvider>
+        <div className="app-container">
+          <Navigation
+            currentPage={currentPage}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          />
+          <div className="main-content">
+            {currentPage === 'home' && <Home />}
+            {currentPage === 'lessons' && (
+              <LessonSelection onSelectLesson={handleSelectLesson} />
+            )}
+            {currentPage === 'settings' && (
+              <UnifiedSettings onBack={() => handleNavigate('home')} />
+            )}
+          </div>
         </div>
-      </div>
+      </AccessibilityProvider>
     );
   }
 
   // If user is not logged in, show Login or Signup
   return (
-    <div className="app-container">
-      {showSignup ? (
-        <Signup onSwitchToLogin={() => setShowSignup(false)} />
-      ) : (
-        <Login onSwitchToSignup={() => setShowSignup(true)} />
-      )}
-    </div>
+    <AccessibilityProvider>
+      <div className="app-container">
+        {showSignup ? (
+          <Signup onSwitchToLogin={() => setShowSignup(false)} />
+        ) : (
+          <Login onSwitchToSignup={() => setShowSignup(true)} />
+        )}
+      </div>
+    </AccessibilityProvider>
   );
 }
 
