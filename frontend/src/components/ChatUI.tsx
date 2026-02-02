@@ -11,6 +11,7 @@ import {
   sendMessage,
   sendImageMessage,
   sendVideoMessage,
+  sendVoiceMessage,
   type Message,
   type Conversation,
 } from '../services/chatService';
@@ -34,6 +35,9 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const [sending, setSending] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
+  const [uploadingVoice, setUploadingVoice] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'reconnecting'>('connected');
@@ -148,6 +152,50 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
     }
   };
 
+  const handleVoiceRecord = async () => {
+    if (isRecording && mediaRecorder) {
+      // Stop recording
+      mediaRecorder.stop();
+      setIsRecording(false);
+    } else {
+      // Start recording
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const recorder = new MediaRecorder(stream);
+        const chunks: Blob[] = [];
+        const startTime = Date.now();
+
+        recorder.ondataavailable = (e) => chunks.push(e.data);
+        recorder.onstop = async () => {
+          const duration = Math.floor((Date.now() - startTime) / 1000);
+          const blob = new Blob(chunks, { type: 'audio/webm' });
+          const file = new File([blob], `voice_${Date.now()}.webm`, { type: 'audio/webm' });
+          
+          // Upload the voice message
+          try {
+            setUploadingVoice(true);
+            await sendVoiceMessage(conversationId, currentUser!.uid, file, duration);
+          } catch (error: any) {
+            console.error('Error uploading voice:', error);
+            alert(error.message || 'Failed to upload voice message');
+          } finally {
+            setUploadingVoice(false);
+          }
+          
+          // Stop all tracks
+          stream.getTracks().forEach(track => track.stop());
+        };
+
+        recorder.start();
+        setMediaRecorder(recorder);
+        setIsRecording(true);
+      } catch (error) {
+        console.error('Error accessing microphone:', error);
+        alert('Could not access microphone. Please grant permission.');
+      }
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!messageText.trim() || sending) return;
 
@@ -251,6 +299,15 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                         Your browser does not support video playback.
                       </video>
                     </div>
+                  ) : message.type === 'voice' && message.mediaUrl ? (
+                    <div className="chat-message-voice">
+                      <audio controls src={message.mediaUrl}>
+                        Your browser does not support audio playback.
+                      </audio>
+                      {message.mediaDuration && (
+                        <span className="voice-duration">{Math.floor(message.mediaDuration)}s</span>
+                      )}
+                    </div>
                   ) : (
                     <div className="chat-message-text">{message.text}</div>
                   )}
@@ -330,7 +387,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         <button
           className="chat-attach-button"
           onClick={() => imageInputRef.current?.click()}
-          disabled={uploadingImage || uploadingVideo || sending}
+          disabled={uploadingImage || uploadingVideo || uploadingVoice || sending || isRecording}
           title="Upload image"
         >
           🖼️
@@ -338,10 +395,18 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         <button
           className="chat-attach-button"
           onClick={() => videoInputRef.current?.click()}
-          disabled={uploadingImage || uploadingVideo || sending}
+          disabled={uploadingImage || uploadingVideo || uploadingVoice || sending || isRecording}
           title="Upload video"
         >
           🎥
+        </button>
+        <button
+          className={`chat-attach-button ${isRecording ? 'recording' : ''}`}
+          onClick={handleVoiceRecord}
+          disabled={uploadingImage || uploadingVideo || uploadingVoice || sending}
+          title={isRecording ? 'Stop recording' : 'Record voice message'}
+        >
+          {isRecording ? '⏹️' : '🎤'}
         </button>
         <input
           type="text"
@@ -350,14 +415,14 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-          disabled={sending || uploadingImage || uploadingVideo}
+          disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || isRecording}
         />
         <button
           className="chat-send-button"
           onClick={handleSendMessage}
-          disabled={sending || uploadingImage || uploadingVideo || !messageText.trim()}
+          disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || isRecording || !messageText.trim()}
         >
-          {uploadingImage || uploadingVideo ? 'Uploading...' : sending ? t('collaboration.chat.sending') : t('collaboration.chat.send')}
+          {uploadingImage || uploadingVideo || uploadingVoice ? 'Uploading...' : isRecording ? 'Recording...' : sending ? t('collaboration.chat.sending') : t('collaboration.chat.send')}
         </button>
       </div>
     </div>

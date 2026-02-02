@@ -330,6 +330,59 @@ export async function sendVideoMessage(
 }
 
 /**
+ * Upload voice message to Firebase Storage and send as message
+ * Voice messages can be recorded audio or uploaded audio files
+ * Stores voice at: /conversations/{conversationId}/voice/{timestamp}_{filename}
+ */
+export async function sendVoiceMessage(
+  conversationId: string,
+  senderUid: string,
+  voiceFile: File,
+  duration?: number
+): Promise<void> {
+  // Validate file type (audio or video/webm for recordings)
+  if (!voiceFile.type.startsWith('audio/') && voiceFile.type !== 'video/webm') {
+    throw new Error('File must be an audio file');
+  }
+
+  // Get sender profile
+  const senderProfile = await getUserProfile(senderUid);
+  let senderName = senderProfile?.name || 'User';
+  
+  if (!senderProfile && auth.currentUser?.uid === senderUid) {
+    senderName = resolveUsername(auth.currentUser);
+  }
+
+  // Upload to Firebase Storage
+  const timestamp = Date.now();
+  const filename = `${timestamp}_${voiceFile.name}`;
+  const storagePath = `conversations/${conversationId}/voice/${filename}`;
+  const storageRef = ref(storage, storagePath);
+
+  const snapshot = await uploadBytes(storageRef, voiceFile);
+  const downloadURL = await getDownloadURL(snapshot.ref);
+
+  // Create message with voice
+  const messagesRef = collection(db, 'conversations', conversationId, 'messages');
+  await addDoc(messagesRef, {
+    senderUid,
+    senderName,
+    text: null, // No text for voice-only messages
+    type: 'voice',
+    mediaUrl: downloadURL,
+    mediaSize: voiceFile.size,
+    mediaFilename: voiceFile.name,
+    mediaType: voiceFile.type,
+    mediaDuration: duration,
+    timestamp: serverTimestamp(),
+  });
+
+  // Update conversation timestamp
+  const conversationRef = doc(db, 'conversations', conversationId);
+  await setDoc(conversationRef, { updatedAt: serverTimestamp() }, { merge: true });
+}
+
+/**
  * Leave a group chat by removing the user from participants
  * Creates a system message for the leave event
  * Archives group if it becomes empty (audit purposes)
