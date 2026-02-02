@@ -12,6 +12,7 @@ import {
   sendImageMessage,
   sendVideoMessage,
   sendVoiceMessage,
+  sendFileMessage,
   type Message,
   type Conversation,
 } from '../services/chatService';
@@ -36,10 +37,12 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const [uploadingImage, setUploadingImage] = useState(false);
   const [uploadingVideo, setUploadingVideo] = useState(false);
   const [uploadingVoice, setUploadingVoice] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'reconnecting'>('connected');
   const [participants, setParticipants] = useState<Array<{ uid: string; name: string; online: boolean; lastActive?: any }>>([]);
   
@@ -149,6 +152,25 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       alert(error.message || 'Failed to upload video');
     } finally {
       setUploadingVideo(false);
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !currentUser || uploadingFile) return;
+
+    try {
+      setUploadingFile(true);
+      await sendFileMessage(conversationId, currentUser.uid, file);
+      // Clear file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error: any) {
+      console.error('Error uploading file:', error);
+      alert(error.message || 'Failed to upload file');
+    } finally {
+      setUploadingFile(false);
     }
   };
 
@@ -308,6 +330,16 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                         <span className="voice-duration">{Math.floor(message.mediaDuration)}s</span>
                       )}
                     </div>
+                  ) : message.type === 'file' && message.mediaUrl ? (
+                    <div className="chat-message-file">
+                      <a href={message.mediaUrl} download={message.mediaFilename} target="_blank" rel="noopener noreferrer">
+                        <div className="file-icon">📄</div>
+                        <div className="file-info">
+                          <div className="file-name">{message.mediaFilename}</div>
+                          <div className="file-size">{(message.mediaSize! / 1024).toFixed(1)} KB</div>
+                        </div>
+                      </a>
+                    </div>
                   ) : (
                     <div className="chat-message-text">{message.text}</div>
                   )}
@@ -384,10 +416,16 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           style={{ display: 'none' }}
           onChange={handleVideoUpload}
         />
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: 'none' }}
+          onChange={handleFileUpload}
+        />
         <button
           className="chat-attach-button"
           onClick={() => imageInputRef.current?.click()}
-          disabled={uploadingImage || uploadingVideo || uploadingVoice || sending || isRecording}
+          disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
           title="Upload image"
         >
           🖼️
@@ -395,7 +433,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         <button
           className="chat-attach-button"
           onClick={() => videoInputRef.current?.click()}
-          disabled={uploadingImage || uploadingVideo || uploadingVoice || sending || isRecording}
+          disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
           title="Upload video"
         >
           🎥
@@ -403,10 +441,18 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         <button
           className={`chat-attach-button ${isRecording ? 'recording' : ''}`}
           onClick={handleVoiceRecord}
-          disabled={uploadingImage || uploadingVideo || uploadingVoice || sending}
+          disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending}
           title={isRecording ? 'Stop recording' : 'Record voice message'}
         >
           {isRecording ? '⏹️' : '🎤'}
+        </button>
+        <button
+          className="chat-attach-button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
+          title="Upload document"
+        >
+          📎
         </button>
         <input
           type="text"
@@ -415,14 +461,14 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-          disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || isRecording}
+          disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || isRecording}
         />
         <button
           className="chat-send-button"
           onClick={handleSendMessage}
-          disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || isRecording || !messageText.trim()}
+          disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || isRecording || !messageText.trim()}
         >
-          {uploadingImage || uploadingVideo || uploadingVoice ? 'Uploading...' : isRecording ? 'Recording...' : sending ? t('collaboration.chat.sending') : t('collaboration.chat.send')}
+          {uploadingImage || uploadingVideo || uploadingVoice || uploadingFile ? 'Uploading...' : isRecording ? 'Recording...' : sending ? t('collaboration.chat.sending') : t('collaboration.chat.send')}
         </button>
       </div>
     </div>

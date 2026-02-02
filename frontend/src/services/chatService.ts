@@ -383,6 +383,58 @@ export async function sendVoiceMessage(
 }
 
 /**
+ * Upload file/document to Firebase Storage and send as message
+ * Validates file size (max 10MB)
+ * Stores file at: /conversations/{conversationId}/files/{timestamp}_{filename}
+ */
+export async function sendFileMessage(
+  conversationId: string,
+  senderUid: string,
+  file: File
+): Promise<void> {
+  // Validate size (10MB = 10 * 1024 * 1024 bytes)
+  const MAX_SIZE = 10 * 1024 * 1024;
+  if (file.size > MAX_SIZE) {
+    throw new Error('File size must be less than 10MB');
+  }
+
+  // Get sender profile
+  const senderProfile = await getUserProfile(senderUid);
+  let senderName = senderProfile?.name || 'User';
+  
+  if (!senderProfile && auth.currentUser?.uid === senderUid) {
+    senderName = resolveUsername(auth.currentUser);
+  }
+
+  // Upload to Firebase Storage
+  const timestamp = Date.now();
+  const filename = `${timestamp}_${file.name}`;
+  const storagePath = `conversations/${conversationId}/files/${filename}`;
+  const storageRef = ref(storage, storagePath);
+
+  const snapshot = await uploadBytes(storageRef, file);
+  const downloadURL = await getDownloadURL(snapshot.ref);
+
+  // Create message with file
+  const messagesRef = collection(db, 'conversations', conversationId, 'messages');
+  await addDoc(messagesRef, {
+    senderUid,
+    senderName,
+    text: null, // No text for file-only messages
+    type: 'file',
+    mediaUrl: downloadURL,
+    mediaSize: file.size,
+    mediaFilename: file.name,
+    mediaType: file.type,
+    timestamp: serverTimestamp(),
+  });
+
+  // Update conversation timestamp
+  const conversationRef = doc(db, 'conversations', conversationId);
+  await setDoc(conversationRef, { updatedAt: serverTimestamp() }, { merge: true });
+}
+
+/**
  * Leave a group chat by removing the user from participants
  * Creates a system message for the leave event
  * Archives group if it becomes empty (audit purposes)
