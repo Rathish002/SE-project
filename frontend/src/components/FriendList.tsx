@@ -6,6 +6,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Friend } from '../services/friendService';
+import { formatLastActive } from '../utils/timeUtils';
 import './FriendList.css';
 
 interface FriendListProps {
@@ -35,7 +36,10 @@ const FriendList: React.FC<FriendListProps> = ({ friends, onStartChat, onStartGr
               <div className="friend-name-row">
                 <span className="friend-name">{friend.name}</span>
                 <span className={`friend-status ${friend.online ? 'online' : 'offline'}`}>
-                  {friend.online ? t('collaboration.friends.online') : t('collaboration.friends.offline')}
+                  {friend.online 
+                    ? t('collaboration.friends.online')
+                    : `Last seen ${formatLastActive(friend.lastActive)}`
+                  }
                 </span>
               </div>
               <span className="friend-email">{friend.email}</span>

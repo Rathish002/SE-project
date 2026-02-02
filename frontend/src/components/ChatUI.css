@@ -162,10 +162,18 @@
   color: var(--text-primary);
 }
 
+.chat-participant-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
 .chat-participant-status {
   width: 10px;
   height: 10px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .chat-participant-status.online {
@@ -177,7 +185,12 @@
 }
 
 .chat-participant-name {
-  flex: 1;
+  font-size: var(--base-font-size, 16px);
+}
+
+.chat-participant-lastactive {
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 .chat-participant-you {

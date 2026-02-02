@@ -15,6 +15,7 @@ import {
 import GroupMembers from './GroupMembers';
 import { doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
+import { formatLastActive } from '../utils/timeUtils';
 import './ChatUI.css';
 
 interface ChatUIProps {
@@ -30,7 +31,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const [messageText, setMessageText] = useState('');
   const [sending, setSending] = useState(false);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'reconnecting'>('connected');
-  const [participants, setParticipants] = useState<Array<{ uid: string; name: string; online: boolean }>>([]);
+  const [participants, setParticipants] = useState<Array<{ uid: string; name: string; online: boolean; lastActive?: any }>>([]);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const unsubscribeMessagesRef = useRef<(() => void) | null>(null);
@@ -83,6 +84,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                 uid,
                 name: data.participantNames?.[data.participants.indexOf(uid)] || 'User',
                 online: presence?.online || false,
+                lastActive: presence?.lastActive,
               };
             })
           );
@@ -197,10 +199,17 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                 {participants.map((participant) => (
                   <div key={participant.uid} className="chat-participant">
                     <span className={`chat-participant-status ${participant.online ? 'online' : 'offline'}`}></span>
-                    <span className="chat-participant-name">{participant.name}</span>
-                    {participant.uid === currentUser!.uid && (
-                      <span className="chat-participant-you">({t('collaboration.chat.you')})</span>
-                    )}
+                    <div className="chat-participant-info">
+                      <span className="chat-participant-name">{participant.name}</span>
+                      {!participant.online && participant.lastActive && (
+                        <span className="chat-participant-lastactive">
+                          {formatLastActive(participant.lastActive)}
+                        </span>
+                      )}
+                      {participant.uid === currentUser!.uid && (
+                        <span className="chat-participant-you">({t('collaboration.chat.you')})</span>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
