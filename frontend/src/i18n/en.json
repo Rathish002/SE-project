@@ -83,22 +83,10 @@
     "saveSuccess": "Settings saved successfully!",
     "resetSuccess": "Settings reset to defaults!"
   },
-  "home": {
-    "title": "Home",
-    "welcome": "Welcome back!",
-    "interfaceLanguage": "Interface Language",
-    "learningDirection": "Learning Direction",
-    "stats": {
-      "title": "Your Progress",
-      "lessonsStarted": "Lessons Started",
-      "lessonsCompleted": "Lessons Completed",
-      "lastActivity": "Last Activity"
-    },
-    "lastActivityPlaceholder": "No activity yet"
-  },
   "navigation": {
     "home": "Home",
     "lessons": "Lessons",
+    "collaboration": "Collaboration",
     "settings": "Settings",
     "accessibility": "Accessibility",
     "logout": "Log Out"
@@ -113,6 +101,8 @@
     "title": "Lessons",
     "loading": "Loading lesson...",
     "error": "Failed to load lesson",
+    "errorTitle": "Lesson Unavailable",
+    "errorMessage": "Unable to load the lesson. The backend service may be unavailable. Please try again or go back to lesson selection.",
     "skipToContent": "Skip to content",
     "instructions": "Important Instructions",
     "keywords": "Keywords",
@@ -184,6 +174,77 @@
       "fontSize": "Font Size",
       "audioSpeed": "Audio Speed",
       "contrast": "Contrast Mode"
+    }
+  },
+  "error": {
+    "title": "Something Went Wrong",
+    "generic": "An unexpected error occurred. Please try again.",
+    "retry": "Try Again",
+    "goBack": "Go Back"
+  },
+  "collaboration": {
+    "title": "Collaboration",
+    "loading": "Loading...",
+    "search": {
+      "title": "Find Friends",
+      "placeholder": "Enter email address",
+      "search": "Search",
+      "searching": "Searching...",
+      "empty": "Please enter an email address",
+      "noResults": "No user found with this email",
+      "error": "Error searching for users",
+      "sendRequest": "Send Request",
+      "sending": "Sending...",
+      "requestError": "Error sending friend request"
+    },
+    "friends": {
+      "title": "Friends",
+      "empty": "No friends yet. Search for users to add friends.",
+      "online": "Online",
+      "offline": "Offline",
+      "startChat": "Chat"
+    },
+    "requests": {
+      "title": "Friend Requests",
+      "accept": "Accept",
+      "reject": "Reject",
+      "acceptError": "Error accepting friend request",
+      "rejectError": "Error rejecting friend request"
+    },
+    "conversations": {
+      "title": "Conversations",
+      "empty": "No conversations yet. Start chatting with a friend!"
+    },
+    "chat": {
+      "connected": "Connected",
+      "reconnecting": "Reconnecting...",
+      "noMessages": "No messages yet. Start the conversation!",
+      "participants": "Participants",
+      "you": "You",
+      "inputPlaceholder": "Type a message...",
+      "send": "Send",
+      "sending": "Sending...",
+      "sendError": "Error sending message",
+      "startError": "Error starting chat",
+      "unknownUser": "Unknown User"
+    }
+  },
+  "home": {
+    "title": "Home",
+    "welcome": "Welcome back!",
+    "interfaceLanguage": "Interface Language",
+    "learningDirection": "Learning Direction",
+    "stats": {
+      "title": "Your Progress",
+      "lessonsStarted": "Lessons Started",
+      "lessonsCompleted": "Lessons Completed",
+      "lastActivity": "Last Activity"
+    },
+    "lastActivityPlaceholder": "No activity yet",
+    "collaboration": {
+      "title": "Recent Collaboration Activity",
+      "lastConversation": "Last Conversation",
+      "lastFriend": "Last Friend"
     }
   }
 }

@@ -1,0 +1,187 @@
+/* Group Members Component Styling */
+
+.group-members {
+  background-color: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid var(--border, #ddd);
+}
+
+.members-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--border, #ddd);
+}
+
+.members-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.member-count {
+  background-color: #2196f3;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.member-message {
+  padding: 10px 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  margin-bottom: 12px;
+  animation: slideIn 0.3s ease;
+}
+
+.member-message.success {
+  background-color: #c8e6c9;
+  color: #2e7d32;
+  border-left: 4px solid #2e7d32;
+}
+
+.member-message.error {
+  background-color: #ffcdd2;
+  color: #c62828;
+  border-left: 4px solid #c62828;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.member-item {
+  padding: 12px;
+  background-color: var(--bg-primary);
+  border-radius: 6px;
+  border: 1px solid var(--border, #eee);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.member-item:hover {
+  background-color: rgba(33, 150, 243, 0.05);
+}
+
+.member-info {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.member-name {
+  font-weight: 500;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.you-badge,
+.friend-badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.you-badge {
+  background-color: #2196f3;
+  color: white;
+}
+
+.friend-badge {
+  background-color: #4caf50;
+  color: white;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.action-btn:hover:not(:disabled) {
+  background-color: #1976d2;
+}
+
+.action-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Leave Group Section */
+.leave-group-section {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border, #eee);
+}
+
+.leave-group-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.leave-group-btn:hover:not(:disabled) {
+  background-color: #d32f2f;
+}
+
+.leave-group-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .member-item {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .action-btn {
+    flex-basis: 100%;
+    width: 100%;
+  }
+}

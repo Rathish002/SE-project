@@ -1,9 +1,10 @@
-import express from "express";
+import express, { Request, Response, NextFunction } from "express";
 import dotenv from "dotenv";
 import pool from "./db"
 import lessonRoutes from "./routes/lessons";
 import evaluationRoutes from "./routes/evaluation";
 import exerciseRoutes from "./routes/exercises";
+import translationRoutes from "./routes/translations";
 
 dotenv.config();
 
@@ -11,8 +12,8 @@ const app = express();
 app.use(express.json());
 
 // Enable CORS for frontend
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+app.use((req: Request, res: Response, next: NextFunction) => {
+  res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || '*');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   if (req.method === 'OPTIONS') {
@@ -20,9 +21,9 @@ app.use((req, res, next) => {
   } else {
     next();
   }
-});  
+});
 
-app.get("/db-test", async (_req, res) => {
+app.get("/db-test", async (_req: Request, res: Response) => {
   try {
     const result = await pool.query("SELECT NOW()");
     res.json(result.rows[0]);
@@ -32,13 +33,20 @@ app.get("/db-test", async (_req, res) => {
   }
 });
 
-app.get("/", (_req, res) => {
+app.get("/", (_req: Request, res: Response) => {
   res.send("Server running");
 });
 
 app.use("/lesson", lessonRoutes);
 app.use("/evaluation", evaluationRoutes);
 app.use("/exercise", exerciseRoutes);
+app.use("/translations", translationRoutes);
+
+// Global error handler
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  console.error("Unhandled error:", err);
+  res.status(err.status || 500).json({ error: err.message || "Internal server error" });
+});
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");

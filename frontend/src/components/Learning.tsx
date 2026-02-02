@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { useAccessibility } from '../contexts/AccessibilityContext';
 import { getLearningDirection } from '../utils/languageManager';
 import { fetchLesson, type LessonData } from '../services/lessonService';
+import ErrorFallback from './ErrorFallback';
 import type { AudioSpeed } from '../types/accessibility';
 import './Learning.css';
 
@@ -17,9 +18,17 @@ interface LearningProps {
   lessonId: number;
   onBack: () => void;
   onNavigateLesson?: (lessonId: number) => void;
+  focusMode: boolean;
+  onFocusModeChange: (enabled: boolean) => void;
 }
 
-const Learning: React.FC<LearningProps> = ({ lessonId, onBack, onNavigateLesson }) => {
+const Learning: React.FC<LearningProps> = ({ 
+  lessonId, 
+  onBack, 
+  onNavigateLesson,
+  focusMode,
+  onFocusModeChange
+}) => {
   const { t } = useTranslation();
   const { preferences, updateAudioSpeed } = useAccessibility();
   const learningDir = getLearningDirection();
@@ -31,7 +40,6 @@ const Learning: React.FC<LearningProps> = ({ lessonId, onBack, onNavigateLesson 
   // Accessibility states (local to lesson page)
   const [dyslexiaMode, setDyslexiaMode] = useState(false);
   const [highContrast, setHighContrast] = useState(false);
-  const [distractionFree, setDistractionFree] = useState(false);
   const [autoScroll, setAutoScroll] = useState(false);
   const [scrollSpeed, setScrollSpeed] = useState(800);
 
@@ -305,7 +313,7 @@ const Learning: React.FC<LearningProps> = ({ lessonId, onBack, onNavigateLesson 
 
   if (loading) {
     return (
-      <div className={`learning-container ${distractionFree ? 'distraction-free' : ''} ${highContrast ? 'high-contrast' : ''}`}>
+      <div className={`learning-container ${highContrast ? 'high-contrast' : ''}`}>
         <div className="learning-content">
           <p>{t('learning.loading')}</p>
         </div>
@@ -315,13 +323,27 @@ const Learning: React.FC<LearningProps> = ({ lessonId, onBack, onNavigateLesson 
 
   if (error || !lessonData) {
     return (
-      <div className={`learning-container ${distractionFree ? 'distraction-free' : ''} ${highContrast ? 'high-contrast' : ''}`}>
-        <div className="learning-content">
-          <p>{error || t('learning.error')}</p>
-          <button onClick={onBack} className="learning-back-button">
-            {t('app.back')}
-          </button>
-        </div>
+      <div className={`learning-container ${highContrast ? 'high-contrast' : ''}`}>
+        <ErrorFallback
+          error={error || t('learning.error')}
+          title={t('learning.errorTitle')}
+          message={t('learning.errorMessage')}
+          onRetry={() => {
+            setError(null);
+            setLoading(true);
+            fetchLesson(lessonId, learningDir)
+              .then((data) => {
+                setLessonData(data);
+                setLoading(false);
+              })
+              .catch((err) => {
+                console.error('Error loading lesson:', err);
+                setError(t('learning.error'));
+                setLoading(false);
+              });
+          }}
+          onGoBack={onBack}
+        />
       </div>
     );
   }
@@ -330,7 +352,7 @@ const Learning: React.FC<LearningProps> = ({ lessonId, onBack, onNavigateLesson 
   const firstSentence = lessonData.lesson.content.split(/[\.\!\?]\s/)[0]?.trim() || '';
 
   return (
-    <div className={`learning-container ${distractionFree ? 'distraction-free' : ''} ${highContrast ? 'high-contrast' : ''}`}>
+    <div className={`learning-container ${highContrast ? 'high-contrast' : ''}`}>
       <a className="skip-link" href="#content">
         {t('learning.skipToContent')}
       </a>
@@ -364,7 +386,7 @@ const Learning: React.FC<LearningProps> = ({ lessonId, onBack, onNavigateLesson 
             {t('learning.navigation.next')} ▶
           </button>
         </nav>
-        <div className="controls" aria-hidden={distractionFree}>
+        <div className="controls" aria-hidden={focusMode}>
           <label>
             <input
               type="checkbox"
@@ -394,8 +416,8 @@ const Learning: React.FC<LearningProps> = ({ lessonId, onBack, onNavigateLesson 
             <input
               type="checkbox"
               id="distractionToggle"
-              checked={distractionFree}
-              onChange={(e) => setDistractionFree(e.target.checked)}
+              checked={focusMode}
+              onChange={(e) => onFocusModeChange(e.target.checked)}
             />
             {t('learning.accessibility.distractionFree')}
           </label>
@@ -522,11 +544,11 @@ const Learning: React.FC<LearningProps> = ({ lessonId, onBack, onNavigateLesson 
         )}
       </main>
 
-      {distractionFree && (
+      {focusMode && (
         <button
           id="exitDistraction"
           className="exit-distraction"
-          onClick={() => setDistractionFree(false)}
+          onClick={() => onFocusModeChange(false)}
           aria-label={t('learning.accessibility.exitDistraction')}
         >
           {t('learning.accessibility.exitDistraction')}

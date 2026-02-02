@@ -1,13 +1,20 @@
 // Home (Dashboard) page component
 // Shows welcome message, current settings, and basic learning stats
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { User } from 'firebase/auth';
 import { getInterfaceLanguage, getLearningDirection } from '../utils/languageManager';
+import { loadActivity } from '../utils/activityTracker';
 import './Home.css';
 
-const Home: React.FC = () => {
+interface HomeProps {
+  currentUser?: User | null;
+}
+
+const Home: React.FC<HomeProps> = ({ currentUser }) => {
   const { t } = useTranslation();
+  const [activity, setActivity] = useState(loadActivity());
   
   // Get current settings
   const interfaceLang = getInterfaceLanguage();
@@ -16,7 +23,11 @@ const Home: React.FC = () => {
   // Static stats (placeholder data)
   const lessonsStarted = 0;
   const lessonsCompleted = 0;
-  const lastActivity = t('home.lastActivityPlaceholder');
+  
+  // Load activity on mount
+  useEffect(() => {
+    setActivity(loadActivity());
+  }, []);
   
   // Get display text for interface language
   const getInterfaceLanguageText = (): string => {
@@ -60,10 +71,31 @@ const Home: React.FC = () => {
             </div>
             <div className="stat-item">
               <div className="stat-label">{t('home.stats.lastActivity')}</div>
-              <div className="stat-value">{lastActivity}</div>
+              <div className="stat-value">
+                {activity.lastConversationName || activity.lastFriendName || t('home.lastActivityPlaceholder')}
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Collaboration Activity */}
+        {(activity.lastConversationName || activity.lastFriendName) && (
+          <div className="home-section">
+            <h2>{t('home.collaboration.title')}</h2>
+            {activity.lastConversationName && (
+              <div className="home-activity-item">
+                <span className="home-activity-label">{t('home.collaboration.lastConversation')}:</span>
+                <span className="home-activity-value">{activity.lastConversationName}</span>
+              </div>
+            )}
+            {activity.lastFriendName && (
+              <div className="home-activity-item">
+                <span className="home-activity-label">{t('home.collaboration.lastFriend')}:</span>
+                <span className="home-activity-value">{activity.lastFriendName}</span>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

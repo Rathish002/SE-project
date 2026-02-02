@@ -1,0 +1,83 @@
+.friend-requests {
+  margin-bottom: 30px;
+}
+
+.friend-requests-title {
+  font-size: var(--heading-3, 20px);
+  color: var(--text-primary);
+  margin-bottom: 15px;
+}
+
+.friend-requests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.friend-request-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.friend-request-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.friend-request-name {
+  font-size: var(--base-font-size, 16px);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.friend-request-email {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.friend-request-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.friend-request-accept,
+.friend-request-reject {
+  padding: 8px 16px;
+  font-size: var(--base-font-size, 16px);
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.friend-request-accept {
+  color: white;
+  background-color: var(--accent);
+}
+
+.friend-request-accept:hover:not(:disabled) {
+  background-color: var(--accent-hover);
+}
+
+.friend-request-reject {
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border);
+}
+
+.friend-request-reject:hover:not(:disabled) {
+  background-color: var(--bg-secondary);
+}
+
+.friend-request-accept:disabled,
+.friend-request-reject:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

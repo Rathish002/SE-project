@@ -3,9 +3,10 @@
 
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 import './Navigation.css';
 
-export type Page = 'home' | 'lessons' | 'settings';
+export type Page = 'home' | 'lessons' | 'settings' | 'collaboration';
 
 interface NavigationProps {
   currentPage: Page;
@@ -36,6 +37,14 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate, onLogo
           {t('navigation.lessons')}
         </button>
         <button
+          className={`nav-button ${currentPage === 'collaboration' ? 'active' : ''}`}
+          onClick={() => onNavigate('collaboration')}
+          aria-label={t('navigation.collaboration')}
+          aria-current={currentPage === 'collaboration' ? 'page' : undefined}
+        >
+          {t('navigation.collaboration')}
+        </button>
+        <button
           className={`nav-button ${currentPage === 'settings' ? 'active' : ''}`}
           onClick={() => onNavigate('settings')}
           aria-label={t('navigation.settings')}
@@ -43,6 +52,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate, onLogo
         >
           {t('navigation.settings')}
         </button>
+        <LanguageSwitcher />
         <button
           className="nav-button nav-button-logout"
           onClick={onLogout}
