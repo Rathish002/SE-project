@@ -5,7 +5,7 @@
  */
 
 import { User, updatePassword, reauthenticateWithCredential, EmailAuthProvider, deleteUser } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs, deleteDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, collection, query, where, getDocs, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export interface UserProfile {
@@ -114,6 +114,36 @@ export async function updateUserName(uid: string, newName: string): Promise<void
     console.warn('Failed to propagate username to conversations', e);
   }
 }
+
+/**
+ * Subscribe to user profile changes (real-time)
+ * Useful for watching your own profile or other users
+ */
+export function subscribeToUserProfile(
+  uid: string,
+  callback: (profile: UserProfile | null) => void
+): () => void {
+  const userRef = doc(db, 'users', uid);
+  
+  return onSnapshot(userRef, (snapshot) => {
+    if (snapshot.exists()) {
+      const data = snapshot.data();
+      callback({
+        uid: data.uid,
+        name: data.name,
+        email: data.email,
+        createdAt: data.createdAt,
+        updatedAt: data.updatedAt,
+      });
+    } else {
+      callback(null);
+    }
+  }, (error) => {
+    console.error('Error subscribing to user profile:', error);
+    callback(null);
+  });
+}
+
 /**
  * Change user password
  * Requires the current password for reauthentication

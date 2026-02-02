@@ -218,36 +218,95 @@ export function subscribeToFriendRequests(
 
 /**
  * Subscribe to friend list (real-time)
+ * Watches both friend list changes and individual friend profile/presence updates
  */
 export function subscribeToFriends(
   uid: string,
   callback: (friends: Friend[]) => void
 ): () => void {
   const friendsRef = collection(db, 'friends', uid, 'list');
+  const profileUnsubscribes: Map<string, () => void> = new Map();
+  let currentFriends: Map<string, Friend> = new Map();
 
-  return onSnapshot(friendsRef, async (snapshot: QuerySnapshot<DocumentData>) => {
-    const friends: Friend[] = [];
-
+  const friendsUnsubscribe = onSnapshot(friendsRef, async (snapshot: QuerySnapshot<DocumentData>) => {
+    // Track which friend UIDs are currently in the list
+    const friendUids = new Set<string>();
+    
     for (const docSnap of snapshot.docs) {
       const friendUid = docSnap.data().uid;
-      const profile = await getUserProfile(friendUid);
+      friendUids.add(friendUid);
       
-      if (profile) {
-        // Get presence
+      // If we're not already watching this friend's profile, start watching
+      if (!profileUnsubscribes.has(friendUid)) {
+        const profile = await getUserProfile(friendUid);
         const presenceRef = doc(db, 'presence', friendUid);
         const presenceSnap = await getDoc(presenceRef);
         const presence = presenceSnap.data();
-
-        friends.push({
-          uid: profile.uid,
-          name: profile.name,
-          email: profile.email,
-          online: presence?.online || false,
-          lastActive: presence?.lastActive,
+        
+        if (profile) {
+          currentFriends.set(friendUid, {
+            uid: profile.uid,
+            name: profile.name,
+            email: profile.email,
+            online: presence?.online || false,
+            lastActive: presence?.lastActive,
+          });
+        }
+        
+        // Subscribe to profile changes
+        const profileUnsubscribe = onSnapshot(doc(db, 'users', friendUid), (profileSnap) => {
+          if (profileSnap.exists()) {
+            const profileData = profileSnap.data();
+            const existing = currentFriends.get(friendUid);
+            if (existing) {
+              currentFriends.set(friendUid, {
+                ...existing,
+                name: profileData.name,
+                email: profileData.email,
+              });
+              callback(Array.from(currentFriends.values()));
+            }
+          }
+        });
+        
+        // Subscribe to presence changes
+        const presenceUnsubscribe = onSnapshot(presenceRef, (presenceSnap) => {
+          const presenceData = presenceSnap.data();
+          const existing = currentFriends.get(friendUid);
+          if (existing) {
+            currentFriends.set(friendUid, {
+              ...existing,
+              online: presenceData?.online || false,
+              lastActive: presenceData?.lastActive,
+            });
+            callback(Array.from(currentFriends.values()));
+          }
+        });
+        
+        profileUnsubscribes.set(friendUid, () => {
+          profileUnsubscribe();
+          presenceUnsubscribe();
         });
       }
     }
-
-    callback(friends);
+    
+    // Unsubscribe from friends who are no longer in the list
+    Array.from(profileUnsubscribes.entries()).forEach(([trackedUid, unsubscribe]) => {
+      if (!friendUids.has(trackedUid)) {
+        unsubscribe();
+        profileUnsubscribes.delete(trackedUid);
+        currentFriends.delete(trackedUid);
+      }
+    });
+    
+    callback(Array.from(currentFriends.values()));
   });
+
+  // Return cleanup function
+  return () => {
+    friendsUnsubscribe();
+    profileUnsubscribes.forEach(unsub => unsub());
+    profileUnsubscribes.clear();
+    currentFriends.clear();
+  };
 }
