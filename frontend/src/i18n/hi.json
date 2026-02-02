@@ -226,7 +226,11 @@
       "sending": "भेज रहे हैं...",
       "sendError": "संदेश भेजने में त्रुटि",
       "startError": "चैट शुरू करने में त्रुटि",
-      "unknownUser": "अज्ञात उपयोगकर्ता"
+      "unknownUser": "अज्ञात उपयोगकर्ता",
+      "systemMessages": {
+        "userJoined": "{userName} समूह में शामिल हुए",
+        "userLeft": "{userName} समूह से बाहर निकल गए"
+      }
     }
   },
   "home": {

@@ -226,7 +226,11 @@
       "sending": "Sending...",
       "sendError": "Error sending message",
       "startError": "Error starting chat",
-      "unknownUser": "Unknown User"
+      "unknownUser": "Unknown User",
+      "systemMessages": {
+        "userJoined": "{userName} joined the group",
+        "userLeft": "{userName} left the group"
+      }
     }
   },
   "home": {

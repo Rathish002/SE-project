@@ -22,6 +22,7 @@ import {
 } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { getUserProfile, resolveUsername } from './userService';
+import i18next from 'i18next';
 
 export interface Message {
   id: string;
@@ -140,8 +141,12 @@ export async function createGroupConversation(
  */
 async function createSystemMessage(
   conversationId: string,
-  text: string
+  i18nKey: string,
+  userName: string
 ): Promise<void> {
+  // Get localized text using current language
+  const text = i18next.t(i18nKey, { userName });
+  
   const messagesRef = collection(db, 'conversations', conversationId, 'messages');
 
   await addDoc(messagesRef, {
@@ -221,8 +226,8 @@ export async function leaveGroupChat(
   const userProfile = await getUserProfile(uid);
   const userName = userProfile?.name || 'User';
 
-  // Create system message for the leave event
-  await createSystemMessage(conversationId, `${userName} left the group`);
+  // Create system message for the leave event (using i18n key)
+  await createSystemMessage(conversationId, 'collaboration.chat.systemMessages.userLeft', userName);
 
   // Remove participant
   participants.splice(userIndex, 1);
@@ -265,7 +270,7 @@ export async function recordGroupJoin(
 ): Promise<void> {
   const userProfile = await getUserProfile(uid);
   const userName = userProfile?.name || 'User';
-  await createSystemMessage(conversationId, `${userName} joined the group`);
+  await createSystemMessage(conversationId, 'collaboration.chat.systemMessages.userJoined', userName);
 }
 
 /**
