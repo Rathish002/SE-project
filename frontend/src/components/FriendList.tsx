@@ -3,20 +3,44 @@
  * Displays friends with presence status
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Friend } from '../services/friendService';
 import { formatLastActive } from '../utils/timeUtils';
+import { blockUser } from '../services/blockService';
 import './FriendList.css';
 
 interface FriendListProps {
   friends: Friend[];
+  currentUid: string;
   onStartChat: (friendUid: string) => void;
   onStartGroup?: (friendUids: string[]) => void;
 }
 
-const FriendList: React.FC<FriendListProps> = ({ friends, onStartChat, onStartGroup }) => {
+const FriendList: React.FC<FriendListProps> = ({ friends, currentUid, onStartChat, onStartGroup }) => {
   const { t } = useTranslation();
+  const [blockConfirm, setBlockConfirm] = useState<string | null>(null);
+  const [blocking, setBlocking] = useState(false);
+
+  const handleBlock = async (friendUid: string) => {
+    if (blockConfirm !== friendUid) {
+      setBlockConfirm(friendUid);
+      // Auto-cancel after 5 seconds
+      setTimeout(() => setBlockConfirm(null), 5000);
+      return;
+    }
+    
+    try {
+      setBlocking(true);
+      await blockUser(currentUid, friendUid);
+      setBlockConfirm(null);
+    } catch (error) {
+      console.error('Error blocking user:', error);
+      alert('Failed to block user');
+    } finally {
+      setBlocking(false);
+    }
+  };
 
   if (friends.length === 0) {
     return (
@@ -49,8 +73,17 @@ const FriendList: React.FC<FriendListProps> = ({ friends, onStartChat, onStartGr
                 className="friend-action-button"
                 onClick={() => onStartChat(friend.uid)}
                 aria-label={t('collaboration.friends.startChat')}
+                disabled={blocking}
               >
                 {t('collaboration.friends.startChat')}
+              </button>
+              <button
+                className="friend-action-button friend-block-button"
+                onClick={() => handleBlock(friend.uid)}
+                disabled={blocking}
+                title="Block this user"
+              >
+                {blockConfirm === friend.uid ? 'Confirm Block?' : 'Block'}
               </button>
             </div>
           </div>

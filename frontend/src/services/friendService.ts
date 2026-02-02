@@ -19,6 +19,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import { getUserProfile, type UserProfile } from './userService';
+import { getBlockedUsers, subscribeToBlockedUsers } from './blockService';
 
 export interface FriendRequest {
   id: string;
@@ -38,7 +39,7 @@ export interface Friend {
 
 /**
  * Search users by email
- * Excludes current user
+ * Excludes current user and blocked users
  */
 export async function searchUsersByEmail(
   email: string,
@@ -52,10 +53,15 @@ export async function searchUsersByEmail(
   const q = query(usersRef, where('email', '==', email.trim().toLowerCase()));
   const querySnapshot = await getDocs(q);
 
+  // Get blocked users
+  const blockedUids = await getBlockedUsers(currentUid);
+  const blockedSet = new Set(blockedUids);
+
   const results: UserProfile[] = [];
   querySnapshot.forEach((docSnap) => {
     const data = docSnap.data();
-    if (data.uid !== currentUid) {
+    // Exclude current user and blocked users
+    if (data.uid !== currentUid && !blockedSet.has(data.uid)) {
       results.push({
         uid: data.uid,
         name: data.name,
@@ -219,6 +225,7 @@ export function subscribeToFriendRequests(
 /**
  * Subscribe to friend list (real-time)
  * Watches both friend list changes and individual friend profile/presence updates
+ * Excludes blocked users
  */
 export function subscribeToFriends(
   uid: string,
@@ -227,6 +234,17 @@ export function subscribeToFriends(
   const friendsRef = collection(db, 'friends', uid, 'list');
   const profileUnsubscribes: Map<string, () => void> = new Map();
   let currentFriends: Map<string, Friend> = new Map();
+  let blockedUids: Set<string> = new Set();
+  
+  // Subscribe to blocked users
+  const blockedUnsubscribe = subscribeToBlockedUsers(uid, (blocked) => {
+    blockedUids = new Set(blocked);
+    // Filter out blocked users from current friends
+    const filteredFriends = Array.from(currentFriends.values()).filter(
+      friend => !blockedUids.has(friend.uid)
+    );
+    callback(filteredFriends);
+  });
 
   const friendsUnsubscribe = onSnapshot(friendsRef, async (snapshot: QuerySnapshot<DocumentData>) => {
     // Track which friend UIDs are currently in the list
@@ -235,6 +253,9 @@ export function subscribeToFriends(
     for (const docSnap of snapshot.docs) {
       const friendUid = docSnap.data().uid;
       friendUids.add(friendUid);
+      
+      // Skip if blocked
+      if (blockedUids.has(friendUid)) continue;
       
       // If we're not already watching this friend's profile, start watching
       if (!profileUnsubscribes.has(friendUid)) {
@@ -258,13 +279,16 @@ export function subscribeToFriends(
           if (profileSnap.exists()) {
             const profileData = profileSnap.data();
             const existing = currentFriends.get(friendUid);
-            if (existing) {
+            if (existing && !blockedUids.has(friendUid)) {
               currentFriends.set(friendUid, {
                 ...existing,
                 name: profileData.name,
                 email: profileData.email,
               });
-              callback(Array.from(currentFriends.values()));
+              const filteredFriends = Array.from(currentFriends.values()).filter(
+                friend => !blockedUids.has(friend.uid)
+              );
+              callback(filteredFriends);
             }
           }
         });
@@ -273,13 +297,16 @@ export function subscribeToFriends(
         const presenceUnsubscribe = onSnapshot(presenceRef, (presenceSnap) => {
           const presenceData = presenceSnap.data();
           const existing = currentFriends.get(friendUid);
-          if (existing) {
+          if (existing && !blockedUids.has(friendUid)) {
             currentFriends.set(friendUid, {
               ...existing,
               online: presenceData?.online || false,
               lastActive: presenceData?.lastActive,
             });
-            callback(Array.from(currentFriends.values()));
+            const filteredFriends = Array.from(currentFriends.values()).filter(
+              friend => !blockedUids.has(friend.uid)
+            );
+            callback(filteredFriends);
           }
         });
         
@@ -299,12 +326,17 @@ export function subscribeToFriends(
       }
     });
     
-    callback(Array.from(currentFriends.values()));
+    // Filter blocked users before calling callback
+    const filteredFriends = Array.from(currentFriends.values()).filter(
+      friend => !blockedUids.has(friend.uid)
+    );
+    callback(filteredFriends);
   });
 
   // Return cleanup function
   return () => {
     friendsUnsubscribe();
+    blockedUnsubscribe();
     profileUnsubscribes.forEach(unsub => unsub());
     profileUnsubscribes.clear();
     currentFriends.clear();

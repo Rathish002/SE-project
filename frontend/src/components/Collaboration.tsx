@@ -194,6 +194,7 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
 
             <FriendList
               friends={friends}
+              currentUid={currentUser.uid}
               onStartChat={handleStartChat}
             />
           </div>
