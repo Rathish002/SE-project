@@ -21,7 +21,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import { getUserProfile, type UserProfile } from './userService';
+import { getUserProfile } from './userService';
 
 export interface Message {
   id: string;

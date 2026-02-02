@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Chat UI Component
  * Real-time chat interface for conversations
  */
@@ -8,12 +8,10 @@ import { useTranslation } from 'react-i18next';
 import { User } from 'firebase/auth';
 import { 
   subscribeToMessages, 
-  sendMessage, 
-  getConversation,
+  sendMessage,
   type Message,
   type Conversation,
 } from '../services/chatService';
-import { subscribeToFriends, type Friend } from '../services/friendService';
 import GroupMembers from './GroupMembers';
 import { doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -137,7 +135,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
     <div className="chat-ui">
       <div className="chat-header">
         <button className="chat-back-button" onClick={onBack}>
-          â† {t('app.back')}
+          ??? {t('app.back')}
         </button>
         <div className="chat-header-info">
           <h2 className="chat-title">

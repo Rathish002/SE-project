@@ -4,7 +4,6 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { createGroupConversation } from '../services/chatService';
 import { subscribeToFriends, type Friend } from '../services/friendService';
 import { searchUsersByEmail } from '../services/friendService';
@@ -21,7 +20,6 @@ const GroupChatCreate: React.FC<GroupChatCreateProps> = ({
   onGroupCreated,
   onCancel,
 }) => {
-  const { t } = useTranslation();
 
   // State
   const [groupName, setGroupName] = useState('');

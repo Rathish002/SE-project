@@ -4,11 +4,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import {
   subscribeToFriends,
   sendFriendRequest,
-  type Friend,
 } from '../services/friendService';
 import { leaveGroupChat } from '../services/chatService';
 import './GroupMembers.css';
@@ -37,8 +35,6 @@ const GroupMembers: React.FC<GroupMembersProps> = ({
   currentUid,
   onLeaveGroup,
 }) => {
-  const { t } = useTranslation();
-
   const [participantInfos, setParticipantInfos] = useState<ParticipantInfo[]>([]);
   const [friends, setFriends] = useState<Set<string>>(new Set());
   const [friendRequests, setFriendRequests] = useState<Set<string>>(new Set());

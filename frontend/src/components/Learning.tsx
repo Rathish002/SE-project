@@ -5,7 +5,7 @@
  * Header with navigation and accessibility controls
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccessibility } from '../contexts/AccessibilityContext';
 import { getLearningDirection } from '../utils/languageManager';
@@ -129,7 +129,7 @@ const Learning: React.FC<LearningProps> = ({
   };
 
   // Speak text
-  const speakText = (text: string, speed?: number) => {
+  const speakText = useCallback((text: string, speed?: number) => {
     if (!synthRef.current || !text) return;
 
     synthRef.current.cancel();
@@ -151,16 +151,16 @@ const Learning: React.FC<LearningProps> = ({
     synthRef.current.speak(utterance);
     setIsPlaying(true);
     setIsPaused(false);
-  };
+  }, [preferences.audioSpeed, learningDir]);
 
   // Play lesson
-  const handlePlay = () => {
+  const handlePlay = useCallback(() => {
     if (!lessonData) return;
     const textToSpeak = lessonData.lesson.instructions
       ? `${lessonData.lesson.instructions}\n\n${lessonData.lesson.content}`
       : lessonData.lesson.content;
     speakText(textToSpeak);
-  };
+  }, [lessonData, speakText]);
 
   // Pause TTS
   const handlePause = () => {
@@ -195,7 +195,7 @@ const Learning: React.FC<LearningProps> = ({
   };
 
   // Handle keyword click
-  const handleKeywordClick = (keywordText: string) => {
+  const handleKeywordClick = useCallback((keywordText: string) => {
     if (!lessonData) return;
     const keyword = lessonData.keywords.find(
       (kw) => kw.keyword.toLowerCase() === keywordText.toLowerCase()
@@ -203,7 +203,7 @@ const Learning: React.FC<LearningProps> = ({
     if (keyword) {
       speakText(keyword.explanation || keyword.keyword);
     }
-  };
+  }, [lessonData, speakText]);
 
   // Auto-scroll
   useEffect(() => {
@@ -277,7 +277,7 @@ const Learning: React.FC<LearningProps> = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [handlePlay]);
 
   // Handle highlighted keyword clicks
   useEffect(() => {
@@ -309,7 +309,7 @@ const Learning: React.FC<LearningProps> = ({
       document.removeEventListener('click', handleKeywordElementClick);
       document.removeEventListener('keydown', handleKeywordElementKeyDown);
     };
-  }, [lessonData]);
+  }, [lessonData, handleKeywordClick]);
 
   if (loading) {
     return (
@@ -349,7 +349,7 @@ const Learning: React.FC<LearningProps> = ({
   }
 
   const highlightedContent = highlightKeywords(lessonData.lesson.content);
-  const firstSentence = lessonData.lesson.content.split(/[\.\!\?]\s/)[0]?.trim() || '';
+  const firstSentence = lessonData.lesson.content.split(/[.!?]\s/)[0]?.trim() || '';
 
   return (
     <div className={`learning-container ${highContrast ? 'high-contrast' : ''}`}>
