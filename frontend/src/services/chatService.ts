@@ -29,6 +29,7 @@ export interface Message {
   senderName: string;
   text: string;
   timestamp: Timestamp;
+  type?: 'user' | 'system'; // 'system' for auto-generated messages (joins, leaves, etc)
 }
 
 export interface Conversation {
@@ -40,6 +41,7 @@ export interface Conversation {
   groupName?: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
+  archived?: boolean; // True if group is empty and archived (for audit purposes)
 }
 
 /**
@@ -133,6 +135,25 @@ export async function createGroupConversation(
 }
 
 /**
+ * Create a system-generated message (for joins, leaves, etc)
+ * @internal - not exported, used internally by service
+ */
+async function createSystemMessage(
+  conversationId: string,
+  text: string
+): Promise<void> {
+  const messagesRef = collection(db, 'conversations', conversationId, 'messages');
+
+  await addDoc(messagesRef, {
+    senderUid: 'system',
+    senderName: 'System',
+    text,
+    type: 'system',
+    timestamp: serverTimestamp(),
+  });
+}
+
+/**
  * Send message to conversation
  */
 export async function sendMessage(
@@ -156,6 +177,7 @@ export async function sendMessage(
     senderUid,
     senderName,
     text: text.trim(),
+    type: 'user',
     timestamp: serverTimestamp(),
   });
 
@@ -166,6 +188,8 @@ export async function sendMessage(
 
 /**
  * Leave a group chat by removing the user from participants
+ * Creates a system message for the leave event
+ * Archives group if it becomes empty (audit purposes)
  */
 export async function leaveGroupChat(
   conversationId: string,
@@ -193,22 +217,31 @@ export async function leaveGroupChat(
     throw new Error('User is not a member of this group');
   }
 
+  // Get the user's name for the system message
+  const userProfile = await getUserProfile(uid);
+  const userName = userProfile?.name || 'User';
+
+  // Create system message for the leave event
+  await createSystemMessage(conversationId, `${userName} left the group`);
+
   // Remove participant
   participants.splice(userIndex, 1);
   participantNames.splice(userIndex, 1);
 
-  // If group is empty, delete it. Otherwise, update it.
+  // If group is now empty, archive it (don't delete - for audit purposes)
   if (participants.length === 0) {
-    // Delete all messages first
-    const messagesRef = collection(db, 'conversations', conversationId, 'messages');
-    const messagesSnap = await getDocs(messagesRef);
-    for (const msgDoc of messagesSnap.docs) {
-      await deleteDoc(msgDoc.ref);
-    }
-    // Delete the conversation
-    await deleteDoc(conversationRef);
+    await setDoc(
+      conversationRef,
+      {
+        participants: [],
+        participantNames: [],
+        archived: true,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
   } else {
-    // Update participants
+    // Update participants list and timestamp
     await setDoc(
       conversationRef,
       {
@@ -222,7 +255,22 @@ export async function leaveGroupChat(
 }
 
 /**
+ * Record a user joining a group (creates system message)
+ * Used internally when members are added to existing group
+ * @internal
+ */
+export async function recordGroupJoin(
+  conversationId: string,
+  uid: string
+): Promise<void> {
+  const userProfile = await getUserProfile(uid);
+  const userName = userProfile?.name || 'User';
+  await createSystemMessage(conversationId, `${userName} joined the group`);
+}
+
+/**
  * Subscribe to conversation messages (real-time)
+ * Includes both user messages and system messages (joins, leaves)
  */
 export function subscribeToMessages(
   conversationId: string,
@@ -241,6 +289,7 @@ export function subscribeToMessages(
         senderName: data.senderName,
         text: data.text,
         timestamp: data.timestamp,
+        type: data.type || 'user',
       });
     });
     callback(messages);
@@ -249,6 +298,7 @@ export function subscribeToMessages(
 
 /**
  * Subscribe to user conversations (real-time)
+ * Filters out archived groups and does not maintain listeners for them
  */
 export function subscribeToConversations(
   uid: string,
@@ -266,6 +316,11 @@ export function subscribeToConversations(
     for (const docSnap of snapshot.docs) {
       const data = docSnap.data();
       
+      // Skip archived groups (don't maintain listeners for them)
+      if (data.archived) {
+        continue;
+      }
+
       // Get last message
       const messagesRef = collection(db, 'conversations', docSnap.id, 'messages');
       const messagesQuery = query(messagesRef, orderBy('timestamp', 'desc'));
@@ -281,6 +336,7 @@ export function subscribeToConversations(
           senderName: lastMsgData.senderName,
           text: lastMsgData.text,
           timestamp: lastMsgData.timestamp,
+          type: lastMsgData.type,
         };
       }
 
@@ -293,6 +349,7 @@ export function subscribeToConversations(
         groupName: data.groupName,
         createdAt: data.createdAt,
         updatedAt: data.updatedAt,
+        archived: data.archived,
       });
     }
 
@@ -327,5 +384,6 @@ export async function getConversation(conversationId: string): Promise<Conversat
     groupName: data.groupName,
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
+    archived: data.archived,
   };
 }
