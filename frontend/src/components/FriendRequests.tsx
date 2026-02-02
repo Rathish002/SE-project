@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { acceptFriendRequest, rejectFriendRequest, type FriendRequest } from '../services/friendService';
+import { acceptFriendRequest, rejectFriendRequest, validateFriendRequest, type FriendRequest } from '../services/friendService';
 import { getUserProfile } from '../services/userService';
 import './FriendRequests.css';
 
@@ -18,20 +18,32 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({ requests, onRequestHand
   const { t } = useTranslation();
   const [handling, setHandling] = useState<string | null>(null);
   const [requestProfiles, setRequestProfiles] = useState<Map<string, { name: string; email: string }>>(new Map());
+  const [validRequests, setValidRequests] = useState<Set<string>>(new Set());
 
-  // Load profiles for requests
+  // Validate and load profiles for requests
   useEffect(() => {
-    const loadProfiles = async () => {
+    const loadProfilesAndValidate = async () => {
       const profiles = new Map();
+      const valid = new Set<string>();
+      
       for (const request of requests) {
-        const profile = await getUserProfile(request.fromUid);
-        if (profile) {
-          profiles.set(request.id, { name: profile.name, email: profile.email });
+        // Validate request
+        const validation = await validateFriendRequest(request.id);
+        if (validation.valid) {
+          valid.add(request.id);
+          
+          // Load profile
+          const profile = await getUserProfile(request.fromUid);
+          if (profile) {
+            profiles.set(request.id, { name: profile.name, email: profile.email });
+          }
         }
       }
+      
+      setValidRequests(valid);
       setRequestProfiles(profiles);
     };
-    loadProfiles();
+    loadProfilesAndValidate();
   }, [requests]);
 
   const handleAccept = async (requestId: string, fromUid: string, toUid: string) => {
@@ -60,7 +72,10 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({ requests, onRequestHand
     }
   };
 
-  if (requests.length === 0) {
+  // Filter to only show valid requests
+  const displayRequests = requests.filter(req => validRequests.has(req.id));
+
+  if (displayRequests.length === 0) {
     return null;
   }
 
@@ -68,7 +83,7 @@ const FriendRequests: React.FC<FriendRequestsProps> = ({ requests, onRequestHand
     <div className="friend-requests">
       <h3 className="friend-requests-title">{t('collaboration.requests.title')}</h3>
       <div className="friend-requests-list">
-        {requests.map((request) => {
+        {displayRequests.map((request) => {
           const profile = requestProfiles.get(request.id);
           return (
             <div key={request.id} className="friend-request-item">

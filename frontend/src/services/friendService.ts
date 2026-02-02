@@ -10,6 +10,7 @@ import {
   getDocs, 
   doc, 
   setDoc,
+  deleteDoc,
   getDoc,
   onSnapshot,
   QuerySnapshot,
@@ -151,6 +152,97 @@ export async function acceptFriendRequest(
 export async function rejectFriendRequest(requestId: string): Promise<void> {
   const requestRef = doc(db, 'friendRequests', requestId);
   await setDoc(requestRef, { status: 'rejected' }, { merge: true });
+}
+
+/**
+ * Remove a friend (unfriend)
+ * Removes bidirectional friendship entries
+ */
+export async function removeFriend(
+  user1Uid: string,
+  user2Uid: string
+): Promise<void> {
+  // Remove from both friend lists
+  const user1FriendRef = doc(db, 'friends', user1Uid, 'list', user2Uid);
+  const user2FriendRef = doc(db, 'friends', user2Uid, 'list', user1Uid);
+  
+  await Promise.all([
+    deleteDoc(user1FriendRef),
+    deleteDoc(user2FriendRef),
+  ]);
+}
+
+/**
+ * Cleanup stale friend requests
+ * Removes requests older than 30 days or for users that don't exist
+ */
+export async function cleanupStaleFriendRequests(uid: string): Promise<void> {
+  const requestsRef = collection(db, 'friendRequests');
+  
+  // Get all requests involving this user
+  const sentQuery = query(requestsRef, where('fromUid', '==', uid));
+  const receivedQuery = query(requestsRef, where('toUid', '==', uid));
+  
+  const [sentSnapshot, receivedSnapshot] = await Promise.all([
+    getDocs(sentQuery),
+    getDocs(receivedQuery),
+  ]);
+  
+  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  
+  const deletePromises: Promise<void>[] = [];
+  
+  for (const docSnap of [...sentSnapshot.docs, ...receivedSnapshot.docs]) {
+    const data = docSnap.data();
+    const createdAt = data.createdAt?.toDate?.() || new Date(0);
+    
+    // Delete if older than 30 days or if status is not pending
+    if (createdAt < thirtyDaysAgo || data.status !== 'pending') {
+      deletePromises.push(deleteDoc(doc(db, 'friendRequests', docSnap.id)));
+    }
+  }
+  
+  await Promise.all(deletePromises);
+}
+
+/**
+ * Check if friend request exists and is valid
+ */
+export async function validateFriendRequest(requestId: string): Promise<{
+  valid: boolean;
+  reason?: string;
+}> {
+  const requestRef = doc(db, 'friendRequests', requestId);
+  const requestSnap = await getDoc(requestRef);
+  
+  if (!requestSnap.exists()) {
+    return { valid: false, reason: 'Request not found' };
+  }
+  
+  const data = requestSnap.data();
+  
+  if (data.status !== 'pending') {
+    return { valid: false, reason: 'Request already handled' };
+  }
+  
+  // Check if both users still exist
+  const fromUserRef = doc(db, 'users', data.fromUid);
+  const toUserRef = doc(db, 'users', data.toUid);
+  
+  const [fromSnap, toSnap] = await Promise.all([
+    getDoc(fromUserRef),
+    getDoc(toUserRef),
+  ]);
+  
+  if (!fromSnap.exists()) {
+    return { valid: false, reason: 'Sender account not found' };
+  }
+  
+  if (!toSnap.exists()) {
+    return { valid: false, reason: 'Recipient account not found' };
+  }
+  
+  return { valid: true };
 }
 
 /**
