@@ -21,15 +21,29 @@ import {
 } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { getUserProfile, resolveUsername } from './userService';
-import i18next from 'i18next';
 
 export interface Message {
   id: string;
   senderUid: string;
   senderName: string;
-  text: string;
+  text?: string; // null for media-only or system with placeholder
   timestamp: Timestamp;
-  type?: 'user' | 'system'; // 'system' for auto-generated messages (joins, leaves, etc)
+  type?: 'user' | 'system' | 'image' | 'video' | 'voice' | 'file';
+  
+  // System message fields (when type === 'system')
+  actionType?: 'join' | 'leave' | 'add_member';
+  actorUid?: string; // who performed action
+  actorUsername?: string; // cached username
+  targetUid?: string; // who was affected (add_member only)
+  targetUsername?: string; // cached username
+  i18nKey?: string; // 'collaboration.chat.systemMessages.userJoined'
+  
+  // Media fields (when type is 'image' | 'video' | 'voice' | 'file')
+  mediaUrl?: string; // Firebase Storage URL
+  mediaSize?: number; // bytes
+  mediaDuration?: number; // seconds (voice/video only)
+  mediaFilename?: string; // original filename
+  mediaType?: string; // MIME type
 }
 
 export interface Conversation {
@@ -136,23 +150,32 @@ export async function createGroupConversation(
 
 /**
  * Create a system-generated message (for joins, leaves, etc)
+ * Stores i18n key and actor data instead of localized text
+ * Text is rendered at display time
  * @internal - not exported, used internally by service
  */
 async function createSystemMessage(
   conversationId: string,
   i18nKey: string,
-  userName: string
+  actorUid: string,
+  actorUsername: string,
+  actionType: 'join' | 'leave' | 'add_member',
+  targetUid?: string,
+  targetUsername?: string
 ): Promise<void> {
-  // Get localized text using current language
-  const text = i18next.t(i18nKey, { userName });
-  
   const messagesRef = collection(db, 'conversations', conversationId, 'messages');
 
   await addDoc(messagesRef, {
     senderUid: 'system',
     senderName: 'System',
-    text,
+    text: null, // Don't store localized text - render at display time
     type: 'system',
+    actionType,
+    actorUid,
+    actorUsername,
+    targetUid: targetUid || null,
+    targetUsername: targetUsername || null,
+    i18nKey,
     timestamp: serverTimestamp(),
   });
 }
@@ -226,7 +249,13 @@ export async function leaveGroupChat(
   const userName = userProfile?.name || 'User';
 
   // Create system message for the leave event (using i18n key)
-  await createSystemMessage(conversationId, 'collaboration.chat.systemMessages.userLeft', userName);
+  await createSystemMessage(
+    conversationId,
+    'collaboration.chat.systemMessages.userLeft',
+    uid,
+    userName,
+    'leave'
+  );
 
   // Remove participant
   participants.splice(userIndex, 1);
@@ -269,7 +298,13 @@ export async function recordGroupJoin(
 ): Promise<void> {
   const userProfile = await getUserProfile(uid);
   const userName = userProfile?.name || 'User';
-  await createSystemMessage(conversationId, 'collaboration.chat.systemMessages.userJoined', userName);
+  await createSystemMessage(
+    conversationId,
+    'collaboration.chat.systemMessages.userJoined',
+    uid,
+    userName,
+    'join'
+  );
 }
 
 /**
@@ -294,6 +329,19 @@ export function subscribeToMessages(
         text: data.text,
         timestamp: data.timestamp,
         type: data.type || 'user',
+        // System message fields
+        actionType: data.actionType,
+        actorUid: data.actorUid,
+        actorUsername: data.actorUsername,
+        targetUid: data.targetUid,
+        targetUsername: data.targetUsername,
+        i18nKey: data.i18nKey,
+        // Media fields (for future use)
+        mediaUrl: data.mediaUrl,
+        mediaSize: data.mediaSize,
+        mediaDuration: data.mediaDuration,
+        mediaFilename: data.mediaFilename,
+        mediaType: data.mediaType,
       });
     });
     callback(messages);

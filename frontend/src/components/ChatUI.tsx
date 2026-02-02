@@ -168,9 +168,21 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
             messages.map((message) => {
               // System messages (joins, leaves) have distinct styling
               if (message.type === 'system') {
+                // Render system message with i18n key and interpolation
+                let systemText = message.text;
+                if (message.i18nKey) {
+                  const interpolation: Record<string, string> = {};
+                  if (message.actorUsername) {
+                    interpolation.actor = message.actorUsername;
+                  }
+                  if (message.targetUsername) {
+                    interpolation.target = message.targetUsername;
+                  }
+                  systemText = t(message.i18nKey, interpolation);
+                }
                 return (
                   <div key={message.id} className="chat-message system-message">
-                    <div className="system-message-content">{message.text}</div>
+                    <div className="system-message-content">{systemText}</div>
                   </div>
                 );
               }

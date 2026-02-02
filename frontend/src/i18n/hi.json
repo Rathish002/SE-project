@@ -228,8 +228,9 @@
       "startError": "चैट शुरू करने में त्रुटि",
       "unknownUser": "अज्ञात उपयोगकर्ता",
       "systemMessages": {
-        "userJoined": "{userName} समूह में शामिल हुए",
-        "userLeft": "{userName} समूह से बाहर निकल गए"
+        "userJoined": "{{actor}} समूह में शामिल हुए",
+        "userLeft": "{{actor}} समूह से बाहर निकल गए",
+        "userAdded": "{{actor}} ने {{target}} को समूह में जोड़ा"
       }
     }
   },

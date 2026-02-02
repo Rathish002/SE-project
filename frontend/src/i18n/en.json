@@ -228,8 +228,9 @@
       "startError": "Error starting chat",
       "unknownUser": "Unknown User",
       "systemMessages": {
-        "userJoined": "{userName} joined the group",
-        "userLeft": "{userName} left the group"
+        "userJoined": "{{actor}} joined the group",
+        "userLeft": "{{actor}} left the group",
+        "userAdded": "{{actor}} added {{target}} to the group"
       }
     }
   },
