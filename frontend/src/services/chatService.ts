@@ -308,6 +308,116 @@ export async function recordGroupJoin(
 }
 
 /**
+ * Add a member to an existing group chat
+ * Validates that:
+ * - Target user exists and is not already a member
+ * - Actor hasn't blocked target or vice versa
+ * - Group is not archived
+ * Creates system message: "{{actor}} added {{target}} to the group"
+ */
+export async function addMemberToGroup(
+  conversationId: string,
+  targetUid: string,
+  actorUid: string
+): Promise<void> {
+  // Get the conversation
+  const conversationRef = doc(db, 'conversations', conversationId);
+  const conversationSnap = await getDoc(conversationRef);
+
+  if (!conversationSnap.exists()) {
+    throw new Error('Conversation not found');
+  }
+
+  const data = conversationSnap.data();
+
+  // Validate it's a group chat
+  if (data.type !== 'group') {
+    throw new Error('Can only add members to group chats');
+  }
+
+  // Validate group is not archived
+  if (data.archived) {
+    throw new Error('Cannot add members to archived group');
+  }
+
+  // Get current participants
+  const participants: string[] = data.participants || [];
+  const participantNames: string[] = data.participantNames || [];
+
+  // Check if target is already a member
+  if (participants.includes(targetUid)) {
+    throw new Error('User is already a member of this group');
+  }
+
+  // Check if target user exists
+  const targetProfile = await getUserProfile(targetUid);
+  if (!targetProfile) {
+    throw new Error('Target user not found');
+  }
+
+  // Get actor profile for system message
+  const actorProfile = await getUserProfile(actorUid);
+  const actorName = actorProfile?.name || 'User';
+  const targetName = targetProfile.name || 'User';
+
+  // Check if actor has blocked target or target has blocked actor
+  let actorBlockedUsers: Set<string> = new Set();
+  let targetBlockedUsers: Set<string> = new Set();
+
+  try {
+    const actorBlocksSnap = await getDocs(
+      collection(db, 'blocks', actorUid, 'list')
+    );
+    actorBlockedUsers = new Set(
+      actorBlocksSnap.docs.map(doc => doc.id)
+    );
+
+    const targetBlocksSnap = await getDocs(
+      collection(db, 'blocks', targetUid, 'list')
+    );
+    targetBlockedUsers = new Set(
+      targetBlocksSnap.docs.map(doc => doc.id)
+    );
+  } catch (error) {
+    // If blocks don't exist yet, that's okay
+  }
+
+  if (actorBlockedUsers.has(targetUid)) {
+    throw new Error('You have blocked this user');
+  }
+
+  if (targetBlockedUsers.has(actorUid)) {
+    throw new Error('This user has blocked you');
+  }
+
+  // Add target to participants
+  participants.push(targetUid);
+  participantNames.push(targetName);
+
+  // Create system message: "{{actor}} added {{target}} to the group"
+  await createSystemMessage(
+    conversationId,
+    'collaboration.chat.systemMessages.userAdded',
+    actorUid,
+    actorName,
+    'add_member',
+    targetUid,
+    targetName
+  );
+
+  // Update conversation with new member
+  await setDoc(
+    conversationRef,
+    {
+      participants,
+      participantNames,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
+}
+
+/**
  * Subscribe to conversation messages (real-time)
  * Includes both user messages and system messages (joins, leaves)
  */

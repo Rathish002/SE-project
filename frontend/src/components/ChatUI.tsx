@@ -12,7 +12,7 @@ import {
   type Message,
   type Conversation,
 } from '../services/chatService';
-import GroupMembers from './GroupMembers';
+import GroupChatSettings from './GroupChatSettings';
 import { doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { formatLastActive } from '../utils/timeUtils';
@@ -206,15 +206,29 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         </div>
 
         <div className="chat-sidebar">
-          {/* For group chats, show GroupMembers component */}
+          {/* For group chats, show GroupChatSettings component */}
           {conversation?.type === 'group' ? (
-            <GroupMembers
+            <GroupChatSettings
               conversationId={conversationId}
               participants={conversation.participants}
               participantNames={conversation.participantNames}
               groupName={conversation.groupName || 'Group'}
               currentUid={currentUser!.uid}
               onLeaveGroup={onBack}
+              onMemberAdded={() => {
+                // Refresh conversation to get updated participants
+                if (conversationId) {
+                  const ref = doc(db, 'conversations', conversationId);
+                  onSnapshot(ref, (snap) => {
+                    if (snap.exists()) {
+                      setConversation({
+                        id: snap.id,
+                        ...snap.data() as Omit<typeof conversation, 'id'>,
+                      });
+                    }
+                  });
+                }
+              }}
             />
           ) : (
             <>
