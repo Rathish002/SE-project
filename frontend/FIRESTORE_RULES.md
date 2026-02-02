@@ -91,6 +91,17 @@ service cloud.firestore {
     }
 
     /* =========================
+       BLOCKS
+       ========================= */
+    match /blocks/{uid}/list/{blockedUid} {
+      allow read: if request.auth != null &&
+        request.auth.uid == uid;
+      
+      allow write: if request.auth != null &&
+        request.auth.uid == uid;
+    }
+
+    /* =========================
        DEFAULT DENY
        ========================= */
     match /{document=**} {
@@ -107,6 +118,7 @@ service cloud.firestore {
 ✅ **Friends List**: Each user can manage their own bidirectional friend list  
 ✅ **Conversations**: Users can create chats and read/write messages in conversations they're part of  
 ✅ **Presence**: Users can update their own online status; everyone can see all presence status  
+✅ **Blocks**: Each user can manage their own blocked users list  
 
 ## Testing the Rules
 
