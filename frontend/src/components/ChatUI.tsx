@@ -165,18 +165,30 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
               <p>{t('collaboration.chat.noMessages')}</p>
             </div>
           ) : (
-            messages.map((message) => (
-              <div
-                key={message.id}
-                className={`chat-message ${message.senderUid === currentUser!.uid ? 'own' : 'other'}`}
-              >
-                <div className="chat-message-header">
-                  <span className="chat-message-sender">{message.senderName}</span>
-                  <span className="chat-message-time">{formatTimestamp(message.timestamp)}</span>
+            messages.map((message) => {
+              // System messages (joins, leaves) have distinct styling
+              if (message.type === 'system') {
+                return (
+                  <div key={message.id} className="chat-message system-message">
+                    <div className="system-message-content">{message.text}</div>
+                  </div>
+                );
+              }
+
+              // Regular user messages
+              return (
+                <div
+                  key={message.id}
+                  className={`chat-message ${message.senderUid === currentUser!.uid ? 'own' : 'other'}`}
+                >
+                  <div className="chat-message-header">
+                    <span className="chat-message-sender">{message.senderName}</span>
+                    <span className="chat-message-time">{formatTimestamp(message.timestamp)}</span>
+                  </div>
+                  <div className="chat-message-text">{message.text}</div>
                 </div>
-                <div className="chat-message-text">{message.text}</div>
-              </div>
-            ))
+              );
+            })
           )}
           <div ref={messagesEndRef} />
         </div>

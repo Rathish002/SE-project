@@ -134,6 +134,24 @@
   word-wrap: break-word;
 }
 
+/* System Message Styling - distinct from user messages */
+.chat-message.system-message {
+  align-self: center;
+  max-width: 100%;
+  background-color: transparent;
+  padding: 8px 0;
+  margin: 12px 0;
+  border: none;
+}
+
+.system-message-content {
+  font-size: 13px;
+  color: var(--text-secondary);
+  text-align: center;
+  font-style: italic;
+  padding: 4px 8px;
+}
+
 .chat-sidebar {
   width: 250px;
   padding: 20px;
