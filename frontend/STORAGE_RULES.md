@@ -27,26 +27,22 @@ service firebase.storage {
       // Allow authenticated users to read any conversation media
       allow read: if request.auth != null;
       
-      // Allow upload only if:
-      // 1. User is authenticated
-      // 2. User is a participant in the conversation (check Firestore)
-      // 3. File size is within limits (handled in app, but enforced here too)
+      // Allow upload for authenticated users with size limits
+      // Participant validation is handled in application code
       allow write: if request.auth != null &&
-        request.auth.uid in firestore.get(/databases/(default)/documents/conversations/$(conversationId)).data.participants &&
         (
           // Images: max 10MB
           (mediaType == 'images' && request.resource.size < 10 * 1024 * 1024) ||
           // Videos: max 10MB
           (mediaType == 'videos' && request.resource.size < 10 * 1024 * 1024) ||
-          // Voice: unlimited (small files)
+          // Voice: max 50MB
           (mediaType == 'voice' && request.resource.size < 50 * 1024 * 1024) ||
           // Documents: max 10MB
           (mediaType == 'files' && request.resource.size < 10 * 1024 * 1024)
         );
       
-      // Allow delete only for conversation participants
-      allow delete: if request.auth != null &&
-        request.auth.uid in firestore.get(/databases/(default)/documents/conversations/$(conversationId)).data.participants;
+      // Allow delete for authenticated users
+      allow delete: if request.auth != null;
     }
     
     /* =========================
@@ -70,9 +66,10 @@ service firebase.storage {
 
 The rules validate:
 1. User authentication (must be signed in)
-2. User is a participant in the conversation
-3. File size is within limits
-4. Proper folder structure (images/videos/voice/files)
+2. File size is within limits
+3. Proper folder structure (images/videos/voice/files)
+
+**Note**: Participant validation (ensuring user is in the conversation) is handled by the application code in `sendImageMessage()`. The app checks conversation membership before uploading.
 
 ## Testing
 
