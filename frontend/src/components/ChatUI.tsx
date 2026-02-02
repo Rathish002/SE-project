@@ -10,6 +10,7 @@ import {
   subscribeToMessages, 
   sendMessage,
   sendImageMessage,
+  sendVideoMessage,
   type Message,
   type Conversation,
 } from '../services/chatService';
@@ -32,7 +33,9 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const [messageText, setMessageText] = useState('');
   const [sending, setSending] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'reconnecting'>('connected');
   const [participants, setParticipants] = useState<Array<{ uid: string; name: string; online: boolean; lastActive?: any }>>([]);
   
@@ -115,14 +118,33 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       setUploadingImage(true);
       await sendImageMessage(conversationId, currentUser.uid, file);
       // Clear file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+      if (imageInputRef.current) {
+        imageInputRef.current.value = '';
       }
     } catch (error: any) {
       console.error('Error uploading image:', error);
       alert(error.message || 'Failed to upload image');
     } finally {
       setUploadingImage(false);
+    }
+  };
+
+  const handleVideoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !currentUser || uploadingVideo) return;
+
+    try {
+      setUploadingVideo(true);
+      await sendVideoMessage(conversationId, currentUser.uid, file);
+      // Clear file input
+      if (videoInputRef.current) {
+        videoInputRef.current.value = '';
+      }
+    } catch (error: any) {
+      console.error('Error uploading video:', error);
+      alert(error.message || 'Failed to upload video');
+    } finally {
+      setUploadingVideo(false);
     }
   };
 
@@ -223,6 +245,12 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                     <div className="chat-message-image">
                       <img src={message.mediaUrl} alt="" />
                     </div>
+                  ) : message.type === 'video' && message.mediaUrl ? (
+                    <div className="chat-message-video">
+                      <video controls src={message.mediaUrl}>
+                        Your browser does not support video playback.
+                      </video>
+                    </div>
                   ) : (
                     <div className="chat-message-text">{message.text}</div>
                   )}
@@ -287,18 +315,33 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       <div className="chat-input-container">
         <input
           type="file"
-          ref={fileInputRef}
+          ref={imageInputRef}
           accept="image/*"
           style={{ display: 'none' }}
           onChange={handleImageUpload}
         />
+        <input
+          type="file"
+          ref={videoInputRef}
+          accept="video/*"
+          style={{ display: 'none' }}
+          onChange={handleVideoUpload}
+        />
         <button
           className="chat-attach-button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploadingImage || sending}
+          onClick={() => imageInputRef.current?.click()}
+          disabled={uploadingImage || uploadingVideo || sending}
           title="Upload image"
         >
-          📎
+          🖼️
+        </button>
+        <button
+          className="chat-attach-button"
+          onClick={() => videoInputRef.current?.click()}
+          disabled={uploadingImage || uploadingVideo || sending}
+          title="Upload video"
+        >
+          🎥
         </button>
         <input
           type="text"
@@ -307,14 +350,14 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-          disabled={sending || uploadingImage}
+          disabled={sending || uploadingImage || uploadingVideo}
         />
         <button
           className="chat-send-button"
           onClick={handleSendMessage}
-          disabled={sending || uploadingImage || !messageText.trim()}
+          disabled={sending || uploadingImage || uploadingVideo || !messageText.trim()}
         >
-          {uploadingImage ? 'Uploading...' : sending ? t('collaboration.chat.sending') : t('collaboration.chat.send')}
+          {uploadingImage || uploadingVideo ? 'Uploading...' : sending ? t('collaboration.chat.sending') : t('collaboration.chat.send')}
         </button>
       </div>
     </div>

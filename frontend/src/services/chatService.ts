@@ -273,6 +273,63 @@ export async function sendImageMessage(
 }
 
 /**
+ * Upload video to Firebase Storage and send as message
+ * Validates video size (max 10MB)
+ * Stores video at: /conversations/{conversationId}/videos/{timestamp}_{filename}
+ */
+export async function sendVideoMessage(
+  conversationId: string,
+  senderUid: string,
+  videoFile: File
+): Promise<void> {
+  // Validate file type
+  if (!videoFile.type.startsWith('video/')) {
+    throw new Error('File must be a video');
+  }
+
+  // Validate size (10MB = 10 * 1024 * 1024 bytes)
+  const MAX_SIZE = 10 * 1024 * 1024;
+  if (videoFile.size > MAX_SIZE) {
+    throw new Error('Video size must be less than 10MB');
+  }
+
+  // Get sender profile
+  const senderProfile = await getUserProfile(senderUid);
+  let senderName = senderProfile?.name || 'User';
+  
+  if (!senderProfile && auth.currentUser?.uid === senderUid) {
+    senderName = resolveUsername(auth.currentUser);
+  }
+
+  // Upload to Firebase Storage
+  const timestamp = Date.now();
+  const filename = `${timestamp}_${videoFile.name}`;
+  const storagePath = `conversations/${conversationId}/videos/${filename}`;
+  const storageRef = ref(storage, storagePath);
+
+  const snapshot = await uploadBytes(storageRef, videoFile);
+  const downloadURL = await getDownloadURL(snapshot.ref);
+
+  // Create message with video
+  const messagesRef = collection(db, 'conversations', conversationId, 'messages');
+  await addDoc(messagesRef, {
+    senderUid,
+    senderName,
+    text: null, // No text for video-only messages
+    type: 'video',
+    mediaUrl: downloadURL,
+    mediaSize: videoFile.size,
+    mediaFilename: videoFile.name,
+    mediaType: videoFile.type,
+    timestamp: serverTimestamp(),
+  });
+
+  // Update conversation timestamp
+  const conversationRef = doc(db, 'conversations', conversationId);
+  await setDoc(conversationRef, { updatedAt: serverTimestamp() }, { merge: true });
+}
+
+/**
  * Leave a group chat by removing the user from participants
  * Creates a system message for the leave event
  * Archives group if it becomes empty (audit purposes)

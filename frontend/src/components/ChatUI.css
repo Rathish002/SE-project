@@ -301,12 +301,30 @@
   transform: scale(1.02);
 }
 
+.chat-message-video {
+  margin-top: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 400px;
+}
+
+.chat-message-video video {
+  width: 100%;
+  height: auto;
+  display: block;
+  background-color: #000;
+}
+
 @media (max-width: 768px) {
   .chat-sidebar {
     display: none;
   }
 
   .chat-message-image {
+    max-width: 100%;
+  }
+
+  .chat-message-video {
     max-width: 100%;
   }
 }
