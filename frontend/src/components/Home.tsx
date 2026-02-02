@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next';
 import { User } from 'firebase/auth';
 import { getInterfaceLanguage, getLearningDirection } from '../utils/languageManager';
 import { loadActivity } from '../utils/activityTracker';
+import { setupPresenceSystem } from '../services/presenceService';
+import { setupAcceptanceListener } from '../services/friendService';
 import './Home.css';
 
 interface HomeProps {
@@ -28,6 +30,22 @@ const Home: React.FC<HomeProps> = ({ currentUser }) => {
   useEffect(() => {
     setActivity(loadActivity());
   }, []);
+  
+  // Setup presence system and friend request listener
+  useEffect(() => {
+    if (currentUser?.uid) {
+      // Initialize presence system
+      const cleanupPresence = setupPresenceSystem(currentUser.uid);
+      
+      // Setup friend request acceptance listener
+      const cleanupAcceptance = setupAcceptanceListener(currentUser.uid);
+      
+      return () => {
+        cleanupPresence();
+        cleanupAcceptance();
+      };
+    }
+  }, [currentUser?.uid]);
   
   // Get display text for interface language
   const getInterfaceLanguageText = (): string => {
