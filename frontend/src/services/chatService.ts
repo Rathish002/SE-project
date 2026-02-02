@@ -20,8 +20,8 @@ import {
   addDoc,
   serverTimestamp,
 } from 'firebase/firestore';
-import { db } from '../firebase';
-import { getUserProfile } from './userService';
+import { db, auth } from '../firebase';
+import { getUserProfile, resolveUsername } from './userService';
 
 export interface Message {
   id: string;
@@ -141,11 +141,20 @@ export async function sendMessage(
   text: string
 ): Promise<void> {
   const senderProfile = await getUserProfile(senderUid);
+  
+  // Fallback: if profile has no name or is stale, use auth user
+  let senderName = senderProfile?.name || 'User';
+  
+  // Extra fallback: get current auth user and resolve username
+  if (!senderProfile && auth.currentUser?.uid === senderUid) {
+    senderName = resolveUsername(auth.currentUser);
+  }
+  
   const messagesRef = collection(db, 'conversations', conversationId, 'messages');
 
   await addDoc(messagesRef, {
     senderUid,
-    senderName: senderProfile?.name || 'User',
+    senderName,
     text: text.trim(),
     timestamp: serverTimestamp(),
   });

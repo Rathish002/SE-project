@@ -140,8 +140,10 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         <div className="chat-header-info">
           <h2 className="chat-title">
             {conversation?.type === 'group' 
-              ? conversation.participantNames.join(', ')
-              : conversation?.participantNames.find(name => name !== currentUser!.displayName) || t('collaboration.chat.unknownUser')
+              ? (conversation.groupName || conversation.participantNames.join(', '))
+              : conversation?.participantNames.find((name, idx) => 
+                  conversation.participants[idx] !== currentUser!.uid
+                ) || t('collaboration.chat.unknownUser')
             }
           </h2>
           <div className="chat-status">
