@@ -9,6 +9,7 @@ import { User } from 'firebase/auth';
 import { 
   subscribeToMessages, 
   sendMessage,
+  sendImageMessage,
   type Message,
   type Conversation,
 } from '../services/chatService';
@@ -30,6 +31,8 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messageText, setMessageText] = useState('');
   const [sending, setSending] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'reconnecting'>('connected');
   const [participants, setParticipants] = useState<Array<{ uid: string; name: string; online: boolean; lastActive?: any }>>([]);
   
@@ -103,6 +106,25 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     };
   }, [conversationId]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !currentUser || uploadingImage) return;
+
+    try {
+      setUploadingImage(true);
+      await sendImageMessage(conversationId, currentUser.uid, file);
+      // Clear file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    } catch (error: any) {
+      console.error('Error uploading image:', error);
+      alert(error.message || 'Failed to upload image');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const handleSendMessage = async () => {
     if (!messageText.trim() || sending) return;
@@ -187,7 +209,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                 );
               }
 
-              // Regular user messages
+              // Regular user messages (text or image)
               return (
                 <div
                   key={message.id}
@@ -197,7 +219,13 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                     <span className="chat-message-sender">{message.senderName}</span>
                     <span className="chat-message-time">{formatTimestamp(message.timestamp)}</span>
                   </div>
-                  <div className="chat-message-text">{message.text}</div>
+                  {message.type === 'image' && message.mediaUrl ? (
+                    <div className="chat-message-image">
+                      <img src={message.mediaUrl} alt="" />
+                    </div>
+                  ) : (
+                    <div className="chat-message-text">{message.text}</div>
+                  )}
                 </div>
               );
             })
@@ -258,20 +286,35 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
 
       <div className="chat-input-container">
         <input
+          type="file"
+          ref={fileInputRef}
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={handleImageUpload}
+        />
+        <button
+          className="chat-attach-button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploadingImage || sending}
+          title="Upload image"
+        >
+          📎
+        </button>
+        <input
           type="text"
           className="chat-input"
           placeholder={t('collaboration.chat.inputPlaceholder')}
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
           onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-          disabled={sending}
+          disabled={sending || uploadingImage}
         />
         <button
           className="chat-send-button"
           onClick={handleSendMessage}
-          disabled={sending || !messageText.trim()}
+          disabled={sending || uploadingImage || !messageText.trim()}
         >
-          {sending ? t('collaboration.chat.sending') : t('collaboration.chat.send')}
+          {uploadingImage ? 'Uploading...' : sending ? t('collaboration.chat.sending') : t('collaboration.chat.send')}
         </button>
       </div>
     </div>

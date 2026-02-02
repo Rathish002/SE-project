@@ -21,6 +21,8 @@ import {
 } from 'firebase/firestore';
 import { db, auth } from '../firebase';
 import { getUserProfile, resolveUsername } from './userService';
+import { storage } from '../firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export interface Message {
   id: string;
@@ -205,6 +207,63 @@ export async function sendMessage(
     senderName,
     text: text.trim(),
     type: 'user',
+    timestamp: serverTimestamp(),
+  });
+
+  // Update conversation timestamp
+  const conversationRef = doc(db, 'conversations', conversationId);
+  await setDoc(conversationRef, { updatedAt: serverTimestamp() }, { merge: true });
+}
+
+/**
+ * Upload image to Firebase Storage and send as message
+ * Validates image size (max 10MB)
+ * Stores image at: /conversations/{conversationId}/images/{timestamp}_{filename}
+ */
+export async function sendImageMessage(
+  conversationId: string,
+  senderUid: string,
+  imageFile: File
+): Promise<void> {
+  // Validate file type
+  if (!imageFile.type.startsWith('image/')) {
+    throw new Error('File must be an image');
+  }
+
+  // Validate size (10MB = 10 * 1024 * 1024 bytes)
+  const MAX_SIZE = 10 * 1024 * 1024;
+  if (imageFile.size > MAX_SIZE) {
+    throw new Error('Image size must be less than 10MB');
+  }
+
+  // Get sender profile
+  const senderProfile = await getUserProfile(senderUid);
+  let senderName = senderProfile?.name || 'User';
+  
+  if (!senderProfile && auth.currentUser?.uid === senderUid) {
+    senderName = resolveUsername(auth.currentUser);
+  }
+
+  // Upload to Firebase Storage
+  const timestamp = Date.now();
+  const filename = `${timestamp}_${imageFile.name}`;
+  const storagePath = `conversations/${conversationId}/images/${filename}`;
+  const storageRef = ref(storage, storagePath);
+
+  const snapshot = await uploadBytes(storageRef, imageFile);
+  const downloadURL = await getDownloadURL(snapshot.ref);
+
+  // Create message with image
+  const messagesRef = collection(db, 'conversations', conversationId, 'messages');
+  await addDoc(messagesRef, {
+    senderUid,
+    senderName,
+    text: null, // No text for image-only messages
+    type: 'image',
+    mediaUrl: downloadURL,
+    mediaSize: imageFile.size,
+    mediaFilename: imageFile.name,
+    mediaType: imageFile.type,
     timestamp: serverTimestamp(),
   });
 

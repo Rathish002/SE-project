@@ -262,8 +262,51 @@
   cursor: not-allowed;
 }
 
+.chat-attach-button {
+  padding: 12px 16px;
+  font-size: 20px;
+  background-color: var(--bg-primary);
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.chat-attach-button:hover:not(:disabled) {
+  background-color: var(--bg-secondary);
+  border-color: var(--accent);
+}
+
+.chat-attach-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chat-message-image {
+  margin-top: 8px;
+  border-radius: 8px;
+  overflow: hidden;
+  max-width: 400px;
+}
+
+.chat-message-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.chat-message-image img:hover {
+  transform: scale(1.02);
+}
+
 @media (max-width: 768px) {
   .chat-sidebar {
     display: none;
+  }
+
+  .chat-message-image {
+    max-width: 100%;
   }
 }
