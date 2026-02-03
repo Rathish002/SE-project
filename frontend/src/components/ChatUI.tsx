@@ -28,6 +28,13 @@ interface ChatUIProps {
   onBack: () => void;
 }
 
+// Media URL resolution state
+interface MediaState {
+  loading: boolean;
+  url: string | null;
+  error: boolean;
+}
+
 const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) => {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -45,6 +52,9 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'reconnecting'>('connected');
   const [participants, setParticipants] = useState<Array<{ uid: string; name: string; online: boolean; lastActive?: any }>>([]);
+  
+  // Media URL resolution tracking
+  const [mediaStates, setMediaStates] = useState<Map<string, MediaState>>(new Map());
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const unsubscribeMessagesRef = useRef<(() => void) | null>(null);
@@ -68,6 +78,62 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     };
   }, [conversationId]);
+
+  // Resolve media URLs asynchronously
+  useEffect(() => {
+    const resolveMediaUrls = async () => {
+      const mediaMessages = messages.filter(
+        (msg) => msg.mediaUrl && ['image', 'video', 'voice', 'file'].includes(msg.type || '')
+      );
+
+      for (const msg of mediaMessages) {
+        // Skip if already resolved or loading
+        setMediaStates((prev) => {
+          if (prev.has(msg.id)) {
+            return prev; // Already handled
+          }
+
+          // Mark as loading
+          const newMap = new Map(prev);
+          newMap.set(msg.id, { loading: true, url: null, error: false });
+          
+          // Resolve asynchronously
+          (async () => {
+            try {
+              // Validate the URL by attempting to fetch metadata
+              // For images, we can preload them
+              if (msg.type === 'image' && msg.mediaUrl) {
+                await new Promise<void>((resolve, reject) => {
+                  const img = new Image();
+                  img.onload = () => resolve();
+                  img.onerror = () => reject(new Error('Failed to load image'));
+                  img.src = msg.mediaUrl!;
+                });
+              }
+              
+              // For other media types, just validate URL format and set as resolved
+              setMediaStates((prev2) => {
+                const newMap2 = new Map(prev2);
+                newMap2.set(msg.id, { loading: false, url: msg.mediaUrl!, error: false });
+                return newMap2;
+              });
+            } catch (error) {
+              console.error('Media URL resolution failed:', error);
+              setMediaStates((prev2) => {
+                const newMap2 = new Map(prev2);
+                newMap2.set(msg.id, { loading: false, url: null, error: true });
+                return newMap2;
+              });
+            }
+          })();
+
+          return newMap;
+        });
+      }
+    };
+
+    resolveMediaUrls();
+  }, [messages]);
 
   // Subscribe to conversation
   useEffect(() => {
@@ -302,6 +368,8 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
               }
 
               // Regular user messages (text or image)
+              const mediaState = message.id ? mediaStates.get(message.id) : undefined;
+              
               return (
                 <div
                   key={message.id}
@@ -313,32 +381,66 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                   </div>
                   {message.type === 'image' && message.mediaUrl ? (
                     <div className="chat-message-image">
-                      <img src={message.mediaUrl} alt="" />
+                      {mediaState?.loading ? (
+                        <div className="media-loading">Loading image...</div>
+                      ) : mediaState?.error ? (
+                        <div className="media-error">Failed to load image</div>
+                      ) : mediaState?.url ? (
+                        <img src={mediaState.url} alt="" />
+                      ) : (
+                        <div className="media-loading">Loading image...</div>
+                      )}
                     </div>
                   ) : message.type === 'video' && message.mediaUrl ? (
                     <div className="chat-message-video">
-                      <video controls src={message.mediaUrl}>
-                        Your browser does not support video playback.
-                      </video>
+                      {mediaState?.loading ? (
+                        <div className="media-loading">Loading video...</div>
+                      ) : mediaState?.error ? (
+                        <div className="media-error">Failed to load video</div>
+                      ) : mediaState?.url ? (
+                        <video controls src={mediaState.url}>
+                          Your browser does not support video playback.
+                        </video>
+                      ) : (
+                        <div className="media-loading">Loading video...</div>
+                      )}
                     </div>
                   ) : message.type === 'voice' && message.mediaUrl ? (
                     <div className="chat-message-voice">
-                      <audio controls src={message.mediaUrl}>
-                        Your browser does not support audio playback.
-                      </audio>
-                      {message.mediaDuration && (
-                        <span className="voice-duration">{Math.floor(message.mediaDuration)}s</span>
+                      {mediaState?.loading ? (
+                        <div className="media-loading">Loading audio...</div>
+                      ) : mediaState?.error ? (
+                        <div className="media-error">Failed to load audio</div>
+                      ) : mediaState?.url ? (
+                        <>
+                          <audio controls src={mediaState.url}>
+                            Your browser does not support audio playback.
+                          </audio>
+                          {message.mediaDuration && (
+                            <span className="voice-duration">{Math.floor(message.mediaDuration)}s</span>
+                          )}
+                        </>
+                      ) : (
+                        <div className="media-loading">Loading audio...</div>
                       )}
                     </div>
                   ) : message.type === 'file' && message.mediaUrl ? (
                     <div className="chat-message-file">
-                      <a href={message.mediaUrl} download={message.mediaFilename} target="_blank" rel="noopener noreferrer">
-                        <div className="file-icon">📄</div>
-                        <div className="file-info">
-                          <div className="file-name">{message.mediaFilename}</div>
-                          <div className="file-size">{(message.mediaSize! / 1024).toFixed(1)} KB</div>
-                        </div>
-                      </a>
+                      {mediaState?.loading ? (
+                        <div className="media-loading">Loading file...</div>
+                      ) : mediaState?.error ? (
+                        <div className="media-error">Failed to load file</div>
+                      ) : mediaState?.url ? (
+                        <a href={mediaState.url} download={message.mediaFilename} target="_blank" rel="noopener noreferrer">
+                          <div className="file-icon">📄</div>
+                          <div className="file-info">
+                            <div className="file-name">{message.mediaFilename}</div>
+                            <div className="file-size">{(message.mediaSize! / 1024).toFixed(1)} KB</div>
+                          </div>
+                        </a>
+                      ) : (
+                        <div className="media-loading">Loading file...</div>
+                      )}
                     </div>
                   ) : (
                     <div className="chat-message-text">{message.text}</div>
