@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   subscribeToFriends,
   type Friend,
@@ -38,6 +39,7 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
   onLeaveGroup,
   onMemberAdded,
 }) => {
+  const { t } = useTranslation();
   const [friends, setFriends] = useState<Friend[]>([]);
   const [blockedUsers, setBlockedUsers] = useState<Set<string>>(new Set());
   const [addableFriends, setAddableFriends] = useState<AddableFriend[]>([]);
@@ -79,9 +81,9 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
         if (participantSet.has(friend.uid)) {
           addable.push({
             uid: friend.uid,
-            name: friend.name || 'User',
+            name: friend.name || t('collaboration.chat.userFallback'),
             canAdd: false,
-            reason: 'Already in group',
+            reason: t('collaboration.group.alreadyInGroup'),
           });
           continue;
         }
@@ -89,16 +91,16 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
         if (blockedUsers.has(friend.uid)) {
           addable.push({
             uid: friend.uid,
-            name: friend.name || 'User',
+            name: friend.name || t('collaboration.chat.userFallback'),
             canAdd: false,
-            reason: 'Blocked user',
+            reason: t('collaboration.group.blockedUser'),
           });
           continue;
         }
 
         addable.push({
           uid: friend.uid,
-          name: friend.name || 'User',
+          name: friend.name || t('collaboration.chat.userFallback'),
           canAdd: true,
         });
       }
@@ -107,12 +109,12 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
     };
 
     buildAddableFriends();
-  }, [friends, participants, blockedUsers, currentUid]);
+  }, [friends, participants, blockedUsers, currentUid, t]);
 
   // Handle add members
   const handleAddMembers = async () => {
     if (selectedFriends.size === 0) {
-      setMessage({ type: 'error', text: 'Please select at least one friend' });
+      setMessage({ type: 'error', text: t('collaboration.group.selectAtLeastOne') });
       return;
     }
 
@@ -128,7 +130,7 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
       const count = selectedFriends.size;
       setMessage({
         type: 'success',
-        text: `Added ${count} member${count > 1 ? 's' : ''} to the group`,
+        text: t('collaboration.group.addedMembers', { count }),
       });
       setSelectedFriends(new Set());
       setShowAddMembers(false);
@@ -137,7 +139,10 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
         onMemberAdded();
       }
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Failed to add member';
+      const errorMsg =
+        error instanceof Error
+          ? error.message
+          : t('collaboration.group.addMemberError');
       setMessage({ type: 'error', text: errorMsg });
     } finally {
       setIsLoading(false);
@@ -146,21 +151,24 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
 
   // Handle leave group
   const handleLeaveGroup = async () => {
-    if (!window.confirm('Are you sure you want to leave this group?')) {
+    if (!window.confirm(t('collaboration.group.leaveConfirm'))) {
       return;
     }
 
     try {
       setIsLoading(true);
       await leaveGroupChat(conversationId, currentUid);
-      setMessage({ type: 'success', text: 'You left the group' });
+      setMessage({ type: 'success', text: t('collaboration.group.leftGroup') });
       setTimeout(() => {
         if (onLeaveGroup) {
           onLeaveGroup();
         }
       }, 1000);
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Failed to leave group';
+      const errorMsg =
+        error instanceof Error
+          ? error.message
+          : t('collaboration.group.leaveGroupError');
       setMessage({ type: 'error', text: errorMsg });
       setIsLoading(false);
     }
@@ -194,9 +202,11 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
           className="add-members-btn"
           onClick={() => setShowAddMembers(!showAddMembers)}
           disabled={isLoading}
-          title="Add friends to this group"
+          title={t('collaboration.group.addMembersTitle')}
         >
-          {showAddMembers ? 'Hide Add Members' : `Add Members (${addableCount})`}
+          {showAddMembers
+            ? t('collaboration.group.hideAddMembers')
+            : t('collaboration.group.addMembersCount', { count: addableCount })}
         </button>
       )}
 
@@ -204,9 +214,12 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
       {showAddMembers && (
         <div className="add-members-panel">
           <div className="add-members-header">
-            <h4>Add Friends to Group</h4>
+            <h4>{t('collaboration.group.addFriendsHeader')}</h4>
             <span className="selected-count">
-              {selectedFriends.size > 0 && `${selectedFriends.size} selected`}
+              {selectedFriends.size > 0 &&
+                t('collaboration.group.selectedCount', {
+                  count: selectedFriends.size,
+                })}
             </span>
           </div>
 
@@ -240,7 +253,11 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
               onClick={handleAddMembers}
               disabled={isLoading}
             >
-              {isLoading ? 'Adding...' : `Add ${selectedFriends.size} Member${selectedFriends.size > 1 ? 's' : ''}`}
+              {isLoading
+                ? t('collaboration.group.adding')
+                : t('collaboration.group.addMembersConfirm', {
+                    count: selectedFriends.size,
+                  })}
             </button>
           )}
         </div>
@@ -252,9 +269,9 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
           className="leave-group-btn"
           onClick={handleLeaveGroup}
           disabled={isLoading}
-          title="Leave this group chat"
+          title={t('collaboration.group.leaveGroupTitle')}
         >
-          Leave Group
+          {t('collaboration.group.leaveGroup')}
         </button>
       </div>
     </div>

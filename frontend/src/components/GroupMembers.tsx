@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   subscribeToFriends,
   sendFriendRequest,
@@ -35,6 +36,7 @@ const GroupMembers: React.FC<GroupMembersProps> = ({
   currentUid,
   onLeaveGroup,
 }) => {
+  const { t } = useTranslation();
   const [participantInfos, setParticipantInfos] = useState<ParticipantInfo[]>([]);
   const [friends, setFriends] = useState<Set<string>>(new Set());
   const [friendRequests, setFriendRequests] = useState<Set<string>>(new Set());
@@ -59,7 +61,7 @@ const GroupMembers: React.FC<GroupMembersProps> = ({
 
       for (let i = 0; i < participants.length; i++) {
         const uid = participants[i];
-        const name = participantNames[i] || 'User';
+        const name = participantNames[i] || t('collaboration.chat.userFallback');
         const isFriend = friends.has(uid) || uid === currentUid;
 
         infos.push({
@@ -73,12 +75,15 @@ const GroupMembers: React.FC<GroupMembersProps> = ({
     };
 
     buildParticipantInfo();
-  }, [participants, participantNames, friends, currentUid]);
+  }, [participants, participantNames, friends, currentUid, t]);
 
   // Handle send friend request
   const handleSendFriendRequest = async (toUid: string) => {
     if (friendRequests.has(toUid)) {
-      setMessage({ type: 'error', text: 'Friend request already sent' });
+      setMessage({
+        type: 'error',
+        text: t('collaboration.members.friendRequestAlreadySent'),
+      });
       return;
     }
 
@@ -88,10 +93,16 @@ const GroupMembers: React.FC<GroupMembersProps> = ({
       const newRequests = new Set(friendRequests);
       newRequests.add(toUid);
       setFriendRequests(newRequests);
-      setMessage({ type: 'success', text: 'Friend request sent!' });
+      setMessage({
+        type: 'success',
+        text: t('collaboration.members.friendRequestSent'),
+      });
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Failed to send request';
+      const errorMsg =
+        error instanceof Error
+          ? error.message
+          : t('collaboration.members.friendRequestError');
       setMessage({ type: 'error', text: errorMsg });
     } finally {
       setIsLoading(false);
@@ -100,21 +111,24 @@ const GroupMembers: React.FC<GroupMembersProps> = ({
 
   // Handle leave group
   const handleLeaveGroup = async () => {
-    if (!window.confirm('Are you sure you want to leave this group?')) {
+    if (!window.confirm(t('collaboration.group.leaveConfirm'))) {
       return;
     }
 
     try {
       setIsLoading(true);
       await leaveGroupChat(conversationId, currentUid);
-      setMessage({ type: 'success', text: 'You left the group' });
+      setMessage({ type: 'success', text: t('collaboration.group.leftGroup') });
       setTimeout(() => {
         if (onLeaveGroup) {
           onLeaveGroup();
         }
       }, 1000);
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : 'Failed to leave group';
+      const errorMsg =
+        error instanceof Error
+          ? error.message
+          : t('collaboration.group.leaveGroupError');
       setMessage({ type: 'error', text: errorMsg });
       setIsLoading(false);
     }
@@ -123,7 +137,7 @@ const GroupMembers: React.FC<GroupMembersProps> = ({
   return (
     <div className="group-members">
       <div className="members-header">
-        <h3>Group Members</h3>
+        <h3>{t('collaboration.members.title')}</h3>
         <span className="member-count">{participants.length}</span>
       </div>
 
@@ -139,10 +153,10 @@ const GroupMembers: React.FC<GroupMembersProps> = ({
             <div className="member-info">
               <div className="member-name">{participant.name}</div>
               {participant.uid === currentUid && (
-                <span className="you-badge">You</span>
+                <span className="you-badge">{t('collaboration.chat.you')}</span>
               )}
               {participant.isFriend && participant.uid !== currentUid && (
-                <span className="friend-badge">Friend</span>
+                <span className="friend-badge">{t('collaboration.members.friendBadge')}</span>
               )}
             </div>
 
@@ -153,13 +167,13 @@ const GroupMembers: React.FC<GroupMembersProps> = ({
                 disabled={isLoading || friendRequests.has(participant.uid)}
                 title={
                   friendRequests.has(participant.uid)
-                    ? 'Friend request sent'
-                    : 'Send friend request'
+                    ? t('collaboration.members.friendRequestSent')
+                    : t('collaboration.members.sendFriendRequest')
                 }
               >
                 {friendRequests.has(participant.uid)
-                  ? 'Request Sent'
-                  : 'Add Friend'}
+                  ? t('collaboration.members.requestSent')
+                  : t('collaboration.members.addFriend')}
               </button>
             )}
           </div>
@@ -172,9 +186,9 @@ const GroupMembers: React.FC<GroupMembersProps> = ({
           className="leave-group-btn"
           onClick={handleLeaveGroup}
           disabled={isLoading}
-          title="Leave this group chat"
+          title={t('collaboration.group.leaveGroupTitle')}
         >
-          Leave Group
+          {t('collaboration.group.leaveGroup')}
         </button>
       </div>
     </div>

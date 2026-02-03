@@ -115,7 +115,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         unsubscribeConversationRef.current();
       }
     };
-  }, [conversationId]);
+  }, [conversationId, t]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -130,7 +130,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     } catch (error: any) {
       console.error('Error uploading image:', error);
-      alert(error.message || 'Failed to upload image');
+      alert(error.message || t('collaboration.chat.uploadImageError'));
     } finally {
       setUploadingImage(false);
     }
@@ -149,7 +149,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     } catch (error: any) {
       console.error('Error uploading video:', error);
-      alert(error.message || 'Failed to upload video');
+      alert(error.message || t('collaboration.chat.uploadVideoError'));
     } finally {
       setUploadingVideo(false);
     }
@@ -168,7 +168,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     } catch (error: any) {
       console.error('Error uploading file:', error);
-      alert(error.message || 'Failed to upload file');
+      alert(error.message || t('collaboration.chat.uploadFileError'));
     } finally {
       setUploadingFile(false);
     }
@@ -199,7 +199,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
             await sendVoiceMessage(conversationId, currentUser!.uid, file, duration);
           } catch (error: any) {
             console.error('Error uploading voice:', error);
-            alert(error.message || 'Failed to upload voice message');
+            alert(error.message || t('collaboration.chat.uploadVoiceError'));
           } finally {
             setUploadingVoice(false);
           }
@@ -213,7 +213,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         setIsRecording(true);
       } catch (error) {
         console.error('Error accessing microphone:', error);
-        alert('Could not access microphone. Please grant permission.');
+        alert(t('collaboration.chat.microphoneAccessError'));
       }
     }
   };
@@ -251,7 +251,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
     <div className="chat-ui">
       <div className="chat-header">
         <button className="chat-back-button" onClick={onBack}>
-          ??? {t('app.back')}
+          {t('app.back')}
         </button>
         <div className="chat-header-info">
           <h2 className="chat-title">
@@ -318,16 +318,20 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                   ) : message.type === 'video' && message.mediaUrl ? (
                     <div className="chat-message-video">
                       <video controls src={message.mediaUrl}>
-                        Your browser does not support video playback.
+                        {t('collaboration.chat.videoNotSupported')}
                       </video>
                     </div>
                   ) : message.type === 'voice' && message.mediaUrl ? (
                     <div className="chat-message-voice">
                       <audio controls src={message.mediaUrl}>
-                        Your browser does not support audio playback.
+                        {t('collaboration.chat.audioNotSupported')}
                       </audio>
                       {message.mediaDuration && (
-                        <span className="voice-duration">{Math.floor(message.mediaDuration)}s</span>
+                        <span className="voice-duration">
+                          {t('collaboration.chat.voiceDuration', {
+                            count: Math.floor(message.mediaDuration),
+                          })}
+                        </span>
                       )}
                     </div>
                   ) : message.type === 'file' && message.mediaUrl ? (
@@ -336,7 +340,11 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                         <div className="file-icon">📄</div>
                         <div className="file-info">
                           <div className="file-name">{message.mediaFilename}</div>
-                          <div className="file-size">{(message.mediaSize! / 1024).toFixed(1)} KB</div>
+                          <div className="file-size">
+                            {t('collaboration.chat.fileSizeKb', {
+                              size: (message.mediaSize! / 1024).toFixed(1),
+                            })}
+                          </div>
                         </div>
                       </a>
                     </div>
@@ -357,7 +365,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
               conversationId={conversationId}
               participants={conversation.participants}
               participantNames={conversation.participantNames}
-              groupName={conversation.groupName || 'Group'}
+              groupName={conversation.groupName || t('collaboration.chat.groupFallback')}
               currentUid={currentUser!.uid}
               onLeaveGroup={onBack}
               onMemberAdded={() => {
@@ -426,7 +434,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           className="chat-attach-button"
           onClick={() => imageInputRef.current?.click()}
           disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
-          title="Upload image"
+          title={t('collaboration.chat.uploadImage')}
         >
           🖼️
         </button>
@@ -434,7 +442,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           className="chat-attach-button"
           onClick={() => videoInputRef.current?.click()}
           disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
-          title="Upload video"
+          title={t('collaboration.chat.uploadVideo')}
         >
           🎥
         </button>
@@ -442,7 +450,11 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           className={`chat-attach-button ${isRecording ? 'recording' : ''}`}
           onClick={handleVoiceRecord}
           disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending}
-          title={isRecording ? 'Stop recording' : 'Record voice message'}
+          title={
+            isRecording
+              ? t('collaboration.chat.stopRecording')
+              : t('collaboration.chat.recordVoice')
+          }
         >
           {isRecording ? '⏹️' : '🎤'}
         </button>
@@ -450,7 +462,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           className="chat-attach-button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
-          title="Upload document"
+          title={t('collaboration.chat.uploadDocument')}
         >
           📎
         </button>
@@ -468,7 +480,13 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           onClick={handleSendMessage}
           disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || isRecording || !messageText.trim()}
         >
-          {uploadingImage || uploadingVideo || uploadingVoice || uploadingFile ? 'Uploading...' : isRecording ? 'Recording...' : sending ? t('collaboration.chat.sending') : t('collaboration.chat.send')}
+          {uploadingImage || uploadingVideo || uploadingVoice || uploadingFile
+            ? t('collaboration.chat.uploading')
+            : isRecording
+            ? t('collaboration.chat.recording')
+            : sending
+            ? t('collaboration.chat.sending')
+            : t('collaboration.chat.send')}
         </button>
       </div>
     </div>
