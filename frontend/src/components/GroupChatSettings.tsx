@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   subscribeToFriends,
   type Friend,
@@ -19,7 +20,7 @@ interface GroupChatSettingsProps {
   groupName: string;
   currentUid: string;
   onLeaveGroup?: () => void;
-  onMemberAdded?: () => void;
+  onMemberAdded?: (addedMembers: Array<{ uid: string; name: string }>) => void;
 }
 
 interface AddableFriend {
@@ -38,6 +39,7 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
   onLeaveGroup,
   onMemberAdded,
 }) => {
+  const { t } = useTranslation();
   const [friends, setFriends] = useState<Friend[]>([]);
   const [blockedUsers, setBlockedUsers] = useState<Set<string>>(new Set());
   const [addableFriends, setAddableFriends] = useState<AddableFriend[]>([]);
@@ -121,8 +123,14 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
       
       // Add each selected friend
       const selectedArray = Array.from(selectedFriends);
+      const addedMembers: Array<{ uid: string; name: string }> = [];
+      
       for (const uid of selectedArray) {
         await addMemberToGroup(conversationId, uid, currentUid);
+        const friendData = addableFriends.find((f) => f.uid === uid);
+        if (friendData) {
+          addedMembers.push({ uid: friendData.uid, name: friendData.name });
+        }
       }
 
       const count = selectedFriends.size;
@@ -130,11 +138,17 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
         type: 'success',
         text: `Added ${count} member${count > 1 ? 's' : ''} to the group`,
       });
+      
+      // Filter out added members from the list immediately
+      setAddableFriends((prev) =>
+        prev.filter((friend) => !selectedFriends.has(friend.uid))
+      );
       setSelectedFriends(new Set());
-      setShowAddMembers(false);
+      // Keep panel open so user can see the updated list
       setTimeout(() => setMessage(null), 3000);
+      
       if (onMemberAdded) {
-        onMemberAdded();
+        onMemberAdded(addedMembers);
       }
     } catch (error) {
       const errorMsg = error instanceof Error ? error.message : 'Failed to add member';
@@ -211,27 +225,33 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
           </div>
 
           <div className="add-members-list">
-            {addableFriends.map((friend) => (
-              <div
-                key={friend.uid}
-                className={`add-member-item ${!friend.canAdd ? 'disabled' : ''}`}
-              >
-                <label className="member-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={selectedFriends.has(friend.uid)}
-                    onChange={() => toggleFriendSelection(friend.uid)}
-                    disabled={!friend.canAdd || isLoading}
-                  />
-                  <span className="member-label">
-                    {friend.name}
-                    {friend.reason && (
-                      <span className="member-reason">{friend.reason}</span>
-                    )}
-                  </span>
-                </label>
+            {addableFriends.length === 0 ? (
+              <div className="add-members-empty">
+                {t('collaboration.group.noAddableFriends')}
               </div>
-            ))}
+            ) : (
+              addableFriends.map((friend) => (
+                <div
+                  key={friend.uid}
+                  className={`add-member-item ${!friend.canAdd ? 'disabled' : ''}`}
+                >
+                  <label className="member-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={selectedFriends.has(friend.uid)}
+                      onChange={() => toggleFriendSelection(friend.uid)}
+                      disabled={!friend.canAdd || isLoading}
+                    />
+                    <span className="member-label">
+                      {friend.name}
+                      {friend.reason && (
+                        <span className="member-reason">{friend.reason}</span>
+                      )}
+                    </span>
+                  </label>
+                </div>
+              ))
+            )}
           </div>
 
           {selectedFriends.size > 0 && (

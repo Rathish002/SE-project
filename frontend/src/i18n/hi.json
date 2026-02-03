@@ -232,6 +232,9 @@
         "userLeft": "{{actor}} समूह से बाहर निकल गए",
         "userAdded": "{{actor}} ने {{target}} को समूह में जोड़ा"
       }
+    },
+    "group": {
+      "noAddableFriends": "आपके सभी मित्र पहले से इस समूह में हैं"
     }
   },
   "home": {

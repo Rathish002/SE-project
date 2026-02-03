@@ -232,6 +232,9 @@
         "userLeft": "{{actor}} left the group",
         "userAdded": "{{actor}} added {{target}} to the group"
       }
+    },
+    "group": {
+      "noAddableFriends": "All your friends are already in this group"
     }
   },
   "home": {
