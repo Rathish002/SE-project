@@ -54,7 +54,7 @@
     "strict": true,
     "esModuleInterop": true,
 
-    "types": ["node"],
+    "types": ["node","jest"],
 
     "sourceMap": true,
     "skipLibCheck": true
