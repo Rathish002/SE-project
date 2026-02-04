@@ -48,6 +48,6 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   res.status(err.status || 500).json({ error: err.message || "Internal server error" });
 });
 
-app.listen(3000, () => {
-  console.log("Server running on port 3000");
+app.listen(3001, () => {
+  console.log("Server running on port 3001");
 });
