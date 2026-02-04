@@ -31,6 +31,7 @@ export interface Message {
   text?: string; // null for media-only or system with placeholder
   timestamp: Timestamp;
   type?: 'user' | 'system' | 'image' | 'video' | 'voice' | 'file';
+  originalLang?: string; // Original language of the message (ISO code: 'en', 'hi')
   
   // System message fields (when type === 'system')
   actionType?: 'join' | 'leave' | 'add_member';
@@ -188,7 +189,8 @@ async function createSystemMessage(
 export async function sendMessage(
   conversationId: string,
   senderUid: string,
-  text: string
+  text: string,
+  originalLang?: string
 ): Promise<void> {
   const senderProfile = await getUserProfile(senderUid);
   
@@ -208,6 +210,7 @@ export async function sendMessage(
     text: text.trim(),
     type: 'user',
     timestamp: serverTimestamp(),
+    originalLang: originalLang || 'en', // Default to English if not specified
   });
 
   // Update conversation timestamp
@@ -660,6 +663,7 @@ export function subscribeToMessages(
         text: data.text,
         timestamp: data.timestamp,
         type: data.type || 'user',
+        originalLang: data.originalLang,
         // System message fields
         actionType: data.actionType,
         actorUid: data.actorUid,
