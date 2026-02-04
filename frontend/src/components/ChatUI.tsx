@@ -20,6 +20,7 @@ import GroupChatSettings from './GroupChatSettings';
 import { doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { formatLastActive } from '../utils/timeUtils';
+import { blockUser, unblockUser, isUserBlocked } from '../services/blockService';
 import './ChatUI.css';
 
 interface ChatUIProps {
@@ -45,6 +46,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'reconnecting'>('connected');
   const [participants, setParticipants] = useState<Array<{ uid: string; name: string; online: boolean; lastActive?: any }>>([]);
+  const [isBlocked, setIsBlocked] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const unsubscribeMessagesRef = useRef<(() => void) | null>(null);
@@ -116,6 +118,21 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     };
   }, [conversationId]);
+
+  // Check if other user is blocked (for direct chats only)
+  useEffect(() => {
+    if (!currentUser?.uid || !conversation || conversation.type !== 'direct') {
+      setIsBlocked(false);
+      return;
+    }
+
+    const otherUid = conversation.participants.find(uid => uid !== currentUser.uid);
+    if (!otherUid) return;
+
+    isUserBlocked(currentUser.uid, otherUid).then(blocked => {
+      setIsBlocked(blocked);
+    });
+  }, [currentUser?.uid, conversation]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -241,6 +258,31 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
     }
   };
 
+  const handleBlockToggle = async () => {
+    if (!currentUser?.uid || !conversation || conversation.type !== 'direct') return;
+
+    const otherUid = conversation.participants.find(uid => uid !== currentUser.uid);
+    if (!otherUid) return;
+
+    const action = isBlocked ? 'unblock' : 'block';
+    if (!window.confirm(`Are you sure you want to ${action} this user?`)) {
+      return;
+    }
+
+    try {
+      if (isBlocked) {
+        await unblockUser(currentUser.uid, otherUid);
+        setIsBlocked(false);
+      } else {
+        await blockUser(currentUser.uid, otherUid);
+        setIsBlocked(true);
+      }
+    } catch (error: any) {
+      console.error(`Error ${action}ing user:`, error);
+      alert(`Failed to ${action} user: ` + error.message);
+    }
+  };
+
   const formatTimestamp = (timestamp: any) => {
     if (!timestamp) return '';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -270,6 +312,16 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
             }
           </div>
         </div>
+        {/* Show block/unblock button for direct chats only */}
+        {conversation?.type === 'direct' && (
+          <button 
+            className="chat-block-button" 
+            onClick={handleBlockToggle}
+            title={isBlocked ? 'Unblock user' : 'Block user'}
+          >
+            {isBlocked ? '🔓' : '🚫'}
+          </button>
+        )}
       </div>
 
       <div className="chat-content">
