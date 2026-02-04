@@ -408,3 +408,47 @@
     max-width: 100%;
   }
 }
+
+/* Message States */
+.message-state {
+  font-size: 12px;
+  margin-top: 4px;
+  text-align: right;
+  opacity: 0.7;
+}
+
+.message-state.sending {
+  color: var(--text-secondary);
+}
+
+.message-state.sent {
+  color: #4caf50;
+}
+
+.message-state.failed {
+  color: #f44336;
+}
+
+.retry-message {
+  cursor: pointer;
+}
+
+.retry-message:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.chat-clear-button {
+  padding: 8px 12px;
+  font-size: 18px;
+  background-color: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chat-clear-button:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--accent);
+}

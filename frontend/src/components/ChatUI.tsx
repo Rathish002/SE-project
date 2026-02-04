@@ -28,6 +28,10 @@ interface ChatUIProps {
   onBack: () => void;
 }
 
+interface LocalMessageState {
+  [messageId: string]: 'sending' | 'sent' | 'failed';
+}
+
 const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) => {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -45,6 +49,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'reconnecting'>('connected');
   const [participants, setParticipants] = useState<Array<{ uid: string; name: string; online: boolean; lastActive?: any }>>([]);
+  const [messageStates, setMessageStates] = useState<LocalMessageState>({});
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const unsubscribeMessagesRef = useRef<(() => void) | null>(null);
@@ -221,11 +226,28 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const handleSendMessage = async () => {
     if (!messageText.trim() || sending) return;
 
+    const tempId = `temp_${Date.now()}`;
+    const textToSend = messageText;
+    setMessageText('');
     setSending(true);
+
+    // Add temporary message with 'sending' state
+    setMessageStates(prev => ({ ...prev, [tempId]: 'sending' }));
+
     try {
       if (!currentUser?.uid) return;
-      await sendMessage(conversationId, currentUser!.uid, messageText);
-      setMessageText('');
+      await sendMessage(conversationId, currentUser!.uid, textToSend);
+      
+      // Mark as sent
+      setMessageStates(prev => ({ ...prev, [tempId]: 'sent' }));
+      setTimeout(() => {
+        setMessageStates(prev => {
+          const newState = { ...prev };
+          delete newState[tempId];
+          return newState;
+        });
+      }, 2000);
+
       // update lastActive on user action
       try {
         const { updateLastActive } = await import('../services/presenceService');
@@ -235,7 +257,8 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     } catch (error: any) {
       console.error('Error sending message:', error);
-      alert(t('collaboration.chat.sendError'));
+      setMessageStates(prev => ({ ...prev, [tempId]: 'failed' }));
+      setMessageText(textToSend); // Restore message for retry
     } finally {
       setSending(false);
     }
@@ -342,6 +365,16 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                     </div>
                   ) : (
                     <div className="chat-message-text">{message.text}</div>
+                  )}
+                  {/* Show message state for own messages */}
+                  {message.senderUid === currentUser!.uid && messageStates[message.id] && (
+                    <div className={`message-state ${messageStates[message.id]}`}>
+                      {messageStates[message.id] === 'sending' && '⏳'}
+                      {messageStates[message.id] === 'sent' && '✓'}
+                      {messageStates[message.id] === 'failed' && (
+                        <span className="retry-message" title="Click to retry">❌</span>
+                      )}
+                    </div>
                   )}
                 </div>
               );
