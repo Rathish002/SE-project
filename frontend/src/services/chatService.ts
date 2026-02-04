@@ -58,6 +58,7 @@ export interface Conversation {
   createdAt: Timestamp;
   updatedAt: Timestamp;
   archived?: boolean; // True if group is empty and archived (for audit purposes)
+  lastClearedAt?: { [uid: string]: Timestamp }; // Per-user clear timestamps
 }
 
 /**
@@ -644,39 +645,62 @@ export async function addMemberToGroup(
  */
 export function subscribeToMessages(
   conversationId: string,
+  currentUid: string,
   callback: (messages: Message[]) => void
 ): () => void {
   const messagesRef = collection(db, 'conversations', conversationId, 'messages');
   const q = query(messagesRef, orderBy('timestamp', 'asc'));
 
-  return onSnapshot(q, (snapshot: QuerySnapshot<DocumentData>) => {
-    const messages: Message[] = [];
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      messages.push({
-        id: docSnap.id,
-        senderUid: data.senderUid,
-        senderName: data.senderName,
-        text: data.text,
-        timestamp: data.timestamp,
-        type: data.type || 'user',
-        // System message fields
-        actionType: data.actionType,
-        actorUid: data.actorUid,
-        actorUsername: data.actorUsername,
-        targetUid: data.targetUid,
-        targetUsername: data.targetUsername,
-        i18nKey: data.i18nKey,
-        // Media fields (for future use)
-        mediaUrl: data.mediaUrl,
-        mediaSize: data.mediaSize,
-        mediaDuration: data.mediaDuration,
-        mediaFilename: data.mediaFilename,
-        mediaType: data.mediaType,
+  // Also subscribe to conversation to get lastClearedAt
+  const conversationRef = doc(db, 'conversations', conversationId);
+  const unsubConv = onSnapshot(conversationRef, (convSnap) => {
+    const convData = convSnap.data();
+    const lastClearedAt = convData?.lastClearedAt?.[currentUid];
+
+    // Now subscribe to messages with filtering
+    const unsubMessages = onSnapshot(q, (snapshot: QuerySnapshot<DocumentData>) => {
+      const messages: Message[] = [];
+      snapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        
+        // Filter out messages before lastClearedAt
+        if (lastClearedAt && data.timestamp && data.timestamp.toMillis() < lastClearedAt.toMillis()) {
+          return; // Skip this message
+        }
+        
+        messages.push({
+          id: docSnap.id,
+          senderUid: data.senderUid,
+          senderName: data.senderName,
+          text: data.text,
+          timestamp: data.timestamp,
+          type: data.type || 'user',
+          // System message fields
+          actionType: data.actionType,
+          actorUid: data.actorUid,
+          actorUsername: data.actorUsername,
+          targetUid: data.targetUid,
+          targetUsername: data.targetUsername,
+          i18nKey: data.i18nKey,
+          // Media fields (for future use)
+          mediaUrl: data.mediaUrl,
+          mediaSize: data.mediaSize,
+          mediaDuration: data.mediaDuration,
+          mediaFilename: data.mediaFilename,
+          mediaType: data.mediaType,
+        });
       });
+      callback(messages);
     });
-    callback(messages);
+
+    // Store unsubMessages for cleanup
+    return unsubMessages;
   });
+
+  // Return cleanup function for both subscriptions
+  return () => {
+    unsubConv();
+  };
 }
 
 /**
@@ -768,5 +792,40 @@ export async function getConversation(conversationId: string): Promise<Conversat
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
     archived: data.archived,
+    lastClearedAt: data.lastClearedAt,
   };
+}
+
+/**
+ * Clear chat for current user (UI-only, doesn't delete messages)
+ * Stores timestamp so messages before this time are hidden
+ */
+export async function clearChatForUser(
+  conversationId: string,
+  uid: string
+): Promise<void> {
+  const conversationRef = doc(db, 'conversations', conversationId);
+  const conversationSnap = await getDoc(conversationRef);
+  
+  if (!conversationSnap.exists()) {
+    throw new Error('Conversation not found');
+  }
+
+  const data = conversationSnap.data();
+  if (!data.participants.includes(uid)) {
+    throw new Error('User is not a participant in this conversation');
+  }
+
+  // Update lastClearedAt for this user
+  const lastClearedAt = data.lastClearedAt || {};
+  lastClearedAt[uid] = serverTimestamp();
+
+  await setDoc(
+    conversationRef,
+    {
+      lastClearedAt,
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true }
+  );
 }

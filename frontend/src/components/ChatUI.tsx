@@ -13,6 +13,7 @@ import {
   sendVideoMessage,
   sendVoiceMessage,
   sendFileMessage,
+  clearChatForUser,
   type Message,
   type Conversation,
 } from '../services/chatService';
@@ -57,7 +58,9 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
 
   // Subscribe to messages
   useEffect(() => {
-    unsubscribeMessagesRef.current = subscribeToMessages(conversationId, (newMessages) => {
+    if (!currentUser?.uid) return;
+    
+    unsubscribeMessagesRef.current = subscribeToMessages(conversationId, currentUser.uid, (newMessages) => {
       setMessages(newMessages);
       setConnectionStatus('connected');
     });
@@ -67,7 +70,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         unsubscribeMessagesRef.current();
       }
     };
-  }, [conversationId]);
+  }, [conversationId, currentUser?.uid]);
 
   // Subscribe to conversation
   useEffect(() => {
@@ -241,6 +244,21 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
     }
   };
 
+  const handleClearChat = async () => {
+    if (!currentUser?.uid) return;
+    
+    if (!window.confirm('Are you sure you want to clear this chat? This will only clear it for you, not for others.')) {
+      return;
+    }
+
+    try {
+      await clearChatForUser(conversationId, currentUser.uid);
+    } catch (error: any) {
+      console.error('Error clearing chat:', error);
+      alert('Failed to clear chat: ' + error.message);
+    }
+  };
+
   const formatTimestamp = (timestamp: any) => {
     if (!timestamp) return '';
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
@@ -270,6 +288,13 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
             }
           </div>
         </div>
+        <button 
+          className="chat-clear-button" 
+          onClick={handleClearChat}
+          title="Clear chat for yourself"
+        >
+          🗑️
+        </button>
       </div>
 
       <div className="chat-content">
