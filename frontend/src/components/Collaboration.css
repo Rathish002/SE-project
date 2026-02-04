@@ -190,3 +190,62 @@
     position: static;
   }
 }
+
+/* Chat Visibility Controls */
+.collaboration-sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.collaboration-sidebar-title {
+  margin: 0;
+}
+
+.toggle-hidden-btn {
+  padding: 6px 12px;
+  font-size: 13px;
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.toggle-hidden-btn:hover {
+  background-color: var(--bg-hover);
+  border-color: var(--accent);
+}
+
+.conversation-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.hide-conversation-btn,
+.unhide-conversation-btn {
+  padding: 4px 8px;
+  font-size: 16px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.collaboration-conversation-item:hover .hide-conversation-btn,
+.collaboration-conversation-item:hover .unhide-conversation-btn {
+  opacity: 1;
+}
+
+.hide-conversation-btn:hover,
+.unhide-conversation-btn:hover {
+  background-color: var(--bg-hover);
+  border-radius: 4px;
+}
