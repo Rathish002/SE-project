@@ -33,6 +33,11 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
     updateFontSize,
     updateAudioSpeed,
     updateContrastMode,
+    updateDistractionFreeMode,
+    updateReducedMotion,
+    updateDyslexiaFont,
+    updateBlueLightFilter,
+    updateReadingMask,
     saveCurrentPreferences,
     resetToDefaults,
   } = useAccessibility();
@@ -126,7 +131,7 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
 
       await changePassword(currentUser, currentPassword, newPassword);
       setPasswordMessage({ type: 'success', text: 'Password changed successfully' });
-      
+
       // Reset form
       setCurrentPassword('');
       setNewPassword('');
@@ -156,7 +161,7 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
       if (!currentUser) throw new Error('User not logged in');
 
       await deleteUserAccount(currentUser, deletePassword);
-      
+
       // Redirect to login after successful deletion
       await signOut(auth);
       window.location.href = '/';
@@ -193,11 +198,6 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
     { value: 'high-contrast', label: t('accessibility.theme.highContrast'), icon: '⚡' },
   ];
 
-  const fontSizeOptions: { value: FontSize; label: string }[] = [
-    { value: 'small', label: t('accessibility.fontSize.small') },
-    { value: 'medium', label: t('accessibility.fontSize.medium') },
-    { value: 'large', label: t('accessibility.fontSize.large') },
-  ];
 
   const audioSpeedOptions: AudioSpeed[] = [0.75, 1.0, 1.25, 1.5];
 
@@ -230,7 +230,7 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
       {/* Language Settings Section */}
       <section className="settings-section card">
         <h2>{t('settings.languageSection')}</h2>
-        
+
         <div className="settings-group">
           <label htmlFor="interface-language">
             {t('settings.interfaceLanguage')}
@@ -301,16 +301,19 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
           <h3>{t('accessibility.fontSize.title')}</h3>
           <p className="section-description">{t('accessibility.fontSize.description')}</p>
           <div className="font-size-controls">
-            {fontSizeOptions.map((option) => (
-              <button
-                key={option.value}
-                className={`font-button ${preferences.fontSize === option.value ? 'active' : ''}`}
-                onClick={() => updateFontSize(option.value)}
-                aria-pressed={preferences.fontSize === option.value}
-              >
-                {option.label}
-              </button>
-            ))}
+            <div className="slider-container">
+              <input
+                type="range"
+                min="12"
+                max="24"
+                step="1"
+                value={preferences.fontSize}
+                onChange={(e) => updateFontSize(Number(e.target.value))}
+                className="settings-slider"
+                aria-label={t('accessibility.fontSize.slider')}
+              />
+              <span className="slider-value">{preferences.fontSize}px</span>
+            </div>
           </div>
           <div className="preview-text">
             <p className="preview-sample">{t('accessibility.fontSize.preview')}</p>
@@ -374,35 +377,83 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
           <label className="toggle-switch">
             <input
               type="checkbox"
-              checked={(() => {
-                try {
-                  return localStorage.getItem('distraction-free-mode') === '1';
-                } catch {
-                  return false;
-                }
-              })()}
-              onChange={(e) => {
-                try {
-                  localStorage.setItem('distraction-free-mode', e.target.checked ? '1' : '0');
-                } catch (err) {
-                  console.warn('Failed to save distraction-free mode');
-                }
-              }}
+              checked={preferences.distractionFreeMode}
+              onChange={(e) => updateDistractionFreeMode(e.target.checked)}
               aria-label={t('accessibility.distractionFree.toggle')}
             />
             <span className="toggle-slider"></span>
             <span className="toggle-label">
-              {(() => {
-                try {
-                  return localStorage.getItem('distraction-free-mode') === '1'
-                    ? t('accessibility.distractionFree.enabled')
-                    : t('accessibility.distractionFree.disabled');
-                } catch {
-                  return t('accessibility.distractionFree.disabled');
-                }
-              })()}
+              {preferences.distractionFreeMode
+                ? t('accessibility.distractionFree.enabled')
+                : t('accessibility.distractionFree.disabled')}
             </span>
           </label>
+        </div>
+
+        {/* Cognitive & Visual Support */}
+        <div className="settings-subsection">
+          <h3>{t('accessibility.cognitive.title', 'Cognitive & Visual Support')}</h3>
+          <p className="section-description">{t('accessibility.cognitive.description', 'Advanced tools for visual comfort and focus')}</p>
+
+          <div className="settings-group">
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={preferences.reducedMotion}
+                onChange={(e) => updateReducedMotion(e.target.checked)}
+                aria-label={t('accessibility.reducedMotion.toggle', 'Reduced Motion')}
+              />
+              <span className="toggle-slider"></span>
+              <span className="toggle-label">
+                {t('accessibility.reducedMotion.label', 'Reduced Motion')}
+              </span>
+            </label>
+          </div>
+
+          <div className="settings-group">
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={preferences.dyslexiaFont}
+                onChange={(e) => updateDyslexiaFont(e.target.checked)}
+                aria-label={t('accessibility.dyslexiaFont.toggle', 'Dyslexia Friendly Font')}
+              />
+              <span className="toggle-slider"></span>
+              <span className="toggle-label">
+                {t('accessibility.dyslexiaFont.label', 'Dyslexia Friendly Font')}
+              </span>
+            </label>
+          </div>
+
+          <div className="settings-group">
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={preferences.blueLightFilter}
+                onChange={(e) => updateBlueLightFilter(e.target.checked)}
+                aria-label={t('accessibility.blueLightFilter.toggle', 'Blue Light Filter')}
+              />
+              <span className="toggle-slider"></span>
+              <span className="toggle-label">
+                {t('accessibility.blueLightFilter.label', 'Blue Light Filter')}
+              </span>
+            </label>
+          </div>
+
+          <div className="settings-group">
+            <label className="toggle-switch">
+              <input
+                type="checkbox"
+                checked={preferences.readingMask}
+                onChange={(e) => updateReadingMask(e.target.checked)}
+                aria-label={t('accessibility.readingMask.toggle', 'Reading Line Mask')}
+              />
+              <span className="toggle-slider"></span>
+              <span className="toggle-label">
+                {t('accessibility.readingMask.label', 'Reading Line Mask')}
+              </span>
+            </label>
+          </div>
         </div>
       </section>
 
