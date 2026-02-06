@@ -281,6 +281,52 @@ const Learning: React.FC<LearningProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handlePlay]);
 
+  // Enter/exit fullscreen when focus (distraction-free) mode changes
+  useEffect(() => {
+    const applyFullscreen = async () => {
+      try {
+        const el: any = document.documentElement;
+        if (focusMode) {
+          if (!document.fullscreenElement) {
+            if (el.requestFullscreen) {
+              await el.requestFullscreen();
+            } else if (el.webkitRequestFullscreen) {
+              el.webkitRequestFullscreen();
+            }
+          }
+        } else {
+          if (document.fullscreenElement) {
+            if (document.exitFullscreen) {
+              await document.exitFullscreen();
+            } else if ((document as any).webkitExitFullscreen) {
+              (document as any).webkitExitFullscreen();
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('Fullscreen API error:', err);
+      }
+    };
+
+    applyFullscreen();
+  }, [focusMode, onFocusModeChange]);
+
+  // Keep focusMode in sync if user exits fullscreen with ESC or browser controls
+  useEffect(() => {
+    const onFsChange = () => {
+      if (!document.fullscreenElement && focusMode) {
+        onFocusModeChange(false);
+      }
+    };
+
+    document.addEventListener('fullscreenchange', onFsChange);
+    document.addEventListener('webkitfullscreenchange', onFsChange as EventListener);
+    return () => {
+      document.removeEventListener('fullscreenchange', onFsChange);
+      document.removeEventListener('webkitfullscreenchange', onFsChange as EventListener);
+    };
+  }, [focusMode, onFocusModeChange]);
+
   // Handle highlighted keyword clicks
   useEffect(() => {
     const handleKeywordElementClick = (e: MouseEvent) => {
@@ -364,12 +410,13 @@ const Learning: React.FC<LearningProps> = ({
           <button
             id="backBtn"
             onClick={() => {
-              if (lessonId > 1 && onNavigateLesson) {
-                onNavigateLesson(lessonId - 1);
+              if (lessonId > 1) {
+                if (onNavigateLesson) onNavigateLesson(lessonId - 1);
+              } else {
+                onBack();
               }
             }}
             aria-label={t('learning.navigation.previous')}
-            disabled={lessonId <= 1}
           >
             ◀ {t('learning.navigation.previous')}
           </button>

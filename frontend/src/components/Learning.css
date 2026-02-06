@@ -370,6 +370,7 @@ main#app {
 .high-contrast .kw-highlight {
   background: var(--accent);
   color: var(--keyword-fg);
+  color: #000 !important;
   padding: 2px 3px;
   border-radius: 3px;
 }
@@ -377,6 +378,24 @@ main#app {
 .high-contrast .keyword {
   background: var(--accent);
   color: var(--keyword-fg);
+  color: #000 !important;
+}
+
+/* Ensure any other yellow-highlighted inline spans show black text in high-contrast */
+.high-contrast span[style*="background: rgba(255, 235, 59"] {
+  color: #000 !important;
+}
+
+/* Ensure accent (yellow) buttons and elements use black text in high-contrast */
+.high-contrast .tts-controls button,
+.high-contrast #instructions button,
+.high-contrast .learning-back-button,
+.high-contrast .exit-distraction,
+.high-contrast .keyword,
+.high-contrast .kw-highlight {
+  background: var(--accent) !important;
+  color: #000 !important;
+  border-color: #000 !important;
 }
 
 /* Distraction-free (Focus Mode) - handled by app-container.focus-mode */

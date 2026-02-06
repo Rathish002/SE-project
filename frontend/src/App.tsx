@@ -6,10 +6,11 @@ import { User, onAuthStateChanged } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
 import { auth } from './firebase';
 import { initializeLanguageSettings } from './utils/languageManager';
-import { useAccessibility } from './contexts/AccessibilityContext';
+import { useAccessibility, AccessibilityProvider } from './contexts/AccessibilityContext';
 import { initializeUserProfile } from './services/userService';
 import { setUserOnline, setUserOffline } from './services/presenceService';
 import { setupAcceptanceListener } from './services/friendService';
+
 import Login from './components/Login';
 import Signup from './components/Signup';
 import Home from './components/Home';
@@ -20,64 +21,47 @@ import Collaboration from './components/Collaboration';
 import Exercises from './components/Exercises';
 import Navigation, { Page } from './components/Navigation';
 import AccessibilityOverlays from './components/AccessibilityOverlays';
+
 import './i18n/i18n'; // Initialize i18n
 import './App.css';
 
 function App() {
   const { t, i18n } = useTranslation();
 
-  // State for current user
   const [user, setUser] = useState<User | null>(null);
-
-  // State for showing login or signup page
   const [showSignup, setShowSignup] = useState<boolean>(false);
-
-  // State for current page (for logged-in users)
   const [currentPage, setCurrentPage] = useState<Page>('home');
-
-  // State for selected lesson (when viewing learning page)
   const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
-
-  // State for loading (checking auth state)
   const [loading, setLoading] = useState<boolean>(true);
 
-
-  // Get accessibility preferences
   const { preferences, updateDistractionFreeMode } = useAccessibility();
   const focusMode = preferences.distractionFreeMode;
   const setFocusMode = updateDistractionFreeMode;
 
-  // Initialize language settings from LocalStorage on app start
+  // Initialize language settings
   useEffect(() => {
     const { interfaceLanguage } = initializeLanguageSettings();
     i18n.changeLanguage(interfaceLanguage);
   }, [i18n]);
 
-  // Monitor authentication state changes
+  // Auth state listener
   useEffect(() => {
-    // onAuthStateChanged returns an unsubscribe function
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        // Initialize user profile and presence
         try {
           await initializeUserProfile(currentUser);
           await setUserOnline(currentUser.uid);
 
-          // Setup listener for friend request acceptance (completes bidirectional adds)
           const unsubscribeAcceptance = setupAcceptanceListener(currentUser.uid);
-
-          // Store unsubscriber for cleanup
           (window as any).__unsubscribeAcceptance = unsubscribeAcceptance;
         } catch (error) {
           console.error('Error initializing user profile:', error);
         }
       } else {
-        // User logged out - set offline if there was a previous user
         if (user) {
           try {
             await setUserOffline(user.uid);
 
-            // Cleanup acceptance listener
             if ((window as any).__unsubscribeAcceptance) {
               (window as any).__unsubscribeAcceptance();
             }
@@ -90,7 +74,6 @@ function App() {
       setLoading(false);
     });
 
-    // Cleanup: unsubscribe when component unmounts
     return () => {
       unsubscribe();
       if ((window as any).__unsubscribeAcceptance) {
@@ -99,7 +82,6 @@ function App() {
     };
   }, [user]);
 
-  // Show loading state while checking authentication
   if (loading) {
     return (
       <div className="loading-container">
@@ -108,34 +90,28 @@ function App() {
     );
   }
 
-  // Handle navigation
   const handleNavigate = (page: Page) => {
     setCurrentPage(page);
-    setSelectedLessonId(null); // Clear selected lesson when navigating
-    // Reset focus mode when navigating away from lesson/collaboration pages
+    setSelectedLessonId(null);
     if (page !== 'lessons' && page !== 'collaboration') {
       setFocusMode(false);
     }
   };
 
-  // Handle lesson selection
   const handleSelectLesson = (lessonId: number) => {
     setSelectedLessonId(lessonId);
   };
 
-  // Handle back from learning page
   const handleBackFromLearning = () => {
     setSelectedLessonId(null);
     setCurrentPage('lessons');
-    setFocusMode(false); // Reset focus mode when leaving lesson
+    setFocusMode(false);
   };
 
-  // Handle lesson navigation (previous/next)
   const handleNavigateLesson = (newLessonId: number) => {
     setSelectedLessonId(newLessonId);
   };
 
-  // Handle logout
   const handleLogout = async () => {
     if (user) {
       try {
@@ -149,70 +125,75 @@ function App() {
     setSelectedLessonId(null);
   };
 
-  // If user is logged in, show main app with navigation
   if (user) {
-    // Show learning page if a lesson is selected
     if (selectedLessonId !== null) {
       return (
-        <div className={`app-container ${focusMode ? 'focus-mode' : ''}`}>
-          <AccessibilityOverlays />
-          {!focusMode && (
-            <Navigation
-              currentPage="lessons"
-              onNavigate={handleNavigate}
-              onLogout={handleLogout}
+        <AccessibilityProvider>
+          <div className={`app-container ${focusMode ? 'focus-mode' : ''}`}>
+            {!focusMode && (
+              <Navigation
+                currentPage="lessons"
+                onNavigate={handleNavigate}
+                onLogout={handleLogout}
+                showSideArrows={false}
+              />
+            )}
+
+            <Learning
+              lessonId={selectedLessonId}
+              onBack={handleBackFromLearning}
+              onNavigateLesson={handleNavigateLesson}
+              focusMode={focusMode}
+              onFocusModeChange={setFocusMode}
+              onNavigateToExercises={() => handleNavigate('exercises')}
             />
-          )}
-          <Learning
-            lessonId={selectedLessonId}
-            onBack={handleBackFromLearning}
-            onNavigateLesson={handleNavigateLesson}
-            focusMode={focusMode}
-            onFocusModeChange={setFocusMode}
-            onNavigateToExercises={() => handleNavigate('exercises')}
-          />
-        </div>
+
+            <AccessibilityOverlays />
+          </div>
+        </AccessibilityProvider>
       );
     }
 
-    // Show main pages with navigation
-    // Focus mode only applies to lesson/collaboration pages
     const isFocusModePage = currentPage === 'collaboration';
 
     return (
-      <div className={`app-container ${isFocusModePage && focusMode ? 'focus-mode' : ''}`}>
-        <AccessibilityOverlays />
-        {!(isFocusModePage && focusMode) && (
-          <Navigation
-            currentPage={currentPage}
-            onNavigate={handleNavigate}
-            onLogout={handleLogout}
-          />
-        )}
-        <div className="main-content">
-          {currentPage === 'home' && <Home currentUser={user} />}
-          {currentPage === 'lessons' && (
-            <LessonSelection onSelectLesson={handleSelectLesson} />
-          )}
-          {currentPage === 'exercises' && (
-            <Exercises onNavigate={handleNavigate} />
-          )}
-          {currentPage === 'collaboration' && user && (
-            <Collaboration
-              currentUser={user}
-              focusMode={focusMode}
-              onFocusModeChange={setFocusMode}
+      <AccessibilityProvider>
+        <div className={`app-container ${isFocusModePage && focusMode ? 'focus-mode' : ''}`}>
+          {!(isFocusModePage && focusMode) && (
+            <Navigation
+              currentPage={currentPage}
+              onNavigate={handleNavigate}
+              onLogout={handleLogout}
+              showSideArrows={true}
             />
           )}
-          {currentPage === 'settings' && (
-            <UnifiedSettings onBack={() => handleNavigate('home')} />
-          )}
+
+          <div className="main-content">
+            {currentPage === 'home' && <Home currentUser={user} />}
+            {currentPage === 'lessons' && (
+              <LessonSelection onSelectLesson={handleSelectLesson} />
+            )}
+            {currentPage === 'exercises' && (
+              <Exercises onNavigate={handleNavigate} />
+            )}
+            {currentPage === 'collaboration' && (
+              <Collaboration
+                currentUser={user}
+                focusMode={focusMode}
+                onFocusModeChange={setFocusMode}
+              />
+            )}
+            {currentPage === 'settings' && (
+              <UnifiedSettings onBack={() => handleNavigate('home')} />
+            )}
+          </div>
+
+          <AccessibilityOverlays />
         </div>
-      </div>
+      </AccessibilityProvider>
     );
   }
 
-  // If user is not logged in, show Login or Signup
   return (
     <div className="app-container">
       {showSignup ? (
