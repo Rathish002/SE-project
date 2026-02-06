@@ -397,6 +397,8 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                 <div
                   key={message.id}
                   className={`chat-message ${message.senderUid === currentUser!.uid ? 'own' : 'other'}`}
+                  role="article"
+                  aria-label={`Message from ${message.senderName} at ${formatTimestamp(message.timestamp)}`}
                 >
                   <div className="chat-message-header">
                     <span className="chat-message-sender">{message.senderName}</span>
@@ -404,17 +406,17 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                   </div>
                   {message.type === 'image' && message.mediaUrl ? (
                     <div className="chat-message-image">
-                      <img src={message.mediaUrl} alt="" />
+                      <img src={message.mediaUrl} alt={`Shared by ${message.senderName}`} />
                     </div>
                   ) : message.type === 'video' && message.mediaUrl ? (
                     <div className="chat-message-video">
-                      <video controls src={message.mediaUrl}>
+                      <video controls src={message.mediaUrl} aria-label={`Video shared by ${message.senderName}`}>
                         Your browser does not support video playback.
                       </video>
                     </div>
                   ) : message.type === 'voice' && message.mediaUrl ? (
                     <div className="chat-message-voice">
-                      <audio controls src={message.mediaUrl}>
+                      <audio controls src={message.mediaUrl} aria-label={`Voice message from ${message.senderName}`}>
                         Your browser does not support audio playback.
                       </audio>
                       {message.mediaDuration && (
@@ -506,6 +508,9 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       </div>
 
       <div className="chat-input-container">
+        <div className="keyboard-hint" role="note" aria-label="Keyboard shortcuts">
+          Press Enter to send, Shift+Enter for new line
+        </div>
         <input
           type="file"
           ref={imageInputRef}
@@ -531,6 +536,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           onClick={() => imageInputRef.current?.click()}
           disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
           title="Upload image"
+          aria-label="Upload image"
         >
           🖼️
         </button>
@@ -539,6 +545,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           onClick={() => videoInputRef.current?.click()}
           disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
           title="Upload video"
+          aria-label="Upload video"
         >
           🎥
         </button>
@@ -547,6 +554,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           onClick={handleVoiceRecord}
           disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending}
           title={isRecording ? 'Stop recording' : 'Record voice message'}
+          aria-label={isRecording ? 'Stop recording' : 'Record voice message'}
         >
           {isRecording ? '⏹️' : '🎤'}
         </button>
@@ -555,22 +563,30 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           onClick={() => fileInputRef.current?.click()}
           disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
           title="Upload document"
+          aria-label="Upload document"
         >
           📎
         </button>
-        <input
-          type="text"
+        <textarea
           className="chat-input"
           placeholder={t('collaboration.chat.inputPlaceholder')}
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleSendMessage();
+            }
+          }}
           disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || isRecording}
+          rows={1}
+          aria-label="Type a message"
         />
         <button
           className="chat-send-button"
           onClick={handleSendMessage}
           disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || isRecording || !messageText.trim()}
+          aria-label="Send message"
         >
           {uploadingImage || uploadingVideo || uploadingVoice || uploadingFile ? 'Uploading...' : isRecording ? 'Recording...' : sending ? t('collaboration.chat.sending') : t('collaboration.chat.send')}
         </button>
