@@ -49,9 +49,9 @@ const AccessibilitySettings: React.FC<AccessibilitySettingsProps> = ({ onBack })
   ];
 
   const fontSizeOptions: { value: FontSize; label: string }[] = [
-    { value: 'small', label: t('accessibility.fontSize.small') },
-    { value: 'medium', label: t('accessibility.fontSize.medium') },
-    { value: 'large', label: t('accessibility.fontSize.large') },
+    { value: 14, label: t('accessibility.fontSize.small') }, // Reduced from default
+    { value: 16, label: t('accessibility.fontSize.medium') }, // Default
+    { value: 20, label: t('accessibility.fontSize.large') }, // Increased
   ];
 
   const audioSpeedOptions: AudioSpeed[] = [0.75, 1.0, 1.25, 1.5];

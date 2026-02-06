@@ -24,10 +24,16 @@
 
 .settings-section {
   margin-bottom: 30px;
-  padding: 20px;
+  padding: 24px;
   background-color: var(--bg-secondary);
-  border-radius: 8px;
+  border-radius: 12px;
   border: 1px solid var(--border);
+  box-shadow: 0 4px 6px var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.settings-section:hover {
+  box-shadow: 0 6px 12px var(--shadow);
 }
 
 .settings-section h2 {
@@ -56,6 +62,30 @@
   color: var(--text-secondary);
   margin-bottom: 15px;
   font-size: var(--base-font-size, 16px);
+}
+
+.settings-input {
+  padding: 12px;
+  font-size: var(--base-font-size, 16px);
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  width: 100%;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+
+.settings-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--shadow);
+}
+
+.settings-input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background-color: var(--bg-secondary);
 }
 
 .settings-group {
@@ -260,6 +290,53 @@
   color: var(--text-primary);
 }
 
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+}
+
+.settings-slider {
+  flex: 1;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.settings-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.settings-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+
+.settings-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  border: none;
+  transition: transform 0.2s;
+}
+
+.settings-slider::-moz-range-thumb:hover {
+  transform: scale(1.1);
+}
+
 /* Toggle Switch */
 .toggle-switch {
   display: flex;
@@ -287,7 +364,7 @@
   background-color: var(--accent);
 }
 
-.toggle-switch input[type="checkbox"]:checked ~ .toggle-slider {
+.toggle-switch input[type="checkbox"]:checked~.toggle-slider {
   transform: translateX(24px);
 }
 
@@ -374,6 +451,7 @@
     transform: translateX(100%);
     opacity: 0;
   }
+
   to {
     transform: translateX(0);
     opacity: 1;
@@ -491,6 +569,7 @@
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);

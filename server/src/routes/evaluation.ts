@@ -1,9 +1,11 @@
 import { Router, Request, Response } from "express";
+import axios from "axios";
 import pool from "../db";
 
 const router = Router();
+const NLP_SERVICE_URL = "http://localhost:8000/semantic-similarity";
 
-router.post("/evaluate-text", async (req: Request, res: Response) => {
+router.post("/evaluate-hybrid", async (req: Request, res: Response) => {
   const { lessonId, answer } = req.body;
 
   if (!lessonId || !answer) {
@@ -11,32 +13,73 @@ router.post("/evaluate-text", async (req: Request, res: Response) => {
   }
 
   try {
-    const keywordsResult = await pool.query(
-      "SELECT keyword FROM lesson_keywords WHERE lesson_id = $1",
+    // 1️⃣ Fetch ALL reference answers (paraphrase set)
+    const intentResult = await pool.query(
+      "SELECT reference_answer FROM evaluation_intents WHERE lesson_id = $1",
       [lessonId]
     );
 
-    const keywords: string[] = keywordsResult.rows.map(
-      (r: { keyword: string }) => r.keyword.toLowerCase()
+    if (intentResult.rows.length === 0) {
+      return res.status(404).json({ message: "No evaluation intents found" });
+    }
+
+    const referenceAnswers: string[] = intentResult.rows.map(
+      (r: { reference_answer: string }) => r.reference_answer
     );
 
-    const normalized = answer.toLowerCase();
+    // 2️⃣ Call NLP service ONCE with correct structure
+    const nlpResponse = await axios.post(NLP_SERVICE_URL, {
+      reference_answers: referenceAnswers,
+      user_answer: answer
+    });
 
-    const matched = keywords.filter(k => normalized.includes(k));
-    const score = keywords.length === 0 ? 0 : matched.length / keywords.length;
+    // 🔍 DEBUG: see exactly what NLP service returns
+    console.log("NLP SERVICE RESPONSE:", nlpResponse.data);
+
+    const semanticScore: number = nlpResponse.data.similarity;
+
+    // 3️⃣ Keyword-based scoring (concept coverage)
+    const keywordsResult = await pool.query(
+      "SELECT keyword, weight FROM evaluation_rules WHERE lesson_id = $1",
+      [lessonId]
+    );
+
+    let keywordScore = 0;
+    let totalWeight = 0;
+    const matchedKeywords: string[] = [];
+
+    for (const row of keywordsResult.rows) {
+      totalWeight += row.weight;
+
+      if (answer.toLowerCase().includes(row.keyword.toLowerCase())) {
+        keywordScore += row.weight;
+        matchedKeywords.push(row.keyword);
+      }
+    }
+
+    const normalizedKeywordScore =
+      totalWeight === 0 ? 0 : keywordScore / totalWeight;
+
+    // 4️⃣ Hybrid scoring formula
+    const finalScore = semanticScore
+    //0.7 * semanticScore + 0.3 * normalizedKeywordScore;
+
+    // 5️⃣ Feedback
+    let feedback = "Needs improvement.";
+    if (finalScore >= 0.8) feedback = "Excellent understanding!";
+    else if (finalScore >= 0.6) feedback = "Good understanding.";
 
     res.json({
-      score,
-      matchedConcepts: matched,
-      missingConcepts: keywords.filter(k => !matched.includes(k)),
-      feedback:
-        score > 0.7
-          ? "Good understanding of key concepts."
-          : "Partial understanding. Review highlighted terms.",
+      semanticScore,
+      keywordScore: normalizedKeywordScore,
+      finalScore,
+      matchedKeywords,
+      feedback
     });
+
   } catch (err) {
-    console.error("Evaluation error:", err);
-    res.status(500).json({ error: "Evaluation failed" });
+    console.error("Hybrid evaluation error:", err);
+    res.status(500).json({ error: "Hybrid evaluation failed" });
   }
 });
 
