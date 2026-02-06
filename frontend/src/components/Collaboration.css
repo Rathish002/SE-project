@@ -96,10 +96,38 @@
   top: 20px;
 }
 
+.collaboration-sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background-color: var(--bg-secondary);
+  border-bottom: 2px solid var(--border);
+  gap: 12px;
+}
+
 .collaboration-sidebar-title {
   font-size: var(--heading-3, 20px);
   color: var(--text-primary);
-  margin: 0 0 20px 0;
+  margin: 0;
+  flex: 1;
+}
+
+.toggle-hidden-btn {
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  background-color: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+}
+
+.toggle-hidden-btn:hover {
+  background-color: var(--accent-hover);
 }
 
 .collaboration-empty {
@@ -189,36 +217,6 @@
   .collaboration-sidebar {
     position: static;
   }
-}
-
-/* Chat Visibility Controls */
-.collaboration-sidebar-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-  gap: 10px;
-}
-
-.collaboration-sidebar-title {
-  margin: 0;
-}
-
-.toggle-hidden-btn {
-  padding: 6px 12px;
-  font-size: 13px;
-  background-color: var(--bg-secondary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.toggle-hidden-btn:hover {
-  background-color: var(--bg-hover);
-  border-color: var(--accent);
 }
 
 .conversation-item-header {

@@ -234,7 +234,26 @@
       }
     },
     "group": {
-      "noAddableFriends": "All your friends are already in this group"
+      "noAddableFriends": "All your friends are already in this group",
+      "addMembers": "Add Members",
+      "addMembersTitle": "Add friends to this group",
+      "addMembersCount": "Add Members ({{count}} available)",
+      "hideAddMembers": "Hide Add Members",
+      "addFriendsHeader": "Select friends to add",
+      "selectFriends": "Select friends to add",
+      "selectAtLeastOne": "Please select at least one friend to add",
+      "selectedCount": "{{count}} selected",
+      "addMembersConfirm": "Add {{count}} member(s)",
+      "adding": "Adding...",
+      "addedMembers": "Added {{count}} member(s) successfully",
+      "addMemberError": "Failed to add member",
+      "alreadyInGroup": "Already in group",
+      "blockedUser": "Blocked",
+      "leaveGroup": "Leave Group",
+      "leaveGroupTitle": "Leave this group chat",
+      "leaveConfirm": "Are you sure you want to leave this group?",
+      "leftGroup": "You have left the group",
+      "leaveGroupError": "Failed to leave group"
     }
   },
   "home": {

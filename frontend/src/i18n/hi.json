@@ -234,7 +234,26 @@
       }
     },
     "group": {
-      "noAddableFriends": "आपके सभी मित्र पहले से इस समूह में हैं"
+      "noAddableFriends": "आपके सभी मित्र पहले से इस समूह में हैं",
+      "addMembers": "सदस्य जोड़ें",
+      "addMembersTitle": "इस समूह में मित्र जोड़ें",
+      "addMembersCount": "सदस्य जोड़ें ({{count}} उपलब्ध)",
+      "hideAddMembers": "सदस्य जोड़ें छिपाएं",
+      "addFriendsHeader": "जोड़ने के लिए मित्रों का चयन करें",
+      "selectFriends": "जोड़ने के लिए मित्रों का चयन करें",
+      "selectAtLeastOne": "कृपया जोड़ने के लिए कम से कम एक मित्र का चयन करें",
+      "selectedCount": "{{count}} चयनित",
+      "addMembersConfirm": "{{count}} सदस्य जोड़ें",
+      "adding": "जोड़ रहे हैं...",
+      "addedMembers": "{{count}} सदस्य सफलतापूर्वक जोड़े गए",
+      "addMemberError": "सदस्य जोड़ने में विफल",
+      "alreadyInGroup": "पहले से समूह में हैं",
+      "blockedUser": "अवरुद्ध",
+      "leaveGroup": "समूह छोड़ें",
+      "leaveGroupTitle": "इस समूह चैट को छोड़ें",
+      "leaveConfirm": "क्या आप वाकई इस समूह को छोड़ना चाहते हैं?",
+      "leftGroup": "आपने समूह छोड़ दिया है",
+      "leaveGroupError": "समूह छोड़ने में विफल"
     }
   },
   "home": {

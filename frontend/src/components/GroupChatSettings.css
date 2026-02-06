@@ -1,7 +1,76 @@
 .group-chat-settings {
-  border-top: 1px solid #ddd;
   padding: 12px;
-  background-color: #f9f9f9;
+  background-color: transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-toggle-btn {
+  width: 100%;
+  padding: 10px 12px;
+  background-color: var(--bg-primary, #fff);
+  color: var(--text-primary, #333);
+  border: 1px solid var(--border, #ddd);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  transition: background-color 0.2s;
+}
+
+.section-toggle-btn:hover:not(:disabled) {
+  background-color: var(--bg-secondary, #f5f5f5);
+}
+
+.section-toggle-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.section-toggle-btn.add-btn {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.section-toggle-btn.add-btn:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.participants-section,
+.add-members-section {
+  border: 1px solid var(--border, #ddd);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.participants-list {
+  padding: 8px;
+  background-color: var(--bg-primary, #fff);
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.participant-item {
+  padding: 8px;
+  border-bottom: 1px solid var(--border, #f0f0f0);
+}
+
+.participant-item:last-child {
+  border-bottom: none;
+}
+
+.participant-name {
+  font-size: 14px;
+  color: var(--text-primary, #333);
+}
+
+.participant-you {
+  font-size: 12px;
+  color: var(--text-secondary, #666);
+  font-style: italic;
 }
 
 .settings-message {
@@ -24,55 +93,21 @@
   border: 1px solid #f5c6cb;
 }
 
-.add-members-btn {
-  width: 100%;
-  padding: 10px 12px;
-  margin-bottom: 12px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.add-members-btn:hover:not(:disabled) {
-  background-color: #0056b3;
-}
-
-.add-members-btn:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-  opacity: 0.65;
-}
-
 .add-members-panel {
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin-bottom: 12px;
-  background-color: white;
+  border-top: 1px solid var(--border, #ddd);
+  background-color: var(--bg-primary, #fff);
 }
 
 .add-members-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 12px;
-  border-bottom: 1px solid #eee;
-}
-
-.add-members-header h4 {
-  margin: 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border, #eee);
+  background-color: var(--bg-secondary, #f9f9f9);
 }
 
 .selected-count {
   font-size: 12px;
-  color: #666;
+  color: var(--text-secondary, #666);
+  font-weight: 500;
 }
 
 .add-members-list {
@@ -152,8 +187,9 @@
 }
 
 .leave-group-section {
-  padding-top: 8px;
-  border-top: 1px solid #eee;
+  border: 1px solid var(--border, #ddd);
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .leave-group-btn {

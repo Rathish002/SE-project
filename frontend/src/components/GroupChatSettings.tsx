@@ -50,6 +50,7 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
   } | null>(null);
   const [showAddMembers, setShowAddMembers] = useState(false);
   const [selectedFriends, setSelectedFriends] = useState<Set<string>>(new Set());
+  const [showParticipants, setShowParticipants] = useState(true);
 
   // Subscribe to user's friends list
   useEffect(() => {
@@ -208,32 +209,54 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
         </div>
       )}
 
-      {/* Add Members Button */}
-      {addableCount > 0 && (
+      {/* Participants List */}
+      <div className="participants-section">
         <button
-          className="add-members-btn"
+          className="section-toggle-btn"
+          onClick={() => setShowParticipants(!showParticipants)}
+        >
+          {showParticipants ? '▼' : '▶'} {t('collaboration.chat.participants')} ({participants.length})
+        </button>
+        {showParticipants && (
+          <div className="participants-list">
+            {participants.map((uid, idx) => (
+              <div key={uid} className="participant-item">
+                <span className="participant-name">
+                  {participantNames[idx] || t('collaboration.chat.userFallback')}
+                  {uid === currentUid && (
+                    <span className="participant-you"> ({t('collaboration.chat.you')})</span>
+                  )}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Add Members Section */}
+      <div className="add-members-section">
+        <button
+          className="section-toggle-btn add-btn"
           onClick={() => setShowAddMembers(!showAddMembers)}
-          disabled={isLoading}
+          disabled={isLoading || addableCount === 0}
           title={t('collaboration.group.addMembersTitle')}
         >
-          {showAddMembers
-            ? t('collaboration.group.hideAddMembers')
-            : t('collaboration.group.addMembersCount', { count: addableCount })}
+          {showAddMembers ? '▼' : '▶'} {t('collaboration.group.addMembers') || 'Add Members'}
+          {addableCount > 0 && ` (${addableCount})`}
         </button>
-      )}
 
-      {/* Add Members List */}
-      {showAddMembers && (
-        <div className="add-members-panel">
-          <div className="add-members-header">
-            <h4>{t('collaboration.group.addFriendsHeader')}</h4>
-            <span className="selected-count">
-              {selectedFriends.size > 0 &&
-                t('collaboration.group.selectedCount', {
-                  count: selectedFriends.size,
-                })}
-            </span>
-          </div>
+        {/* Add Members List */}
+        {showAddMembers && (
+          <div className="add-members-panel">
+            <div className="add-members-header">
+              <span className="selected-count">
+                {selectedFriends.size > 0
+                  ? t('collaboration.group.selectedCount', {
+                      count: selectedFriends.size,
+                    })
+                  : t('collaboration.group.selectFriends') || 'Select friends to add'}
+              </span>
+            </div>
 
           <div className="add-members-list">
             {addableFriends.length === 0 ? (
@@ -278,8 +301,9 @@ const GroupChatSettings: React.FC<GroupChatSettingsProps> = ({
                   })}
             </button>
           )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
 
       {/* Leave Group Button */}
       <div className="leave-group-section">

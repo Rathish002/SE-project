@@ -29,6 +29,10 @@ interface ChatUIProps {
   onBack: () => void;
 }
 
+interface LocalMessageState {
+  [messageId: string]: 'sending' | 'sent' | 'failed';
+}
+
 const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) => {
   const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -46,11 +50,9 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'reconnecting'>('connected');
   const [participants, setParticipants] = useState<Array<{ uid: string; name: string; online: boolean; lastActive?: any }>>([]);
-<<<<<<< HEAD
   const [isBlocked, setIsBlocked] = useState(false);
-=======
+  const [messageStates, setMessageStates] = useState<LocalMessageState>({});
   const [translatedMessages, setTranslatedMessages] = useState<{ [messageId: string]: string }>({});
->>>>>>> collaboration-groupchat-message-translation
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const unsubscribeMessagesRef = useRef<(() => void) | null>(null);
@@ -63,7 +65,9 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
 
   // Subscribe to messages
   useEffect(() => {
-    unsubscribeMessagesRef.current = subscribeToMessages(conversationId, (newMessages) => {
+    if (!currentUser?.uid) return;
+    
+    unsubscribeMessagesRef.current = subscribeToMessages(conversationId, currentUser.uid, (newMessages: Message[]) => {
       setMessages(newMessages);
       setConnectionStatus('connected');
     });
@@ -242,12 +246,29 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const handleSendMessage = async () => {
     if (!messageText.trim() || sending) return;
 
+    const tempId = `temp_${Date.now()}`;
+    const textToSend = messageText;
+    setMessageText('');
     setSending(true);
+
+    // Add temporary message with 'sending' state
+    setMessageStates(prev => ({ ...prev, [tempId]: 'sending' }));
+
     try {
       if (!currentUser?.uid) return;
       const currentLang = i18n.language || 'en';
-      await sendMessage(conversationId, currentUser!.uid, messageText, currentLang);
-      setMessageText('');
+      await sendMessage(conversationId, currentUser!.uid, textToSend, currentLang);
+      
+      // Mark as sent
+      setMessageStates(prev => ({ ...prev, [tempId]: 'sent' }));
+      setTimeout(() => {
+        setMessageStates(prev => {
+          const newState = { ...prev };
+          delete newState[tempId];
+          return newState;
+        });
+      }, 2000);
+
       // update lastActive on user action
       try {
         const { updateLastActive } = await import('../services/presenceService');
@@ -257,13 +278,13 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     } catch (error: any) {
       console.error('Error sending message:', error);
-      alert(t('collaboration.chat.sendError'));
+      setMessageStates(prev => ({ ...prev, [tempId]: 'failed' }));
+      setMessageText(textToSend); // Restore message for retry
     } finally {
       setSending(false);
     }
   };
 
-<<<<<<< HEAD
   const handleBlockToggle = async () => {
     if (!currentUser?.uid || !conversation || conversation.type !== 'direct') return;
 
@@ -272,11 +293,28 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
 
     const action = isBlocked ? 'unblock' : 'block';
     if (!window.confirm(`Are you sure you want to ${action} this user?`)) {
-=======
+      return;
+    }
+
+    try {
+      if (isBlocked) {
+        await unblockUser(currentUser.uid, otherUid);
+        setIsBlocked(false);
+      } else {
+        await blockUser(currentUser.uid, otherUid);
+        setIsBlocked(true);
+      }
+    } catch (error: any) {
+      console.error(`Error ${action}ing user:`, error);
+      alert(`Failed to ${action} user: ` + error.message);
+    }
+  };
+
   // Mock translation function (in production, use Google Translate API or similar)
   const mockTranslate = async (text: string, fromLang: string, toLang: string): Promise<string> => {
-    // Simple mock: just add a prefix to show translation happened
-    return `[Translated from ${fromLang} to ${toLang}] ${text}`;
+    if (!text) return text;
+    if (fromLang === toLang) return text;
+    return `[${toLang}] ${text}`;
   };
 
   const handleTranslateMessage = async (messageId: string, text: string, originalLang: string) => {
@@ -296,29 +334,15 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         delete newState[messageId];
         return newState;
       });
->>>>>>> collaboration-groupchat-message-translation
       return;
     }
 
     try {
-<<<<<<< HEAD
-      if (isBlocked) {
-        await unblockUser(currentUser.uid, otherUid);
-        setIsBlocked(false);
-      } else {
-        await blockUser(currentUser.uid, otherUid);
-        setIsBlocked(true);
-      }
-    } catch (error: any) {
-      console.error(`Error ${action}ing user:`, error);
-      alert(`Failed to ${action} user: ` + error.message);
-=======
       const translated = await mockTranslate(text, originalLang, targetLang);
       setTranslatedMessages(prev => ({ ...prev, [messageId]: translated }));
     } catch (error) {
       console.error('Translation error:', error);
       alert('Failed to translate message');
->>>>>>> collaboration-groupchat-message-translation
     }
   };
 
@@ -449,6 +473,16 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                       )}
                     </>
                   )}
+                  {/* Show message state for own messages */}
+                  {message.senderUid === currentUser!.uid && messageStates[message.id] && (
+                    <div className={`message-state ${messageStates[message.id]}`}>
+                      {messageStates[message.id] === 'sending' && '⏳'}
+                      {messageStates[message.id] === 'sent' && '✓'}
+                      {messageStates[message.id] === 'failed' && (
+                        <span className="retry-message" title="Click to retry">❌</span>
+                      )}
+                    </div>
+                  )}
                 </div>
               );
             })
@@ -508,9 +542,6 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       </div>
 
       <div className="chat-input-container">
-        <div className="keyboard-hint" role="note" aria-label="Keyboard shortcuts">
-          Press Enter to send, Shift+Enter for new line
-        </div>
         <input
           type="file"
           ref={imageInputRef}
@@ -567,28 +598,33 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         >
           📎
         </button>
-        <textarea
-          className="chat-input"
-          placeholder={t('collaboration.chat.inputPlaceholder')}
-          value={messageText}
-          onChange={(e) => setMessageText(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault();
-              handleSendMessage();
-            }
-          }}
-          disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || isRecording}
-          rows={1}
-          aria-label="Type a message"
-        />
+        <div className="input-wrapper">
+          <textarea
+            className="chat-input"
+            placeholder={t('collaboration.chat.inputPlaceholder')}
+            value={messageText}
+            onChange={(e) => setMessageText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSendMessage();
+              }
+            }}
+            disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || isRecording}
+            rows={1}
+            aria-label="Type a message"
+          />
+          <div className="keyboard-hint" role="note" aria-label="Keyboard shortcuts">
+            Enter to send • Shift+Enter for new line
+          </div>
+        </div>
         <button
           className="chat-send-button"
           onClick={handleSendMessage}
           disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || isRecording || !messageText.trim()}
           aria-label="Send message"
         >
-          {uploadingImage || uploadingVideo || uploadingVoice || uploadingFile ? 'Uploading...' : isRecording ? 'Recording...' : sending ? t('collaboration.chat.sending') : t('collaboration.chat.send')}
+          {uploadingImage || uploadingVideo || uploadingVoice || uploadingFile ? '⏳' : isRecording ? '🔴' : sending ? '⏳' : '📤'}
         </button>
       </div>
     </div>
