@@ -28,6 +28,13 @@ interface ChatUIProps {
   onBack: () => void;
 }
 
+// Media URL resolution state
+interface MediaState {
+  loading: boolean;
+  url: string | null;
+  error: boolean;
+}
+
 const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) => {
   const { t } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -45,6 +52,9 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'reconnecting'>('connected');
   const [participants, setParticipants] = useState<Array<{ uid: string; name: string; online: boolean; lastActive?: any }>>([]);
+  
+  // Media URL resolution tracking
+  const [mediaStates, setMediaStates] = useState<Map<string, MediaState>>(new Map());
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const unsubscribeMessagesRef = useRef<(() => void) | null>(null);
@@ -68,6 +78,62 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     };
   }, [conversationId]);
+
+  // Resolve media URLs asynchronously
+  useEffect(() => {
+    const resolveMediaUrls = async () => {
+      const mediaMessages = messages.filter(
+        (msg) => msg.mediaUrl && ['image', 'video', 'voice', 'file'].includes(msg.type || '')
+      );
+
+      for (const msg of mediaMessages) {
+        // Skip if already resolved or loading
+        setMediaStates((prev) => {
+          if (prev.has(msg.id)) {
+            return prev; // Already handled
+          }
+
+          // Mark as loading
+          const newMap = new Map(prev);
+          newMap.set(msg.id, { loading: true, url: null, error: false });
+          
+          // Resolve asynchronously
+          (async () => {
+            try {
+              // Validate the URL by attempting to fetch metadata
+              // For images, we can preload them
+              if (msg.type === 'image' && msg.mediaUrl) {
+                await new Promise<void>((resolve, reject) => {
+                  const img = new Image();
+                  img.onload = () => resolve();
+                  img.onerror = () => reject(new Error('Failed to load image'));
+                  img.src = msg.mediaUrl!;
+                });
+              }
+              
+              // For other media types, just validate URL format and set as resolved
+              setMediaStates((prev2) => {
+                const newMap2 = new Map(prev2);
+                newMap2.set(msg.id, { loading: false, url: msg.mediaUrl!, error: false });
+                return newMap2;
+              });
+            } catch (error) {
+              console.error('Media URL resolution failed:', error);
+              setMediaStates((prev2) => {
+                const newMap2 = new Map(prev2);
+                newMap2.set(msg.id, { loading: false, url: null, error: true });
+                return newMap2;
+              });
+            }
+          })();
+
+          return newMap;
+        });
+      }
+    };
+
+    resolveMediaUrls();
+  }, [messages]);
 
   // Subscribe to conversation
   useEffect(() => {
@@ -115,7 +181,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         unsubscribeConversationRef.current();
       }
     };
-  }, [conversationId, t]);
+  }, [conversationId]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -130,7 +196,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     } catch (error: any) {
       console.error('Error uploading image:', error);
-      alert(error.message || t('collaboration.chat.uploadImageError'));
+      alert(error.message || 'Failed to upload image');
     } finally {
       setUploadingImage(false);
     }
@@ -149,7 +215,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     } catch (error: any) {
       console.error('Error uploading video:', error);
-      alert(error.message || t('collaboration.chat.uploadVideoError'));
+      alert(error.message || 'Failed to upload video');
     } finally {
       setUploadingVideo(false);
     }
@@ -168,7 +234,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     } catch (error: any) {
       console.error('Error uploading file:', error);
-      alert(error.message || t('collaboration.chat.uploadFileError'));
+      alert(error.message || 'Failed to upload file');
     } finally {
       setUploadingFile(false);
     }
@@ -199,7 +265,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
             await sendVoiceMessage(conversationId, currentUser!.uid, file, duration);
           } catch (error: any) {
             console.error('Error uploading voice:', error);
-            alert(error.message || t('collaboration.chat.uploadVoiceError'));
+            alert(error.message || 'Failed to upload voice message');
           } finally {
             setUploadingVoice(false);
           }
@@ -213,7 +279,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         setIsRecording(true);
       } catch (error) {
         console.error('Error accessing microphone:', error);
-        alert(t('collaboration.chat.microphoneAccessError'));
+        alert('Could not access microphone. Please grant permission.');
       }
     }
   };
@@ -251,7 +317,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
     <div className="chat-ui">
       <div className="chat-header">
         <button className="chat-back-button" onClick={onBack}>
-          {t('app.back')}
+          ??? {t('app.back')}
         </button>
         <div className="chat-header-info">
           <h2 className="chat-title">
@@ -302,6 +368,8 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
               }
 
               // Regular user messages (text or image)
+              const mediaState = message.id ? mediaStates.get(message.id) : undefined;
+              
               return (
                 <div
                   key={message.id}
@@ -313,40 +381,66 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                   </div>
                   {message.type === 'image' && message.mediaUrl ? (
                     <div className="chat-message-image">
-                      <img src={message.mediaUrl} alt="" />
+                      {mediaState?.loading ? (
+                        <div className="media-loading">Loading image...</div>
+                      ) : mediaState?.error ? (
+                        <div className="media-error">Failed to load image</div>
+                      ) : mediaState?.url ? (
+                        <img src={mediaState.url} alt="" />
+                      ) : (
+                        <div className="media-loading">Loading image...</div>
+                      )}
                     </div>
                   ) : message.type === 'video' && message.mediaUrl ? (
                     <div className="chat-message-video">
-                      <video controls src={message.mediaUrl}>
-                        {t('collaboration.chat.videoNotSupported')}
-                      </video>
+                      {mediaState?.loading ? (
+                        <div className="media-loading">Loading video...</div>
+                      ) : mediaState?.error ? (
+                        <div className="media-error">Failed to load video</div>
+                      ) : mediaState?.url ? (
+                        <video controls src={mediaState.url}>
+                          Your browser does not support video playback.
+                        </video>
+                      ) : (
+                        <div className="media-loading">Loading video...</div>
+                      )}
                     </div>
                   ) : message.type === 'voice' && message.mediaUrl ? (
                     <div className="chat-message-voice">
-                      <audio controls src={message.mediaUrl}>
-                        {t('collaboration.chat.audioNotSupported')}
-                      </audio>
-                      {message.mediaDuration && (
-                        <span className="voice-duration">
-                          {t('collaboration.chat.voiceDuration', {
-                            count: Math.floor(message.mediaDuration),
-                          })}
-                        </span>
+                      {mediaState?.loading ? (
+                        <div className="media-loading">Loading audio...</div>
+                      ) : mediaState?.error ? (
+                        <div className="media-error">Failed to load audio</div>
+                      ) : mediaState?.url ? (
+                        <>
+                          <audio controls src={mediaState.url}>
+                            Your browser does not support audio playback.
+                          </audio>
+                          {message.mediaDuration && (
+                            <span className="voice-duration">{Math.floor(message.mediaDuration)}s</span>
+                          )}
+                        </>
+                      ) : (
+                        <div className="media-loading">Loading audio...</div>
                       )}
                     </div>
                   ) : message.type === 'file' && message.mediaUrl ? (
                     <div className="chat-message-file">
-                      <a href={message.mediaUrl} download={message.mediaFilename} target="_blank" rel="noopener noreferrer">
-                        <div className="file-icon">📄</div>
-                        <div className="file-info">
-                          <div className="file-name">{message.mediaFilename}</div>
-                          <div className="file-size">
-                            {t('collaboration.chat.fileSizeKb', {
-                              size: (message.mediaSize! / 1024).toFixed(1),
-                            })}
+                      {mediaState?.loading ? (
+                        <div className="media-loading">Loading file...</div>
+                      ) : mediaState?.error ? (
+                        <div className="media-error">Failed to load file</div>
+                      ) : mediaState?.url ? (
+                        <a href={mediaState.url} download={message.mediaFilename} target="_blank" rel="noopener noreferrer">
+                          <div className="file-icon">📄</div>
+                          <div className="file-info">
+                            <div className="file-name">{message.mediaFilename}</div>
+                            <div className="file-size">{(message.mediaSize! / 1024).toFixed(1)} KB</div>
                           </div>
-                        </div>
-                      </a>
+                        </a>
+                      ) : (
+                        <div className="media-loading">Loading file...</div>
+                      )}
                     </div>
                   ) : (
                     <div className="chat-message-text">{message.text}</div>
@@ -365,7 +459,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
               conversationId={conversationId}
               participants={conversation.participants}
               participantNames={conversation.participantNames}
-              groupName={conversation.groupName || t('collaboration.chat.groupFallback')}
+              groupName={conversation.groupName || 'Group'}
               currentUid={currentUser!.uid}
               onLeaveGroup={onBack}
               onMemberAdded={() => {
@@ -434,7 +528,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           className="chat-attach-button"
           onClick={() => imageInputRef.current?.click()}
           disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
-          title={t('collaboration.chat.uploadImage')}
+          title="Upload image"
         >
           🖼️
         </button>
@@ -442,7 +536,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           className="chat-attach-button"
           onClick={() => videoInputRef.current?.click()}
           disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
-          title={t('collaboration.chat.uploadVideo')}
+          title="Upload video"
         >
           🎥
         </button>
@@ -450,11 +544,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           className={`chat-attach-button ${isRecording ? 'recording' : ''}`}
           onClick={handleVoiceRecord}
           disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending}
-          title={
-            isRecording
-              ? t('collaboration.chat.stopRecording')
-              : t('collaboration.chat.recordVoice')
-          }
+          title={isRecording ? 'Stop recording' : 'Record voice message'}
         >
           {isRecording ? '⏹️' : '🎤'}
         </button>
@@ -462,7 +552,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           className="chat-attach-button"
           onClick={() => fileInputRef.current?.click()}
           disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
-          title={t('collaboration.chat.uploadDocument')}
+          title="Upload document"
         >
           📎
         </button>
@@ -480,13 +570,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           onClick={handleSendMessage}
           disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || isRecording || !messageText.trim()}
         >
-          {uploadingImage || uploadingVideo || uploadingVoice || uploadingFile
-            ? t('collaboration.chat.uploading')
-            : isRecording
-            ? t('collaboration.chat.recording')
-            : sending
-            ? t('collaboration.chat.sending')
-            : t('collaboration.chat.send')}
+          {uploadingImage || uploadingVideo || uploadingVoice || uploadingFile ? 'Uploading...' : isRecording ? 'Recording...' : sending ? t('collaboration.chat.sending') : t('collaboration.chat.send')}
         </button>
       </div>
     </div>

@@ -395,6 +395,27 @@
   }
 }
 
+/* Media loading and error states */
+.media-loading,
+.media-error {
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.media-loading {
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.media-error {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #ff4444;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+}
+
 @media (max-width: 768px) {
   .chat-sidebar {
     display: none;
