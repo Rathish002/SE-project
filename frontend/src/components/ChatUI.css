@@ -429,3 +429,20 @@
     max-width: 100%;
   }
 }
+
+/* Clear Chat Button */
+.chat-clear-button {
+  padding: 8px 12px;
+  font-size: 18px;
+  background-color: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.chat-clear-button:hover {
+  background-color: var(--bg-primary);
+  border-color: #f44336;
+  color: #f44336;
+}
