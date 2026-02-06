@@ -31,6 +31,7 @@ export interface Message {
   text?: string; // null for media-only or system with placeholder
   timestamp: Timestamp;
   type?: 'user' | 'system' | 'image' | 'video' | 'voice' | 'file';
+  state?: 'sending' | 'sent' | 'failed'; // Message delivery state (client-side only)
   
   // System message fields (when type === 'system')
   actionType?: 'join' | 'leave' | 'add_member';

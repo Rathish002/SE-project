@@ -395,27 +395,6 @@
   }
 }
 
-/* Media loading and error states */
-.media-loading,
-.media-error {
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  text-align: center;
-}
-
-.media-loading {
-  background-color: var(--bg-secondary);
-  color: var(--text-secondary);
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-.media-error {
-  background-color: rgba(255, 0, 0, 0.1);
-  color: #ff4444;
-  border: 1px solid rgba(255, 0, 0, 0.3);
-}
-
 @media (max-width: 768px) {
   .chat-sidebar {
     display: none;
@@ -430,7 +409,35 @@
   }
 }
 
-/* Clear Chat Button */
+/* Message States */
+.message-state {
+  font-size: 12px;
+  margin-top: 4px;
+  text-align: right;
+  opacity: 0.7;
+}
+
+.message-state.sending {
+  color: var(--text-secondary);
+}
+
+.message-state.sent {
+  color: #4caf50;
+}
+
+.message-state.failed {
+  color: #f44336;
+}
+
+.retry-message {
+  cursor: pointer;
+}
+
+.retry-message:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
 .chat-clear-button {
   padding: 8px 12px;
   font-size: 18px;
@@ -442,7 +449,6 @@
 }
 
 .chat-clear-button:hover {
-  background-color: var(--bg-primary);
-  border-color: #f44336;
-  color: #f44336;
+  background-color: var(--bg-hover);
+  border-color: var(--accent);
 }

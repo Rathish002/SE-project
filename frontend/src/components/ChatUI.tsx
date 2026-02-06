@@ -13,7 +13,6 @@ import {
   sendVideoMessage,
   sendVoiceMessage,
   sendFileMessage,
-  clearChatForUser,
   type Message,
   type Conversation,
 } from '../services/chatService';
@@ -29,11 +28,8 @@ interface ChatUIProps {
   onBack: () => void;
 }
 
-// Media URL resolution state
-interface MediaState {
-  loading: boolean;
-  url: string | null;
-  error: boolean;
+interface LocalMessageState {
+  [messageId: string]: 'sending' | 'sent' | 'failed';
 }
 
 const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) => {
@@ -53,9 +49,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'reconnecting'>('connected');
   const [participants, setParticipants] = useState<Array<{ uid: string; name: string; online: boolean; lastActive?: any }>>([]);
-  
-  // Media URL resolution tracking
-  const [mediaStates, setMediaStates] = useState<Map<string, MediaState>>(new Map());
+  const [messageStates, setMessageStates] = useState<LocalMessageState>({});
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const unsubscribeMessagesRef = useRef<(() => void) | null>(null);
@@ -68,9 +62,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
 
   // Subscribe to messages
   useEffect(() => {
-    if (!currentUser?.uid) return;
-    
-    unsubscribeMessagesRef.current = subscribeToMessages(conversationId, currentUser.uid, (newMessages) => {
+    unsubscribeMessagesRef.current = subscribeToMessages(conversationId, (newMessages) => {
       setMessages(newMessages);
       setConnectionStatus('connected');
     });
@@ -80,63 +72,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         unsubscribeMessagesRef.current();
       }
     };
-  }, [conversationId, currentUser?.uid]);
-
-  // Resolve media URLs asynchronously
-  useEffect(() => {
-    const resolveMediaUrls = async () => {
-      const mediaMessages = messages.filter(
-        (msg) => msg.mediaUrl && ['image', 'video', 'voice', 'file'].includes(msg.type || '')
-      );
-
-      for (const msg of mediaMessages) {
-        // Skip if already resolved or loading
-        setMediaStates((prev) => {
-          if (prev.has(msg.id)) {
-            return prev; // Already handled
-          }
-
-          // Mark as loading
-          const newMap = new Map(prev);
-          newMap.set(msg.id, { loading: true, url: null, error: false });
-          
-          // Resolve asynchronously
-          (async () => {
-            try {
-              // Validate the URL by attempting to fetch metadata
-              // For images, we can preload them
-              if (msg.type === 'image' && msg.mediaUrl) {
-                await new Promise<void>((resolve, reject) => {
-                  const img = new Image();
-                  img.onload = () => resolve();
-                  img.onerror = () => reject(new Error('Failed to load image'));
-                  img.src = msg.mediaUrl!;
-                });
-              }
-              
-              // For other media types, just validate URL format and set as resolved
-              setMediaStates((prev2) => {
-                const newMap2 = new Map(prev2);
-                newMap2.set(msg.id, { loading: false, url: msg.mediaUrl!, error: false });
-                return newMap2;
-              });
-            } catch (error) {
-              console.error('Media URL resolution failed:', error);
-              setMediaStates((prev2) => {
-                const newMap2 = new Map(prev2);
-                newMap2.set(msg.id, { loading: false, url: null, error: true });
-                return newMap2;
-              });
-            }
-          })();
-
-          return newMap;
-        });
-      }
-    };
-
-    resolveMediaUrls();
-  }, [messages]);
+  }, [conversationId]);
 
   // Subscribe to conversation
   useEffect(() => {
@@ -290,11 +226,28 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const handleSendMessage = async () => {
     if (!messageText.trim() || sending) return;
 
+    const tempId = `temp_${Date.now()}`;
+    const textToSend = messageText;
+    setMessageText('');
     setSending(true);
+
+    // Add temporary message with 'sending' state
+    setMessageStates(prev => ({ ...prev, [tempId]: 'sending' }));
+
     try {
       if (!currentUser?.uid) return;
-      await sendMessage(conversationId, currentUser!.uid, messageText);
-      setMessageText('');
+      await sendMessage(conversationId, currentUser!.uid, textToSend);
+      
+      // Mark as sent
+      setMessageStates(prev => ({ ...prev, [tempId]: 'sent' }));
+      setTimeout(() => {
+        setMessageStates(prev => {
+          const newState = { ...prev };
+          delete newState[tempId];
+          return newState;
+        });
+      }, 2000);
+
       // update lastActive on user action
       try {
         const { updateLastActive } = await import('../services/presenceService');
@@ -304,24 +257,10 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     } catch (error: any) {
       console.error('Error sending message:', error);
-      alert(t('collaboration.chat.sendError'));
+      setMessageStates(prev => ({ ...prev, [tempId]: 'failed' }));
+      setMessageText(textToSend); // Restore message for retry
     } finally {
       setSending(false);
-    }
-  };
-
-  const handleClearChat = async () => {
-    if (!currentUser?.uid) return;
-    
-    if (!window.confirm('Are you sure you want to clear this chat? This will only clear it for you, not for others.')) {
-      return;
-    }
-
-    try {
-      await clearChatForUser(conversationId, currentUser.uid);
-    } catch (error: any) {
-      console.error('Error clearing chat:', error);
-      alert('Failed to clear chat: ' + error.message);
     }
   };
 
@@ -354,13 +293,6 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
             }
           </div>
         </div>
-        <button 
-          className="chat-clear-button" 
-          onClick={handleClearChat}
-          title="Clear chat for yourself"
-        >
-          🗑️
-        </button>
       </div>
 
       <div className="chat-content">
@@ -393,8 +325,6 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
               }
 
               // Regular user messages (text or image)
-              const mediaState = message.id ? mediaStates.get(message.id) : undefined;
-              
               return (
                 <div
                   key={message.id}
@@ -406,69 +336,45 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                   </div>
                   {message.type === 'image' && message.mediaUrl ? (
                     <div className="chat-message-image">
-                      {mediaState?.loading ? (
-                        <div className="media-loading">Loading image...</div>
-                      ) : mediaState?.error ? (
-                        <div className="media-error">Failed to load image</div>
-                      ) : mediaState?.url ? (
-                        <img src={mediaState.url} alt="" />
-                      ) : (
-                        <div className="media-loading">Loading image...</div>
-                      )}
+                      <img src={message.mediaUrl} alt="" />
                     </div>
                   ) : message.type === 'video' && message.mediaUrl ? (
                     <div className="chat-message-video">
-                      {mediaState?.loading ? (
-                        <div className="media-loading">Loading video...</div>
-                      ) : mediaState?.error ? (
-                        <div className="media-error">Failed to load video</div>
-                      ) : mediaState?.url ? (
-                        <video controls src={mediaState.url}>
-                          Your browser does not support video playback.
-                        </video>
-                      ) : (
-                        <div className="media-loading">Loading video...</div>
-                      )}
+                      <video controls src={message.mediaUrl}>
+                        Your browser does not support video playback.
+                      </video>
                     </div>
                   ) : message.type === 'voice' && message.mediaUrl ? (
                     <div className="chat-message-voice">
-                      {mediaState?.loading ? (
-                        <div className="media-loading">Loading audio...</div>
-                      ) : mediaState?.error ? (
-                        <div className="media-error">Failed to load audio</div>
-                      ) : mediaState?.url ? (
-                        <>
-                          <audio controls src={mediaState.url}>
-                            Your browser does not support audio playback.
-                          </audio>
-                          {message.mediaDuration && (
-                            <span className="voice-duration">{Math.floor(message.mediaDuration)}s</span>
-                          )}
-                        </>
-                      ) : (
-                        <div className="media-loading">Loading audio...</div>
+                      <audio controls src={message.mediaUrl}>
+                        Your browser does not support audio playback.
+                      </audio>
+                      {message.mediaDuration && (
+                        <span className="voice-duration">{Math.floor(message.mediaDuration)}s</span>
                       )}
                     </div>
                   ) : message.type === 'file' && message.mediaUrl ? (
                     <div className="chat-message-file">
-                      {mediaState?.loading ? (
-                        <div className="media-loading">Loading file...</div>
-                      ) : mediaState?.error ? (
-                        <div className="media-error">Failed to load file</div>
-                      ) : mediaState?.url ? (
-                        <a href={mediaState.url} download={message.mediaFilename} target="_blank" rel="noopener noreferrer">
-                          <div className="file-icon">📄</div>
-                          <div className="file-info">
-                            <div className="file-name">{message.mediaFilename}</div>
-                            <div className="file-size">{(message.mediaSize! / 1024).toFixed(1)} KB</div>
-                          </div>
-                        </a>
-                      ) : (
-                        <div className="media-loading">Loading file...</div>
-                      )}
+                      <a href={message.mediaUrl} download={message.mediaFilename} target="_blank" rel="noopener noreferrer">
+                        <div className="file-icon">📄</div>
+                        <div className="file-info">
+                          <div className="file-name">{message.mediaFilename}</div>
+                          <div className="file-size">{(message.mediaSize! / 1024).toFixed(1)} KB</div>
+                        </div>
+                      </a>
                     </div>
                   ) : (
                     <div className="chat-message-text">{message.text}</div>
+                  )}
+                  {/* Show message state for own messages */}
+                  {message.senderUid === currentUser!.uid && messageStates[message.id] && (
+                    <div className={`message-state ${messageStates[message.id]}`}>
+                      {messageStates[message.id] === 'sending' && '⏳'}
+                      {messageStates[message.id] === 'sent' && '✓'}
+                      {messageStates[message.id] === 'failed' && (
+                        <span className="retry-message" title="Click to retry">❌</span>
+                      )}
+                    </div>
                   )}
                 </div>
               );
