@@ -1,61 +1,9 @@
-/*import { Router, Request, Response } from "express";
-import pool from "../db";
-
-const router = Router();
-
-router.post("/evaluate-text", async (req: Request, res: Response) => {
-  const { lessonId, answer } = req.body;
-
-  if (!lessonId || !answer) {
-    return res.status(400).json({ message: "Invalid input" });
-  }
-
-  try {
-    const keywordsResult = await pool.query(
-      "SELECT keyword FROM lesson_keywords WHERE lesson_id = $1",
-      [lessonId]
-    );
-
-    const keywords: string[] = keywordsResult.rows.map(
-      (r: { keyword: string }) => r.keyword.toLowerCase()
-    );
-
-    const normalized = answer.toLowerCase();
-
-    const matched = keywords.filter(k => normalized.includes(k));
-    const score = keywords.length === 0 ? 0 : matched.length / keywords.length;
-
-    res.json({
-      score,
-      matchedConcepts: matched,
-      missingConcepts: keywords.filter(k => !matched.includes(k)),
-      feedback:
-        score > 0.7
-          ? "Good understanding of key concepts."
-          : "Partial understanding. Review highlighted terms.",
-    });
-  } catch (err) {
-    console.error("Evaluation error:", err);
-    res.status(500).json({ error: "Evaluation failed" });
-  }
-});
-
-export default router;
-*/
-
 import { Router, Request, Response } from "express";
+import axios from "axios";
 import pool from "../db";
-import OpenAI from "openai";
-import { cosineSimilarity } from "../utils/similarity";
-import { splitIntoSentences } from "../utils/text";
 
 const router = Router();
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-const CONCEPT_THRESHOLD = 0.6;
+const NLP_SERVICE_URL = "http://localhost:8000/semantic-similarity";
 
 router.post("/evaluate-hybrid", async (req: Request, res: Response) => {
   const { lessonId, answer } = req.body;
@@ -65,131 +13,70 @@ router.post("/evaluate-hybrid", async (req: Request, res: Response) => {
   }
 
   try {
-    /* -----------------------------
-       1️⃣ Fetch reference answers
-    ------------------------------ */
+    // 1️⃣ Fetch ALL reference answers (paraphrase set)
     const intentResult = await pool.query(
       "SELECT reference_answer FROM evaluation_intents WHERE lesson_id = $1",
       [lessonId]
     );
 
     if (intentResult.rows.length === 0) {
-      return res.status(404).json({ message: "No reference answers found" });
+      return res.status(404).json({ message: "No evaluation intents found" });
     }
 
-    const referenceAnswers = intentResult.rows.map(r => r.reference_answer);
+    const referenceAnswers: string[] = intentResult.rows.map(
+      (r: { reference_answer: string }) => r.reference_answer
+    );
 
-    /* -----------------------------
-       2️⃣ Fetch evaluation rules
-    ------------------------------ */
-    const rulesResult = await pool.query(
+    // 2️⃣ Call NLP service ONCE with correct structure
+    const nlpResponse = await axios.post(NLP_SERVICE_URL, {
+      reference_answers: referenceAnswers,
+      user_answer: answer
+    });
+
+    // 🔍 DEBUG: see exactly what NLP service returns
+    console.log("NLP SERVICE RESPONSE:", nlpResponse.data);
+
+    const semanticScore: number = nlpResponse.data.similarity;
+
+    // 3️⃣ Keyword-based scoring (concept coverage)
+    const keywordsResult = await pool.query(
       "SELECT keyword, weight FROM evaluation_rules WHERE lesson_id = $1",
       [lessonId]
     );
 
-    /* -----------------------------
-       3️⃣ Sentence chunking
-    ------------------------------ */
-    const sentences = splitIntoSentences(answer);
-
-    /* -----------------------------
-       4️⃣ Embed full answer (semantic score)
-    ------------------------------ */
-    const userEmbeddingResult = await openai.embeddings.create({
-      model: "text-embedding-3-small",
-      input: answer,
-    });
-
-    const userVector = userEmbeddingResult.data[0].embedding;
-
-    let bestSemanticScore = 0;
-
-    for (const ref of referenceAnswers) {
-      const refEmbedding = await openai.embeddings.create({
-        model: "text-embedding-3-small",
-        input: ref,
-      });
-      
-      const similarity = cosineSimilarity(
-        userVector,
-        refEmbedding.data[0].embedding
-      );
-
-      if (similarity > bestSemanticScore) {
-        bestSemanticScore = similarity;
-      }
-    }
-
-    /* -----------------------------
-       5️⃣ Concept coverage (sentence-level)
-    ------------------------------ */
-    let matchedWeight = 0;
+    let keywordScore = 0;
     let totalWeight = 0;
-    const matchedConcepts: string[] = [];
-    const missingConcepts: string[] = [];
+    const matchedKeywords: string[] = [];
 
-    for (const rule of rulesResult.rows) {
-      totalWeight += rule.weight;
+    for (const row of keywordsResult.rows) {
+      totalWeight += row.weight;
 
-      const keywordEmbedding = await openai.embeddings.create({
-        model: "text-embedding-3-small",
-        input: rule.keyword,
-      });
-
-      let bestConceptSimilarity = 0;
-
-      for (const sentence of sentences) {
-        const sentenceEmbedding = await openai.embeddings.create({
-          model: "text-embedding-3-small",
-          input: sentence,
-        });
-
-        const similarity = cosineSimilarity(
-          keywordEmbedding.data[0].embedding,
-          sentenceEmbedding.data[0].embedding
-        );
-
-        if (similarity > bestConceptSimilarity) {
-          bestConceptSimilarity = similarity;
-        }
-      }
-
-      if (bestConceptSimilarity >= CONCEPT_THRESHOLD) {
-        matchedWeight += rule.weight;
-        matchedConcepts.push(rule.keyword);
-      } else {
-        missingConcepts.push(rule.keyword);
+      if (answer.toLowerCase().includes(row.keyword.toLowerCase())) {
+        keywordScore += row.weight;
+        matchedKeywords.push(row.keyword);
       }
     }
 
-    const coverageScore =
-      totalWeight === 0 ? 0 : matchedWeight / totalWeight;
+    const normalizedKeywordScore =
+      totalWeight === 0 ? 0 : keywordScore / totalWeight;
 
-    /* -----------------------------
-       6️⃣ Final hybrid score
-    ------------------------------ */
-    const finalScore =
-      0.7 * bestSemanticScore + 0.3 * coverageScore;
+    // 4️⃣ Hybrid scoring formula
+    const finalScore = semanticScore
+    //0.7 * semanticScore + 0.3 * normalizedKeywordScore;
 
-    /* -----------------------------
-       7️⃣ Feedback
-    ------------------------------ */
-    let feedback = "Partial understanding. Try again.";
-
-    if (finalScore >= 0.8) {
-      feedback = "Excellent! You understood the meaning and key concepts.";
-    } else if (finalScore >= 0.65) {
-      feedback = "Good understanding, but some important ideas are missing.";
-    }
+    // 5️⃣ Feedback
+    let feedback = "Needs improvement.";
+    if (finalScore >= 0.8) feedback = "Excellent understanding!";
+    else if (finalScore >= 0.6) feedback = "Good understanding.";
 
     res.json({
-      semanticScore: bestSemanticScore,
-      conceptCoverageScore: coverageScore,
+      semanticScore,
+      keywordScore: normalizedKeywordScore,
       finalScore,
-      matchedConcepts,
-      missingConcepts,
-      feedback,
+      matchedKeywords,
+      feedback
     });
+
   } catch (err) {
     console.error("Hybrid evaluation error:", err);
     res.status(500).json({ error: "Hybrid evaluation failed" });
