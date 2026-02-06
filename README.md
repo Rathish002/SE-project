@@ -4,12 +4,7 @@ A full-stack learning platform for specially-abled learners with Firebase Authen
 
 ## 🚀 Quick Start
 
-### Prerequisites
-
-- **Node.js** (v14 or higher) - [Download](https://nodejs.org/)
-- **Your Firebase API Key** (ask your team lead via secure message)
-
-### Setup (2 Minutes)
+### New Team Members (First Time)
 
 ```powershell
 # 1. Clone the repository
@@ -22,6 +17,20 @@ cd SE-project
 # 3. When prompted, paste your API Key and press Enter
 # That's it! Dependencies install automatically
 ```
+
+### Existing Team Members (Already Cloned Repo)
+
+If you cloned the repo before and it's still set up, just run:
+
+```powershell
+cd SE-project
+git pull origin main
+
+# If you get a message about old firebase.ts code, run:
+.\setup-team-member.ps1
+```
+
+---
 
 ### Run the App
 
@@ -107,11 +116,60 @@ This project uses **Firebase** for backend services. Credentials are managed sec
 
 See [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md) and `frontend/SECURITY.md` for more information.
 
+## ⚠️ Troubleshooting
+
+### I cloned the repo before these changes. What do I do?
+
+```powershell
+# 1. Pull the latest changes
+git pull origin main
+
+# 2. Run setup to get the new .env.local
+.\setup-team-member.ps1
+
+# 3. Start developing
+.\start-dev.ps1
+```
+
+### I'm getting "Firebase error" or "invalid-api-key"
+
+Your `.env.local` is missing or has incorrect values:
+
+```powershell
+# Recreate it
+.\setup-team-member.ps1
+```
+
+### Old code still running?
+
+The old hardcoded Firebase config has been removed. You must now:
+
+1. Have `.env.local` in the `frontend` directory
+2. It must contain a valid `REACT_APP_FIREBASE_API_KEY`
+3. Run `.\setup-team-member.ps1` if you don't have it
+
+### Need a fresh start?
+
+```powershell
+# Delete node_modules and cache
+cd frontend
+Remove-Item -Recurse -Force node_modules, .cache, build
+cd ..
+
+# Run setup again
+.\setup-team-member.ps1
+.\start-dev.ps1
+```
+
+### Still having issues?
+
+Check [QUICK_START.md](./QUICK_START.md) or [TEAM_SETUP_GUIDE.md](./TEAM_SETUP_GUIDE.md) for detailed help.
+
 ## 📝 Notes
 
-- The app works out-of-the-box with the default Firebase configuration
-- No backend setup required for authentication
-- All sensitive files (`.env.local`) are already in `.gitignore`
+- The app requires proper Firebase credentials to run
+- All sensitive data (`.env.local`) is automatically in `.gitignore`
+- Never commit `.env.local` or API keys to Git
 
 ## 🤝 Contributing
 
