@@ -39,6 +39,23 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showGroupCreate, setShowGroupCreate] = useState(false);
+  const [hiddenConversations, setHiddenConversations] = useState<Set<string>>(new Set());
+  const [showHidden, setShowHidden] = useState(false);
+
+  // Load hidden conversations from localStorage
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+    const storageKey = `hiddenConversations_${currentUser.uid}`;
+    const stored = localStorage.getItem(storageKey);
+    if (stored) {
+      try {
+        const hiddenIds = JSON.parse(stored);
+        setHiddenConversations(new Set(hiddenIds));
+      } catch (e) {
+        console.error('Failed to parse hidden conversations:', e);
+      }
+    }
+  }, [currentUser?.uid]);
 
   // Subscribe to friends
   useEffect(() => {
@@ -108,6 +125,32 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
 
   const handleBackToLanding = () => {
     setActiveConversationId(null);
+  };
+
+  const handleHideConversation = (conversationId: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (!currentUser?.uid) return;
+    
+    const newHidden = new Set(hiddenConversations);
+    newHidden.add(conversationId);
+    setHiddenConversations(newHidden);
+    
+    // Save to localStorage
+    const storageKey = `hiddenConversations_${currentUser.uid}`;
+    localStorage.setItem(storageKey, JSON.stringify(Array.from(newHidden)));
+  };
+
+  const handleUnhideConversation = (conversationId: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (!currentUser?.uid) return;
+    
+    const newHidden = new Set(hiddenConversations);
+    newHidden.delete(conversationId);
+    setHiddenConversations(newHidden);
+    
+    // Save to localStorage
+    const storageKey = `hiddenConversations_${currentUser.uid}`;
+    localStorage.setItem(storageKey, JSON.stringify(Array.from(newHidden)));
   };
 
   // If auth not ready or no user, show loading
@@ -200,14 +243,27 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
           </div>
 
           <div className="collaboration-sidebar">
-            <h3 className="collaboration-sidebar-title">{t('collaboration.conversations.title')}</h3>
+            <div className="collaboration-sidebar-header">
+              <h3 className="collaboration-sidebar-title">{t('collaboration.conversations.title')}</h3>
+              {hiddenConversations.size > 0 && (
+                <button
+                  className="toggle-hidden-btn"
+                  onClick={() => setShowHidden(!showHidden)}
+                  title={showHidden ? 'Hide archived chats' : 'Show archived chats'}
+                >
+                  {showHidden ? '📂 Hide Archived' : `📁 Show Archived (${hiddenConversations.size})`}
+                </button>
+              )}
+            </div>
             {conversations.length === 0 ? (
               <div className="collaboration-empty">
                 <p>{t('collaboration.conversations.empty')}</p>
               </div>
             ) : (
               <div className="collaboration-conversations">
-                {conversations.map((conversation) => (
+                {conversations
+                  .filter(conv => showHidden ? hiddenConversations.has(conv.id) : !hiddenConversations.has(conv.id))
+                  .map((conversation) => (
                   <div
                     key={conversation.id}
                     className="collaboration-conversation-item"
@@ -220,6 +276,23 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
                           : conversation.participantNames.find(name => name !== currentUser.displayName) || 'User'
                         }
                       </span>
+                      {showHidden ? (
+                        <button
+                          className="unhide-conversation-btn"
+                          onClick={(e) => handleUnhideConversation(conversation.id, e)}
+                          title="Unarchive chat"
+                        >
+                          ↩️
+                        </button>
+                      ) : (
+                        <button
+                          className="hide-conversation-btn"
+                          onClick={(e) => handleHideConversation(conversation.id, e)}
+                          title="Archive chat"
+                        >
+                          🗂️
+                        </button>
+                      )}
                     </div>
                     {conversation.lastMessage && (
                       <div className="conversation-item-preview">
