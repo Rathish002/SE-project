@@ -20,16 +20,13 @@ import GroupChatSettings from './GroupChatSettings';
 import { doc, onSnapshot, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { formatLastActive } from '../utils/timeUtils';
+import { blockUser, unblockUser, isUserBlocked } from '../services/blockService';
 import './ChatUI.css';
 
 interface ChatUIProps {
   conversationId: string;
   currentUser: User | null;
   onBack: () => void;
-}
-
-interface LocalMessageState {
-  [messageId: string]: 'sending' | 'sent' | 'failed';
 }
 
 const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) => {
@@ -49,7 +46,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'reconnecting'>('connected');
   const [participants, setParticipants] = useState<Array<{ uid: string; name: string; online: boolean; lastActive?: any }>>([]);
-  const [messageStates, setMessageStates] = useState<LocalMessageState>({});
+  const [isBlocked, setIsBlocked] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const unsubscribeMessagesRef = useRef<(() => void) | null>(null);
@@ -121,6 +118,21 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     };
   }, [conversationId]);
+
+  // Check if other user is blocked (for direct chats only)
+  useEffect(() => {
+    if (!currentUser?.uid || !conversation || conversation.type !== 'direct') {
+      setIsBlocked(false);
+      return;
+    }
+
+    const otherUid = conversation.participants.find(uid => uid !== currentUser.uid);
+    if (!otherUid) return;
+
+    isUserBlocked(currentUser.uid, otherUid).then(blocked => {
+      setIsBlocked(blocked);
+    });
+  }, [currentUser?.uid, conversation]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -226,28 +238,11 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const handleSendMessage = async () => {
     if (!messageText.trim() || sending) return;
 
-    const tempId = `temp_${Date.now()}`;
-    const textToSend = messageText;
-    setMessageText('');
     setSending(true);
-
-    // Add temporary message with 'sending' state
-    setMessageStates(prev => ({ ...prev, [tempId]: 'sending' }));
-
     try {
       if (!currentUser?.uid) return;
-      await sendMessage(conversationId, currentUser!.uid, textToSend);
-      
-      // Mark as sent
-      setMessageStates(prev => ({ ...prev, [tempId]: 'sent' }));
-      setTimeout(() => {
-        setMessageStates(prev => {
-          const newState = { ...prev };
-          delete newState[tempId];
-          return newState;
-        });
-      }, 2000);
-
+      await sendMessage(conversationId, currentUser!.uid, messageText);
+      setMessageText('');
       // update lastActive on user action
       try {
         const { updateLastActive } = await import('../services/presenceService');
@@ -257,10 +252,34 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     } catch (error: any) {
       console.error('Error sending message:', error);
-      setMessageStates(prev => ({ ...prev, [tempId]: 'failed' }));
-      setMessageText(textToSend); // Restore message for retry
+      alert(t('collaboration.chat.sendError'));
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleBlockToggle = async () => {
+    if (!currentUser?.uid || !conversation || conversation.type !== 'direct') return;
+
+    const otherUid = conversation.participants.find(uid => uid !== currentUser.uid);
+    if (!otherUid) return;
+
+    const action = isBlocked ? 'unblock' : 'block';
+    if (!window.confirm(`Are you sure you want to ${action} this user?`)) {
+      return;
+    }
+
+    try {
+      if (isBlocked) {
+        await unblockUser(currentUser.uid, otherUid);
+        setIsBlocked(false);
+      } else {
+        await blockUser(currentUser.uid, otherUid);
+        setIsBlocked(true);
+      }
+    } catch (error: any) {
+      console.error(`Error ${action}ing user:`, error);
+      alert(`Failed to ${action} user: ` + error.message);
     }
   };
 
@@ -293,6 +312,16 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
             }
           </div>
         </div>
+        {/* Show block/unblock button for direct chats only */}
+        {conversation?.type === 'direct' && (
+          <button 
+            className="chat-block-button" 
+            onClick={handleBlockToggle}
+            title={isBlocked ? 'Unblock user' : 'Block user'}
+          >
+            {isBlocked ? '🔓' : '🚫'}
+          </button>
+        )}
       </div>
 
       <div className="chat-content">
@@ -365,16 +394,6 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                     </div>
                   ) : (
                     <div className="chat-message-text">{message.text}</div>
-                  )}
-                  {/* Show message state for own messages */}
-                  {message.senderUid === currentUser!.uid && messageStates[message.id] && (
-                    <div className={`message-state ${messageStates[message.id]}`}>
-                      {messageStates[message.id] === 'sending' && '⏳'}
-                      {messageStates[message.id] === 'sent' && '✓'}
-                      {messageStates[message.id] === 'failed' && (
-                        <span className="retry-message" title="Click to retry">❌</span>
-                      )}
-                    </div>
                   )}
                 </div>
               );
