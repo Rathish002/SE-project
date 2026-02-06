@@ -62,7 +62,12 @@ const Home: React.FC<HomeProps> = ({ currentUser }) => {
   return (
     <div className="home-container">
       <div className="home-content">
-        <h1>{t('home.welcome')}</h1>
+        <h1>
+          {t('home.welcome')}
+          {currentUser && (
+            <span className="home-username"> {' '}{currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : '')}</span>
+          )}
+        </h1>
         
         {/* Current Settings */}
         <div className="home-section">

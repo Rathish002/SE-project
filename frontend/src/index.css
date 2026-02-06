@@ -52,6 +52,64 @@
   --border: #ffffff !important;
 }
 
+/* Targeted overrides for components that used hardcoded colors */
+.high-contrast .navigation,
+.high-contrast header#topbar {
+  background-color: var(--bg-primary) !important;
+  border-bottom-color: var(--border) !important;
+  box-shadow: none !important;
+}
+
+.high-contrast .nav-button,
+.high-contrast .nav-button-logout {
+  color: var(--text-primary) !important;
+  background-color: transparent !important;
+  border-bottom-color: transparent !important;
+}
+
+.high-contrast .nav-button:hover {
+  background-color: var(--bg-secondary) !important;
+}
+
+.high-contrast .nav-button.active {
+  color: var(--accent) !important;
+  border-bottom-color: var(--accent) !important;
+  background-color: var(--bg-secondary) !important;
+}
+
+.high-contrast .welcome-box h1,
+.high-contrast .welcome-box p,
+.high-contrast .user-email {
+  color: var(--text-primary) !important;
+}
+
+.high-contrast .logout-button,
+.high-contrast .settings-button,
+.high-contrast .back-button {
+  color: #000 !important;
+  background-color: var(--accent) !important;
+  border-color: var(--border) !important;
+}
+
+.high-contrast .logout-button:hover,
+.high-contrast .settings-button:hover,
+.high-contrast .back-button:hover {
+  background-color: var(--accent-hover, var(--accent)) !important;
+}
+
+.high-contrast .main-content,
+.high-contrast .loading-container,
+.high-contrast .app-container,
+.high-contrast body {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Override lesson header gradient which was hardcoded */
+.high-contrast header#topbar {
+  background: var(--bg-primary) !important;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -78,9 +136,25 @@ code {
   letter-spacing: 0.05em;
 }
 
-/* Reduced Motion */
-.reduced-motion * {
-  animation: none !important;
-  transition: none !important;
-  scroll-behavior: auto !important;
+/* Ensure elements using the accent (yellow) have readable black text in high-contrast mode */
+.high-contrast .active,
+.high-contrast button,
+.high-contrast .button,
+.high-contrast .theme-button.active,
+.high-contrast .font-button.active,
+.high-contrast .speed-button.active,
+.high-contrast .tts-controls button,
+.high-contrast #instructions button,
+.high-contrast .learning-back-button,
+.high-contrast .exit-distraction,
+.high-contrast .kw-highlight,
+.high-contrast .keyword {
+  color: #000 !important;
+}
+
+/* Also ensure any element whose background uses the accent gets black foreground */
+.high-contrast [style*="var(--accent)"],
+.high-contrast [style*="background: var(--accent)"],
+.high-contrast [style*="background-color: var(--accent)"] {
+  color: #000 !important;
 }

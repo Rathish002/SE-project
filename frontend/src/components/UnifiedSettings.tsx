@@ -51,6 +51,7 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
   const [showResetMessage, setShowResetMessage] = useState(false);
   const [username, setUsername] = useState<string>('');
   const [uid, setUid] = useState<string | null>(null);
+  const [email, setEmail] = useState<string>('');
 
   // Password change modal
   const [showChangePassword, setShowChangePassword] = useState(false);
@@ -177,6 +178,7 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         setUid(user.uid);
+        setEmail(user.email || '');
         try {
           const profile = await getUserProfile(user.uid);
           setUsername(profile?.name || '');
@@ -186,6 +188,7 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
       } else {
         setUid(null);
         setUsername('');
+        setEmail('');
       }
     });
 
@@ -461,6 +464,11 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
       <section className="settings-section card">
         <h2>Account & Security</h2>
         <p className="section-description">Manage your account security and preferences</p>
+
+        <div className="settings-subsection">
+          <h3>Email</h3>
+          <p className="section-description">{email || 'Not signed in'}</p>
+        </div>
 
         {/* Change Password */}
         <div className="settings-subsection">
