@@ -9,16 +9,15 @@ import { getStorage } from "firebase/storage";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 // Values are loaded from environment variables for security
-// Note: Firebase API keys are safe to expose in client-side code, but using
-// environment variables makes it easier to manage different environments
+// Note: All values must be set in .env.local - see ENV_SETUP.md for instructions
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "AIzaSyDCdnY6dl65ajLQjY9XiVy2V9z0jHDsZtA",
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "se-01-18cc8.firebaseapp.com",
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID || "se-01-18cc8",
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "se-01-18cc8.firebasestorage.app",
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || "698206432143",
-  appId: process.env.REACT_APP_FIREBASE_APP_ID || "1:698206432143:web:762b399aaf23fa584bb9fa",
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID || "G-C23HP9D8GH"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY!,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN!,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID!,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET!,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID!,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID!,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase

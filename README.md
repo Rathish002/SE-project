@@ -6,36 +6,43 @@ A full-stack learning platform for specially-abled learners with Firebase Authen
 
 ### Prerequisites
 
-- **Node.js** (v14 or higher recommended) - [Download here](https://nodejs.org/)
-- **npm** (comes automatically with Node.js)
-- A modern web browser
+- **Node.js** (v14 or higher) - [Download](https://nodejs.org/)
+- **Your Firebase API Key** (ask your team lead via secure message)
 
-### Installation & Running
+### Setup (2 Minutes)
 
-**Yes! If you have Node.js, you can clone and run it immediately:**
+```powershell
+# 1. Clone the repository
+git clone <repository-url>
+cd SE-project
 
-1. **Clone the repository:**
-   ```bash
-   git clone <repository-url>
-   cd SE-project
-   ```
+# 2. Run one-time setup
+.\setup-team-member.ps1
 
-2. **Install dependencies (this installs Firebase and all other packages):**
-   ```bash
-   cd frontend
-   npm install
-   ```
+# 3. When prompted, paste your API Key and press Enter
+# That's it! Dependencies install automatically
+```
 
-3. **Run the development server:**
-   ```bash
-   npm start
-   ```
+### Run the App
 
-4. **The app will automatically:**
-   - Open in your browser at [http://localhost:3000](http://localhost:3000)
-   - Use the default Firebase configuration (no setup needed!)
+```powershell
+.\start-dev.ps1
+```
 
-**That's it!** The app works out-of-the-box. No Firebase setup, no environment variables, no additional configuration needed.
+Your app opens automatically on [http://localhost:3000](http://localhost:3000) ✅
+
+---
+
+### What You Need From Your Team Lead
+
+**Only 1 thing:** Your Firebase API Key
+
+Ask them via secure message (Slack DM, Teams, etc.):
+```
+"Can you send me the Firebase API Key for this project?"
+```
+
+Everything else is pre-configured automatically.
 
 ## 📁 Project Structure
 
@@ -50,28 +57,13 @@ SE-project/
 └── server/            # Express backend (future implementation)
 ```
 
-## 🔧 Configuration (Optional)
+## 🔧 Configuration
 
-### Using Your Own Firebase Project
+Your Firebase credentials go in `.env.local` (which is created by `setup-team-member.ps1`). 
 
-If you want to use your own Firebase project instead of the default one:
+**Never commit this file** - it's automatically ignored by Git for security.
 
-1. **Create a Firebase project** (see `frontend/FIREBASE_SETUP.md`)
-
-2. **Set up environment variables:**
-   ```bash
-   cd frontend
-   cp .env.example .env.local
-   ```
-   
-3. **Edit `.env.local`** with your Firebase config values
-
-4. **Restart the development server:**
-   ```bash
-   npm start
-   ```
-
-See `frontend/ENV_SETUP.md` for detailed instructions.
+See `frontend/ENV_SETUP.md` for detailed environment variable information.
 
 ## ✨ Features
 
@@ -82,21 +74,38 @@ See `frontend/ENV_SETUP.md` for detailed instructions.
 
 ## 📚 Documentation
 
-- `frontend/FIREBASE_SETUP.md` - Firebase project setup guide
+- [QUICK_START.md](./QUICK_START.md) - Simple setup guide for developers
+- [TEAM_SETUP_GUIDE.md](./TEAM_SETUP_GUIDE.md) - Team member onboarding guide
 - `frontend/ENV_SETUP.md` - Environment variables setup
+- `frontend/FIREBASE_SETUP.md` - Firebase project setup
 - `frontend/SECURITY.md` - Security best practices
+- [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md) - Pre-publication checklist
 
-## 🛠️ Available Scripts
+## 🛠️ Development Scripts
 
-In the `frontend` directory:
+**In the project root directory:**
 
-- `npm start` - Runs the app in development mode
+- `.\setup-team-member.ps1` - Initial setup (one time)
+- `.\start-dev.ps1` - Start development server (every time)
+- `.\validate-security.ps1` - Validate no credentials are exposed
+- `.\clean-git-history.ps1` - Clean git history of old credentials (admin only)
+
+**In the `frontend` directory:**
+
+- `npm start` - Runs the app in development mode (called by `start-dev.ps1`)
 - `npm run build` - Builds the app for production
 - `npm test` - Launches the test runner
 
 ## 🔒 Security
 
-This project uses Firebase Authentication. Firebase API keys are safe to expose in client-side code. See `frontend/SECURITY.md` for more information.
+This project uses **Firebase** for backend services. Credentials are managed securely:
+
+- ✅ API keys are restricted to specific domains and APIs
+- ✅ Credentials are never committed to Git (`.env.local` is gitignored)
+- ✅ Team members get credentials through secure channels
+- ✅ Git history is cleaned to remove any exposed credentials
+
+See [SECURITY_CHECKLIST.md](./SECURITY_CHECKLIST.md) and `frontend/SECURITY.md` for more information.
 
 ## 📝 Notes
 

@@ -9,7 +9,7 @@ Your app is experiencing permission errors because Firebase Storage rules are no
 ### Step 1: Configure Firebase Storage Rules
 
 1. Open [Firebase Console](https://console.firebase.google.com/)
-2. Select project: **se-01-18cc8**
+2. Select your Firebase project
 3. Click **Storage** in left sidebar
 4. Click **Rules** tab at the top
 5. Copy the rules from [STORAGE_RULES.md](./STORAGE_RULES.md) (lines 13-58)
