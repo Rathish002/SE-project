@@ -95,7 +95,8 @@
     "title": "पाठ चयन",
     "selectLesson": "शुरू करने के लिए एक पाठ चुनें",
     "noLessons": "कोई पाठ उपलब्ध नहीं",
-    "startLesson": "पाठ शुरू करें"
+    "startLesson": "पाठ शुरू करें",
+    "goToExercises": "अभ्यास पर जाएं"
   },
   "learning": {
     "title": "पाठ",

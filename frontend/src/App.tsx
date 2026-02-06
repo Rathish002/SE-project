@@ -17,6 +17,7 @@ import LessonSelection from './components/LessonSelection';
 import Learning from './components/Learning';
 import UnifiedSettings from './components/UnifiedSettings';
 import Collaboration from './components/Collaboration';
+import Exercises from './components/Exercises';
 import Navigation, { Page } from './components/Navigation';
 import AccessibilityOverlays from './components/AccessibilityOverlays';
 import './i18n/i18n'; // Initialize i18n
@@ -168,6 +169,7 @@ function App() {
             onNavigateLesson={handleNavigateLesson}
             focusMode={focusMode}
             onFocusModeChange={setFocusMode}
+            onNavigateToExercises={() => handleNavigate('exercises')}
           />
         </div>
       );
@@ -191,6 +193,9 @@ function App() {
           {currentPage === 'home' && <Home currentUser={user} />}
           {currentPage === 'lessons' && (
             <LessonSelection onSelectLesson={handleSelectLesson} />
+          )}
+          {currentPage === 'exercises' && (
+            <Exercises onNavigate={handleNavigate} />
           )}
           {currentPage === 'collaboration' && user && (
             <Collaboration
