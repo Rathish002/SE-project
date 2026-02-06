@@ -30,7 +30,7 @@ interface ChatUIProps {
 }
 
 const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [messages, setMessages] = useState<Message[]>([]);
   const [conversation, setConversation] = useState<Conversation | null>(null);
   const [messageText, setMessageText] = useState('');
@@ -46,7 +46,11 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [connectionStatus, setConnectionStatus] = useState<'connected' | 'reconnecting'>('connected');
   const [participants, setParticipants] = useState<Array<{ uid: string; name: string; online: boolean; lastActive?: any }>>([]);
+<<<<<<< HEAD
   const [isBlocked, setIsBlocked] = useState(false);
+=======
+  const [translatedMessages, setTranslatedMessages] = useState<{ [messageId: string]: string }>({});
+>>>>>>> collaboration-groupchat-message-translation
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const unsubscribeMessagesRef = useRef<(() => void) | null>(null);
@@ -241,7 +245,8 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
     setSending(true);
     try {
       if (!currentUser?.uid) return;
-      await sendMessage(conversationId, currentUser!.uid, messageText);
+      const currentLang = i18n.language || 'en';
+      await sendMessage(conversationId, currentUser!.uid, messageText, currentLang);
       setMessageText('');
       // update lastActive on user action
       try {
@@ -258,6 +263,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
     }
   };
 
+<<<<<<< HEAD
   const handleBlockToggle = async () => {
     if (!currentUser?.uid || !conversation || conversation.type !== 'direct') return;
 
@@ -266,10 +272,36 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
 
     const action = isBlocked ? 'unblock' : 'block';
     if (!window.confirm(`Are you sure you want to ${action} this user?`)) {
+=======
+  // Mock translation function (in production, use Google Translate API or similar)
+  const mockTranslate = async (text: string, fromLang: string, toLang: string): Promise<string> => {
+    // Simple mock: just add a prefix to show translation happened
+    return `[Translated from ${fromLang} to ${toLang}] ${text}`;
+  };
+
+  const handleTranslateMessage = async (messageId: string, text: string, originalLang: string) => {
+    const targetLang = i18n.language || 'en';
+    
+    // Don't translate if already in target language
+    if (originalLang === targetLang) {
+      alert('Message is already in your current language');
+      return;
+    }
+
+    // Check if already translated
+    if (translatedMessages[messageId]) {
+      // Toggle back to original
+      setTranslatedMessages(prev => {
+        const newState = { ...prev };
+        delete newState[messageId];
+        return newState;
+      });
+>>>>>>> collaboration-groupchat-message-translation
       return;
     }
 
     try {
+<<<<<<< HEAD
       if (isBlocked) {
         await unblockUser(currentUser.uid, otherUid);
         setIsBlocked(false);
@@ -280,6 +312,13 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
     } catch (error: any) {
       console.error(`Error ${action}ing user:`, error);
       alert(`Failed to ${action} user: ` + error.message);
+=======
+      const translated = await mockTranslate(text, originalLang, targetLang);
+      setTranslatedMessages(prev => ({ ...prev, [messageId]: translated }));
+    } catch (error) {
+      console.error('Translation error:', error);
+      alert('Failed to translate message');
+>>>>>>> collaboration-groupchat-message-translation
     }
   };
 
@@ -393,7 +432,20 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                       </a>
                     </div>
                   ) : (
-                    <div className="chat-message-text">{message.text}</div>
+                    <>
+                      <div className="chat-message-text">
+                        {translatedMessages[message.id] || message.text}
+                      </div>
+                      {message.text && message.originalLang && message.originalLang !== i18n.language && (
+                        <button
+                          className="translate-button"
+                          onClick={() => handleTranslateMessage(message.id, message.text!, message.originalLang!)}
+                          title={translatedMessages[message.id] ? 'Show original' : 'Translate'}
+                        >
+                          {translatedMessages[message.id] ? '🔄 Original' : '🌐 Translate'}
+                        </button>
+                      )}
+                    </>
                   )}
                 </div>
               );

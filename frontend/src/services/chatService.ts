@@ -31,7 +31,11 @@ export interface Message {
   text?: string; // null for media-only or system with placeholder
   timestamp: Timestamp;
   type?: 'user' | 'system' | 'image' | 'video' | 'voice' | 'file';
+<<<<<<< HEAD
   state?: 'sending' | 'sent' | 'failed'; // Message delivery state (client-side only)
+=======
+  originalLang?: string; // Original language of the message (ISO code: 'en', 'hi')
+>>>>>>> collaboration-groupchat-message-translation
   
   // System message fields (when type === 'system')
   actionType?: 'join' | 'leave' | 'add_member';
@@ -190,7 +194,8 @@ async function createSystemMessage(
 export async function sendMessage(
   conversationId: string,
   senderUid: string,
-  text: string
+  text: string,
+  originalLang?: string
 ): Promise<void> {
   const senderProfile = await getUserProfile(senderUid);
   
@@ -210,6 +215,7 @@ export async function sendMessage(
     text: text.trim(),
     type: 'user',
     timestamp: serverTimestamp(),
+    originalLang: originalLang || 'en', // Default to English if not specified
   });
 
   // Update conversation timestamp
@@ -652,6 +658,7 @@ export function subscribeToMessages(
   const messagesRef = collection(db, 'conversations', conversationId, 'messages');
   const q = query(messagesRef, orderBy('timestamp', 'asc'));
 
+<<<<<<< HEAD
   // Also subscribe to conversation to get lastClearedAt
   const conversationRef = doc(db, 'conversations', conversationId);
   const unsubConv = onSnapshot(conversationRef, (convSnap) => {
@@ -690,6 +697,33 @@ export function subscribeToMessages(
           mediaFilename: data.mediaFilename,
           mediaType: data.mediaType,
         });
+=======
+  return onSnapshot(q, (snapshot: QuerySnapshot<DocumentData>) => {
+    const messages: Message[] = [];
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      messages.push({
+        id: docSnap.id,
+        senderUid: data.senderUid,
+        senderName: data.senderName,
+        text: data.text,
+        timestamp: data.timestamp,
+        type: data.type || 'user',
+        originalLang: data.originalLang,
+        // System message fields
+        actionType: data.actionType,
+        actorUid: data.actorUid,
+        actorUsername: data.actorUsername,
+        targetUid: data.targetUid,
+        targetUsername: data.targetUsername,
+        i18nKey: data.i18nKey,
+        // Media fields (for future use)
+        mediaUrl: data.mediaUrl,
+        mediaSize: data.mediaSize,
+        mediaDuration: data.mediaDuration,
+        mediaFilename: data.mediaFilename,
+        mediaType: data.mediaType,
+>>>>>>> collaboration-groupchat-message-translation
       });
       callback(messages);
     });
