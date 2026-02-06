@@ -110,11 +110,11 @@
   .home-content {
     padding: 30px 20px;
   }
-  
+
   .home-content h1 {
     font-size: 24px;
   }
-  
+
   .stats-grid {
     grid-template-columns: 1fr;
   }

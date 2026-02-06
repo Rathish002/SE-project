@@ -20,14 +20,16 @@ interface LearningProps {
   onNavigateLesson?: (lessonId: number) => void;
   focusMode: boolean;
   onFocusModeChange: (enabled: boolean) => void;
+  onNavigateToExercises?: () => void;
 }
 
-const Learning: React.FC<LearningProps> = ({ 
-  lessonId, 
-  onBack, 
+const Learning: React.FC<LearningProps> = ({
+  lessonId,
+  onBack,
   onNavigateLesson,
   focusMode,
-  onFocusModeChange
+  onFocusModeChange,
+  onNavigateToExercises
 }) => {
   const { t } = useTranslation();
   const { preferences, updateAudioSpeed } = useAccessibility();
@@ -513,6 +515,17 @@ const Learning: React.FC<LearningProps> = ({
             </button>
           </section>
         )}
+
+        <div className="exercises-section">
+          <button
+            className="exercises-button"
+            onClick={onNavigateToExercises}
+            aria-label={t('lessons.goToExercises')}
+          >
+            {t('lessons.goToExercises')}
+          </button>
+        </div>
+
 
         <article
           id="content"

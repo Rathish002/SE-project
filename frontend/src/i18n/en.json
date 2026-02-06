@@ -95,7 +95,8 @@
     "title": "Lesson Selection",
     "selectLesson": "Select a lesson to begin",
     "noLessons": "No lessons available",
-    "startLesson": "Start Lesson"
+    "startLesson": "Start Lesson",
+    "goToExercises": "Go to Exercises"
   },
   "learning": {
     "title": "Lessons",

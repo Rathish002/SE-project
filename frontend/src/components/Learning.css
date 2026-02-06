@@ -459,3 +459,37 @@ main#app {
   border-radius: 6px;
   cursor: pointer;
 }
+
+/* Exercises section */
+.exercises-section {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.exercises-button {
+  padding: 12px 30px;
+  font-size: var(--base-font-size, 16px);
+  font-weight: 600;
+  color: white;
+  background-color: #6366f1;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.exercises-button:hover {
+  background-color: #4f46e5;
+  transform: translateY(-2px);
+}
+
+.exercises-button:active {
+  transform: translateY(0);
+}
+
+.exercises-button:focus {
+  outline: 3px solid rgba(99, 102, 241, 0.4);
+  outline-offset: 2px;
+}

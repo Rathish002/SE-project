@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
 import './Navigation.css';
 
-export type Page = 'home' | 'lessons' | 'settings' | 'collaboration';
+export type Page = 'home' | 'lessons' | 'settings' | 'collaboration' | 'exercises';
 
 interface NavigationProps {
   currentPage: Page;

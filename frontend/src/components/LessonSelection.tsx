@@ -42,7 +42,7 @@ const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => 
       <div className="lesson-selection-content">
         <h1>{t('lessons.title')}</h1>
         <p className="lesson-selection-subtitle">{t('lessons.selectLesson')}</p>
-        
+
         {loading ? (
           <div className="no-lessons">
             <p>{t('app.loading')}</p>
