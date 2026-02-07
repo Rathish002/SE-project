@@ -155,7 +155,7 @@ router.post(
 
       // 2️⃣ Call NLP service for semantic similarity
       const nlpResponse = await axios.post(NLP_SERVICE_URL, {
-        reference_answer: referenceAnswer,
+        reference_answers: [referenceAnswer],  // Must be array!
         user_answer: answer
       });
 
@@ -188,20 +188,19 @@ router.post(
         totalWeight === 0 ? 0 : keywordScore / totalWeight;
 
       // 4️⃣ Hybrid scoring formula
-      const finalScore = semanticScore
-      //0.7 * semanticScore + 0.3 * normalizedKeywordScore;
+      const finalScore = semanticScore * 0.7 + normalizedKeywordScore * 0.3;
 
       // 5️⃣ Feedback
       let feedback = "Needs improvement.";
       if (finalScore >= 0.8) feedback = "Excellent understanding!";
       else if (finalScore >= 0.6) feedback = "Good understanding.";
+      else if (finalScore >= 0.4) feedback = "Fair understanding.";
 
-
-      /*semanticScore,
-        keywordScore: normalizedKeywordScore,
-        matchedKeywords,*/
       res.json({
         finalScore,
+        semanticScore,
+        keywordScore: normalizedKeywordScore,
+        matchedKeywords,
         feedback
       });
 

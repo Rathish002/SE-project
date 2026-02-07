@@ -88,12 +88,22 @@ CREATE TABLE IF NOT EXISTS exercise_answers (
 );
 
 
+-- ✅ 7) evaluation_intents
+-- Questions and reference answers for lesson evaluation
+CREATE TABLE IF NOT EXISTS evaluation_intents (
+  id SERIAL PRIMARY KEY,
+  lesson_id INT NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+  question TEXT NOT NULL,
+  reference_answer TEXT NOT NULL
+);
+
 -- ✅ 6) evaluation_rules
 CREATE TABLE IF NOT EXISTS evaluation_rules (
   id SERIAL PRIMARY KEY,
-  lesson_id INT REFERENCES lessons(id) ON DELETE CASCADE,
+  lesson_id INT NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
   keyword TEXT NOT NULL,
-  weight DOUBLE PRECISION NOT NULL DEFAULT 1.0
+  weight DOUBLE PRECISION NOT NULL,
+  evaluation_intent_id INT NOT NULL REFERENCES evaluation_intents(id) ON DELETE CASCADE
 );
 
 /* 

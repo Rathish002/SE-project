@@ -52,11 +52,6 @@ export async function getPreferences(uid: string): Promise<AccessibilityPreferen
     throw new Error('uid is required');
   }
 
-export async function getPreferences(uid: string): Promise<AccessibilityPreferences> {
-  if (!uid) {
-    throw new Error('uid is required');
-  }
-
   const prefRef = doc(db, 'users', uid, 'settings', 'accessibility');
   const prefSnap = await getDoc(prefRef);
 
