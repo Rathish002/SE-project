@@ -274,5 +274,39 @@
       "lastConversation": "Last Conversation",
       "lastFriend": "Last Friend"
     }
+  },
+  "evaluation": {
+    "title": "Self Evaluation",
+    "subtitle": "Test your understanding of the lesson",
+    "noQuestions": "No evaluation questions available for this lesson",
+    "exit": "Exit",
+    "loading": "Loading evaluation questions...",
+    "question": "Question",
+    "of": "of",
+    "enterAnswer": "Enter your answer here...",
+    "evaluate": "Evaluate Answer",
+    "evaluating": "Evaluating",
+    "previous": "Previous",
+    "next": "Next",
+    "finish": "Finish",
+    "complete": "Evaluation Complete!",
+    "yourScore": "Your Score",
+    "summary": {
+      "totalQuestions": "Total Questions",
+      "averageScore": "Average Score",
+      "matchedKeywords": "Matched Keywords",
+      "feedback": "Feedback"
+    },
+    "error": {
+      "fetchQuestions": "Failed to load evaluation questions. Please try again.",
+      "emptyAnswer": "Please enter an answer before submitting.",
+      "evaluate": "Failed to evaluate your answer. Please try again."
+    },
+    "scoreRange": {
+      "excellent": "Excellent! You have a strong understanding.",
+      "good": "Good! You understand the main points.",
+      "fair": "Fair. Review the concepts and try again.",
+      "needsWork": "Needs improvement. Please review the lesson content."
+    }
   }
 }
