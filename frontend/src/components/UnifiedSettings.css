@@ -40,6 +40,13 @@
   font-size: var(--heading-2, 24px);
   color: var(--text-primary);
   margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.section-icon {
+  margin-right: 12px;
+  font-size: 1.2em;
 }
 
 .settings-subsection {
@@ -262,6 +269,7 @@
   background: var(--border);
   outline: none;
   -webkit-appearance: none;
+  appearance: none;
 }
 
 .speed-slider input[type="range"]::-webkit-slider-thumb {
@@ -468,6 +476,47 @@
   margin-bottom: 15px;
 }
 
+.cognitive-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .cognitive-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Cognitive Grid Items as Cards */
+.cognitive-grid .settings-group {
+  background-color: var(--bg-primary);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+  margin-bottom: 0;
+  /* Override default settings-group margin */
+}
+
+.cognitive-grid .settings-group:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--shadow);
+  border-color: var(--accent);
+}
+
+/* High Contrast override for grid items */
+.high-contrast .cognitive-grid .settings-group {
+  background-color: var(--bg-primary) !important;
+  border: 2px solid #fff !important;
+}
+
+.high-contrast .cognitive-grid .settings-group:hover {
+  border-color: var(--accent) !important;
+  background-color: #222 !important;
+  /* Slight highlight */
+}
+
 .danger-form {
   border-color: #ff5252;
   background-color: rgba(255, 82, 82, 0.05);
@@ -506,13 +555,25 @@
 }
 
 .button-secondary {
-  background-color: #f5f5f5;
+  background-color: var(--bg-secondary);
   color: var(--text-primary);
   border: 1px solid var(--border);
 }
 
 .button-secondary:hover {
-  background-color: #eeeeee;
+  background-color: var(--bg-primary);
+  border-color: var(--accent);
+}
+
+[data-theme="dark"] .button-secondary {
+  background-color: #333;
+  border-color: #555;
+  color: #fff;
+}
+
+[data-theme="dark"] .button-secondary:hover {
+  background-color: #444;
+  border-color: var(--accent);
 }
 
 .button-secondary:disabled {
@@ -538,41 +599,50 @@
 }
 
 /* Status Messages */
+/* Status Messages - Consolidated */
 .status-message {
-  margin-top: 10px;
-  padding: 12px 16px;
-  border-radius: 4px;
-  font-size: 14px;
-  animation: slideIn 0.3s ease;
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  padding: 16px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 16px;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .status-message.success {
-  background-color: #c8e6c9;
-  color: #2e7d32;
-  border-left: 4px solid #2e7d32;
+  background-color: #4caf50;
+  color: white;
+  border-left: 5px solid #2e7d32;
 }
 
 .status-message.error {
-  background-color: #ffcdd2;
-  color: #c62828;
-  border-left: 4px solid #c62828;
+  background-color: #f44336;
+  color: white;
+  border-left: 5px solid #b71c1c;
 }
 
 .status-message.info {
-  background-color: #bbdefb;
-  color: #1565c0;
-  border-left: 4px solid #1565c0;
+  background-color: #2196f3;
+  color: white;
+  border-left: 5px solid #0d47a1;
 }
 
 @keyframes slideIn {
   from {
+    transform: translateX(120%);
     opacity: 0;
-    transform: translateY(-10px);
   }
 
   to {
+    transform: translateX(0);
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
