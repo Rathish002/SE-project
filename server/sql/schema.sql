@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS lesson_keywords (
   expanation TEXT
 );
 
+
 -- ✅ 3) exercises
 CREATE TABLE IF NOT EXISTS exercises (
   id SERIAL PRIMARY KEY,

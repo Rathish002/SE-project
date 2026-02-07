@@ -45,7 +45,6 @@ const AccessibilitySettings: React.FC<AccessibilitySettingsProps> = ({ onBack })
   const themeOptions: { value: ThemeMode; label: string; icon: string }[] = [
     { value: 'light', label: t('accessibility.theme.light'), icon: '☀️' },
     { value: 'dark', label: t('accessibility.theme.dark'), icon: '🌙' },
-    { value: 'high-contrast', label: t('accessibility.theme.highContrast'), icon: '⚡' },
   ];
 
   const fontSizeOptions: { value: FontSize; label: string }[] = [
@@ -141,6 +140,8 @@ const AccessibilitySettings: React.FC<AccessibilitySettingsProps> = ({ onBack })
         </div>
       </section>
 
+
+
       {/* Contrast Mode Toggle */}
       <section className="settings-section card">
         <h2>{t('accessibility.contrast.title')}</h2>
@@ -210,6 +211,7 @@ const AccessibilitySettings: React.FC<AccessibilitySettingsProps> = ({ onBack })
               {preferences.contrastMode ? t('accessibility.contrast.enabled') : t('accessibility.contrast.disabled')}
             </span>
           </div>
+
         </div>
       </section>
     </div>

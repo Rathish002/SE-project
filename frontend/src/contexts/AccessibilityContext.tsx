@@ -62,6 +62,8 @@ export const AccessibilityProvider: React.FC<AccessibilityProviderProps> = ({ ch
     root.removeAttribute('data-font-size');
   };
 
+
+
   // Apply contrast mode to document
   const applyContrastMode = (enabled: boolean) => {
     if (enabled) {
