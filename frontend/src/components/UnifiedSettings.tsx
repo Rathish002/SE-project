@@ -198,7 +198,6 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
   const themeOptions: { value: ThemeMode; label: string; icon: string }[] = [
     { value: 'light', label: t('accessibility.theme.light'), icon: '☀️' },
     { value: 'dark', label: t('accessibility.theme.dark'), icon: '🌙' },
-    { value: 'high-contrast', label: t('accessibility.theme.highContrast'), icon: '⚡' },
   ];
 
 
@@ -213,7 +212,7 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
 
       {/* Username Editing */}
       <section className="settings-section card">
-        <h2>{t('settings.profileSection', 'Profile')}</h2>
+        <h2><span className="section-icon">👤</span> {t('settings.profileSection', 'Profile')}</h2>
         <div className="settings-group">
           <label htmlFor="username">{t('settings.username', 'Username')}</label>
           <input
@@ -232,7 +231,7 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
 
       {/* Language Settings Section */}
       <section className="settings-section card">
-        <h2>{t('settings.languageSection')}</h2>
+        <h2><span className="section-icon">🌐</span> {t('settings.languageSection')}</h2>
 
         <div className="settings-group">
           <label htmlFor="interface-language">
@@ -277,7 +276,7 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
 
       {/* Accessibility Settings Section */}
       <section className="settings-section card">
-        <h2>{t('accessibility.title')}</h2>
+        <h2><span className="section-icon">♿</span> {t('accessibility.title')}</h2>
         <p className="section-description">{t('accessibility.subtitle')}</p>
 
         {/* Theme Selection */}
@@ -353,6 +352,8 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
           </div>
         </div>
 
+
+
         {/* Contrast Mode */}
         <div className="settings-subsection">
           <h3>{t('accessibility.contrast.title')}</h3>
@@ -398,71 +399,73 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
           <h3>{t('accessibility.cognitive.title', 'Cognitive & Visual Support')}</h3>
           <p className="section-description">{t('accessibility.cognitive.description', 'Advanced tools for visual comfort and focus')}</p>
 
-          <div className="settings-group">
-            <label className="toggle-switch">
-              <input
-                type="checkbox"
-                checked={preferences.reducedMotion}
-                onChange={(e) => updateReducedMotion(e.target.checked)}
-                aria-label={t('accessibility.reducedMotion.toggle', 'Reduced Motion')}
-              />
-              <span className="toggle-slider"></span>
-              <span className="toggle-label">
-                {t('accessibility.reducedMotion.label', 'Reduced Motion')}
-              </span>
-            </label>
-          </div>
+          <div className="cognitive-grid">
+            <div className="settings-group">
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={preferences.reducedMotion}
+                  onChange={(e) => updateReducedMotion(e.target.checked)}
+                  aria-label={t('accessibility.reducedMotion.toggle', 'Reduced Motion')}
+                />
+                <span className="toggle-slider"></span>
+                <span className="toggle-label">
+                  {t('accessibility.reducedMotion.label', 'Reduced Motion')}
+                </span>
+              </label>
+            </div>
 
-          <div className="settings-group">
-            <label className="toggle-switch">
-              <input
-                type="checkbox"
-                checked={preferences.dyslexiaFont}
-                onChange={(e) => updateDyslexiaFont(e.target.checked)}
-                aria-label={t('accessibility.dyslexiaFont.toggle', 'Dyslexia Friendly Font')}
-              />
-              <span className="toggle-slider"></span>
-              <span className="toggle-label">
-                {t('accessibility.dyslexiaFont.label', 'Dyslexia Friendly Font')}
-              </span>
-            </label>
-          </div>
+            <div className="settings-group">
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={preferences.dyslexiaFont}
+                  onChange={(e) => updateDyslexiaFont(e.target.checked)}
+                  aria-label={t('accessibility.dyslexiaFont.toggle', 'Dyslexia Friendly Font')}
+                />
+                <span className="toggle-slider"></span>
+                <span className="toggle-label">
+                  {t('accessibility.dyslexiaFont.label', 'Dyslexia Friendly Font')}
+                </span>
+              </label>
+            </div>
 
-          <div className="settings-group">
-            <label className="toggle-switch">
-              <input
-                type="checkbox"
-                checked={preferences.blueLightFilter}
-                onChange={(e) => updateBlueLightFilter(e.target.checked)}
-                aria-label={t('accessibility.blueLightFilter.toggle', 'Blue Light Filter')}
-              />
-              <span className="toggle-slider"></span>
-              <span className="toggle-label">
-                {t('accessibility.blueLightFilter.label', 'Blue Light Filter')}
-              </span>
-            </label>
-          </div>
+            <div className="settings-group">
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={preferences.blueLightFilter}
+                  onChange={(e) => updateBlueLightFilter(e.target.checked)}
+                  aria-label={t('accessibility.blueLightFilter.toggle', 'Blue Light Filter')}
+                />
+                <span className="toggle-slider"></span>
+                <span className="toggle-label">
+                  {t('accessibility.blueLightFilter.label', 'Blue Light Filter')}
+                </span>
+              </label>
+            </div>
 
-          <div className="settings-group">
-            <label className="toggle-switch">
-              <input
-                type="checkbox"
-                checked={preferences.readingMask}
-                onChange={(e) => updateReadingMask(e.target.checked)}
-                aria-label={t('accessibility.readingMask.toggle', 'Reading Line Mask')}
-              />
-              <span className="toggle-slider"></span>
-              <span className="toggle-label">
-                {t('accessibility.readingMask.label', 'Reading Line Mask')}
-              </span>
-            </label>
+            <div className="settings-group">
+              <label className="toggle-switch">
+                <input
+                  type="checkbox"
+                  checked={preferences.readingMask}
+                  onChange={(e) => updateReadingMask(e.target.checked)}
+                  aria-label={t('accessibility.readingMask.toggle', 'Reading Line Mask')}
+                />
+                <span className="toggle-slider"></span>
+                <span className="toggle-label">
+                  {t('accessibility.readingMask.label', 'Reading Line Mask')}
+                </span>
+              </label>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Account Security Section */}
       <section className="settings-section card">
-        <h2>Account & Security</h2>
+        <h2><span className="section-icon">🔒</span> Account & Security</h2>
         <p className="section-description">Manage your account security and preferences</p>
 
         <div className="settings-subsection">

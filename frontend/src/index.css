@@ -28,7 +28,8 @@
   --shadow: rgba(0, 0, 0, 0.3);
 }
 
-[data-theme="high-contrast"] {
+/* High Contrast Mode CSS Class */
+.high-contrast {
   --bg-primary: #000000;
   --bg-secondary: #1a1a1a;
   --text-primary: #ffffff;
@@ -39,25 +40,23 @@
   --shadow: rgba(255, 255, 255, 0.3);
 }
 
-/* Font Size Variables */
-
-
-/* High Contrast Mode */
-.high-contrast {
-  --bg-primary: #000000 !important;
-  --bg-secondary: #000000 !important;
-  --text-primary: #ffffff !important;
-  --text-secondary: #ffffff !important;
-  --accent: #ffff00 !important;
-  --border: #ffffff !important;
+/* High Contrast Mode Overrides */
+.high-contrast .button,
+.high-contrast button,
+.high-contrast .button-primary,
+.high-contrast .button-secondary,
+.high-contrast .theme-button.active,
+.high-contrast .nav-button.active {
+  color: #000000 !important;
+  background-color: var(--accent) !important;
+  border-color: #000000 !important;
+  font-weight: bold;
 }
 
-/* Targeted overrides for components that used hardcoded colors */
-.high-contrast .navigation,
-.high-contrast header#topbar {
-  background-color: var(--bg-primary) !important;
-  border-bottom-color: var(--border) !important;
-  box-shadow: none !important;
+/* Ensure links are also visible if using default colors */
+.high-contrast a {
+  color: #ffff00;
+  text-decoration: underline;
 }
 
 .high-contrast .nav-button,
@@ -100,6 +99,7 @@
 .high-contrast .main-content,
 .high-contrast .loading-container,
 .high-contrast .app-container,
+.high-contrast .settings-container,
 .high-contrast body {
   background-color: var(--bg-primary) !important;
   color: var(--text-primary) !important;
@@ -138,8 +138,6 @@ code {
 
 /* Ensure elements using the accent (yellow) have readable black text in high-contrast mode */
 .high-contrast .active,
-.high-contrast button,
-.high-contrast .button,
 .high-contrast .theme-button.active,
 .high-contrast .font-button.active,
 .high-contrast .speed-button.active,
@@ -147,6 +145,11 @@ code {
 .high-contrast #instructions button,
 .high-contrast .learning-back-button,
 .high-contrast .exit-distraction,
+.high-contrast .kw-highlight,
+.high-contrast .keyword {
+  color: #000 !important;
+}
+
 .high-contrast .kw-highlight,
 .high-contrast .keyword {
   color: #000 !important;
