@@ -2,8 +2,7 @@
 
 > A full-stack accessible learning platform with real-time collaboration, NLP-powered features, and multilingual support designed for specially-abled learners.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Node.js](https://img.shields.io/badge/node-%3E%3D16.0.0-brightgreen)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/node-18.20-brightgreen)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/react-19.2.3-blue)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/typescript-4.9.5-blue)](https://www.typescriptlang.org/)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue)](https://www.python.org/)
@@ -171,7 +170,7 @@ SE-project/
 | Document | Description |
 |----------|-------------|
 | [frontend/README.md](frontend/README.md) | Frontend-specific documentation |
-| [server/README.md](server/README.md) | Backend API documentation |
+| [API.md](API.md) | Backend API documentation |
 | [server/TEST_GUIDE.md](server/TEST_GUIDE.md) | Backend testing guide |
 | [SECURITY_CHECKLIST.md](SECURITY_CHECKLIST.md) | 🔒 Security guidelines |
 | [frontend/FIREBASE_SETUP.md](frontend/FIREBASE_SETUP.md) | Firebase configuration |
@@ -188,7 +187,7 @@ SE-project/
 - **React Testing Library** - Testing
 
 ### Backend
-- **Node.js 16+** - Runtime
+- **Node.js 18.20** - Runtime
 - **Express 5.2.1** - Web framework
 - **TypeScript 5.9.3** - Type safety
 - **PostgreSQL 13+** - Database
@@ -212,7 +211,7 @@ SE-project/
 
 ### Prerequisites
 
-- Node.js 16+
+- Node.js 18.20
 - Python 3.8+
 - PostgreSQL 13+
 - Git 2.30+
@@ -366,7 +365,7 @@ This is a collaborative Software Engineering project by students committed to in
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+No license is currently specified for this project.
 
 ---
 
@@ -387,6 +386,6 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-**Made with ❤️ for inclusive education**
+Built for inclusive education.
 
 

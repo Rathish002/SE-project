@@ -16,7 +16,7 @@ Welcome! This guide will help you contribute to our learning platform for specia
 
 ### Prerequisites
 
-- **Node.js** 16+ and npm
+- **Node.js** 18.20 and npm
 - **Python** 3.8+ (for NLP service)
 - **PostgreSQL** (for backend database)
 - **Git** for version control

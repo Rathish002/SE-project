@@ -57,7 +57,7 @@ SE-Project is a full-stack learning platform designed for specially-abled learne
 ### Backend
 | Technology | Version | Purpose |
 |------------|---------|---------|
-| Node.js | 16+ | Runtime |
+| Node.js | 18.20 | Runtime |
 | Express | 5.2.1 | Web framework |
 | TypeScript | 5.9.3 | Type safety |
 | PostgreSQL | 13+ | Database |
@@ -648,7 +648,7 @@ Based on current architecture:
 ## 📚 Additional Resources
 
 - [Component Documentation](./frontend/README.md)
-- [API Documentation](./server/README.md)
+- [API Documentation](API.md)
 - [Database Schema](./server/sql/schema.sql)
 - [Security Guidelines](./SECURITY_CHECKLIST.md)
 

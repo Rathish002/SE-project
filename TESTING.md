@@ -67,6 +67,13 @@ npm test -- --coverage
 npm test ChatUI.test.tsx
 ```
 
+### Test Report (Frontend)
+
+Test report with inputs, outputs, and expected values:
+- [frontend/TEST_REPORT.md](frontend/TEST_REPORT.md)
+
+Use this report to show the exact test command (input), observed results (output), and expected values for each unit test. The raw execution log is in [frontend/test-report.txt](frontend/test-report.txt), and the coverage report is in [frontend/coverage/lcov-report/index.html](frontend/coverage/lcov-report/index.html).
+
 ### Unit Testing Components
 
 **Example: ChatUI Component Test**

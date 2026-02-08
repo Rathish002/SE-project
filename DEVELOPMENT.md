@@ -19,7 +19,7 @@ Complete guide for setting up your local development environment for the SE-Proj
 
 | Software | Version | Purpose |
 |----------|---------|---------|
-| Node.js | 16+ | Frontend & Backend runtime |
+| Node.js | 18.20 | Frontend & Backend runtime |
 | npm | 8+ | Package management |
 | Python | 3.8+ | NLP service |
 | PostgreSQL | 13+ | Database |
@@ -587,7 +587,7 @@ After setup is complete:
 ## 📚 Additional Resources
 
 - [Project Wiki](https://github.com/Rathish002/SE-project/wiki)
-- [API Documentation](./server/README.md)
+- [API Documentation](API.md)
 - [Component Library](./frontend/README.md)
 - [Security Guidelines](./SECURITY_CHECKLIST.md)
 
