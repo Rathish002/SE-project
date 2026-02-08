@@ -35,32 +35,75 @@ CREATE TABLE IF NOT EXISTS exercises (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+
 -- ✅ 4) exercise_steps
 CREATE TABLE IF NOT EXISTS exercise_steps (
   id SERIAL PRIMARY KEY,
   exercise_id INT REFERENCES exercises(id) ON DELETE CASCADE,
   step_number INT NOT NULL,
+
   prompt TEXT NOT NULL,
-  expected_answer TEXT,
+  prompt_audio_url TEXT,
+
+  correct_option_id INT, -- FK added later
+
   hint_1 TEXT,
   hint_2 TEXT,
   hint_3 TEXT
 );
+
 
 -- ✅ 5) exercise_progress
 CREATE TABLE IF NOT EXISTS exercise_progress (
   id SERIAL PRIMARY KEY,
   user_id INT NOT NULL,
   exercise_id INT REFERENCES exercises(id) ON DELETE CASCADE,
+
+  current_step INT DEFAULT 1,
+  completed_steps INT DEFAULT 0,
+  is_completed BOOLEAN DEFAULT FALSE,
+
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
   UNIQUE(user_id, exercise_id)
+);
+
+-- 6) exercise_step_options
+CREATE TABLE IF NOT EXISTS exercise_step_options (
+  id SERIAL PRIMARY KEY,
+  step_id INT REFERENCES exercise_steps(id) ON DELETE CASCADE,
+  option_text TEXT NOT NULL,
+  option_audio_url TEXT,
+  option_order INT NOT NULL
+);
+
+-- 7) exercise_answers
+CREATE TABLE IF NOT EXISTS exercise_answers (
+  id SERIAL PRIMARY KEY,
+  user_id INT NOT NULL,
+  step_id INT REFERENCES exercise_steps(id) ON DELETE CASCADE,
+  selected_option_id INT REFERENCES exercise_step_options(id),
+  is_correct BOOLEAN,
+  answered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+-- ✅ 7) evaluation_intents
+-- Questions and reference answers for lesson evaluation
+CREATE TABLE IF NOT EXISTS evaluation_intents (
+  id SERIAL PRIMARY KEY,
+  lesson_id INT NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
+  question TEXT NOT NULL,
+  reference_answer TEXT NOT NULL
 );
 
 -- ✅ 6) evaluation_rules
 CREATE TABLE IF NOT EXISTS evaluation_rules (
   id SERIAL PRIMARY KEY,
-  lesson_id INT REFERENCES lessons(id) ON DELETE CASCADE,
+  lesson_id INT NOT NULL REFERENCES lessons(id) ON DELETE CASCADE,
   keyword TEXT NOT NULL,
-  weight DOUBLE PRECISION NOT NULL DEFAULT 1.0
+  weight DOUBLE PRECISION NOT NULL,
+  evaluation_intent_id INT NOT NULL REFERENCES evaluation_intents(id) ON DELETE CASCADE
 );
 
 /* 

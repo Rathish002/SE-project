@@ -11,6 +11,7 @@ import { useAccessibility } from '../contexts/AccessibilityContext';
 import { getLearningDirection } from '../utils/languageManager';
 import { fetchLesson, type LessonData } from '../services/lessonService';
 import ErrorFallback from './ErrorFallback';
+import Evaluation from './Evaluation';
 import type { AudioSpeed } from '../types/accessibility';
 import './Learning.css';
 
@@ -38,6 +39,7 @@ const Learning: React.FC<LearningProps> = ({
   const [lessonData, setLessonData] = useState<LessonData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showEvaluation, setShowEvaluation] = useState(false);
 
   // Accessibility states (local to lesson page)
   const [dyslexiaMode, setDyslexiaMode] = useState(false);
@@ -396,6 +398,19 @@ const Learning: React.FC<LearningProps> = ({
     );
   }
 
+  // Show evaluation page if opened
+  if (showEvaluation && lessonData) {
+    return (
+      <div className={`learning-container ${highContrast ? 'high-contrast' : ''}`}>
+        <Evaluation
+          lessonId={lessonId}
+          lessonTitle={lessonData.lesson.title}
+          onExit={() => setShowEvaluation(false)}
+        />
+      </div>
+    );
+  }
+
   const highlightedContent = highlightKeywords(lessonData.lesson.content);
   const firstSentence = lessonData.lesson.content.split(/[.!?]\s/)[0]?.trim() || '';
 
@@ -570,6 +585,13 @@ const Learning: React.FC<LearningProps> = ({
             aria-label={t('lessons.goToExercises')}
           >
             {t('lessons.goToExercises')}
+          </button>
+          <button
+            className="evaluation-button"
+            onClick={() => setShowEvaluation(true)}
+            aria-label={t('lessons.evaluateYourself') || 'Evaluate yourself'}
+          >
+            {t('lessons.evaluateYourself') || 'Evaluate yourself'}
           </button>
         </div>
 
