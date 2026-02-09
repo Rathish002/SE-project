@@ -1,15 +1,14 @@
 /**
  * Learning Page Component
- * Matches epic1 layout exactly but implemented in React/TypeScript
- * Grid layout: main content (1fr) + keywords sidebar (300px)
- * Header with navigation and accessibility controls
+ * Clean, focused reading experience for lesson content
+ * Single-column centered layout with minimal controls
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAccessibility } from '../contexts/AccessibilityContext';
 import { getLearningDirection } from '../utils/languageManager';
-import { fetchLesson, type LessonData } from '../services/lessonService';
+import { fetchLesson, getAvailableLessonIds, type LessonData } from '../services/lessonService';
 import ErrorFallback from './ErrorFallback';
 import Evaluation from './Evaluation';
 import type { AudioSpeed } from '../types/accessibility';
@@ -40,22 +39,16 @@ const Learning: React.FC<LearningProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showEvaluation, setShowEvaluation] = useState(false);
-
-  // Accessibility states (local to lesson page)
-  const [dyslexiaMode, setDyslexiaMode] = useState(false);
-  const [highContrast, setHighContrast] = useState(false);
-  const [autoScroll, setAutoScroll] = useState(false);
-  const [scrollSpeed, setScrollSpeed] = useState(800);
+  const [totalLessons, setTotalLessons] = useState(0);
 
   // TTS states
   const [isPlaying, setIsPlaying] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const autoScrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Load lesson
+  // Load lesson and total count
   useEffect(() => {
     const loadLesson = async () => {
       try {
@@ -63,6 +56,7 @@ const Learning: React.FC<LearningProps> = ({
         setError(null);
         const data = await fetchLesson(lessonId, learningDir);
         setLessonData(data);
+        setTotalLessons(getAvailableLessonIds().length);
       } catch (err) {
         console.error('Error loading lesson:', err);
         setError(t('learning.error'));
@@ -80,34 +74,10 @@ const Learning: React.FC<LearningProps> = ({
       synthRef.current = window.speechSynthesis;
     }
     return () => {
-      if (autoScrollIntervalRef.current) {
-        clearInterval(autoScrollIntervalRef.current);
-      }
       if (synthRef.current) {
         synthRef.current.cancel();
       }
     };
-  }, []);
-
-  // Apply dyslexia mode
-  useEffect(() => {
-    if (dyslexiaMode) {
-      document.body.classList.add('dyslexia-mode');
-    } else {
-      document.body.classList.remove('dyslexia-mode');
-    }
-  }, [dyslexiaMode]);
-
-  // Load dyslexia preference
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('dyslexia-mode');
-      if (saved === '1') {
-        setDyslexiaMode(true);
-      }
-    } catch (e) {
-      // Ignore
-    }
   }, []);
 
   // Highlight keywords in content
@@ -191,13 +161,6 @@ const Learning: React.FC<LearningProps> = ({
     }
   };
 
-  // Play instructions
-  const handlePlayInstructions = () => {
-    if (lessonData?.lesson.instructions) {
-      speakText(lessonData.lesson.instructions);
-    }
-  };
-
   // Handle keyword click
   const handleKeywordClick = useCallback((keywordText: string) => {
     if (!lessonData) return;
@@ -208,59 +171,6 @@ const Learning: React.FC<LearningProps> = ({
       speakText(keyword.explanation || keyword.keyword);
     }
   }, [lessonData, speakText]);
-
-  // Auto-scroll
-  useEffect(() => {
-    if (autoScroll && contentRef.current) {
-      const startAutoScroll = () => {
-        if (autoScrollIntervalRef.current) {
-          clearInterval(autoScrollIntervalRef.current);
-        }
-
-        const pxPerSec = Math.round(
-          Math.max(20, Math.min(200, Math.round(((scrollSpeed - 200) / (2000 - 200)) * (200 - 20) + 20)))
-        );
-        let last = Date.now();
-
-        autoScrollIntervalRef.current = setInterval(() => {
-          if (!contentRef.current) return;
-          const now = Date.now();
-          const dt = (now - last) / 1000;
-          last = now;
-          const delta = Math.max(1, Math.round(pxPerSec * dt));
-
-          contentRef.current.scrollTop = Math.min(
-            contentRef.current.scrollTop + delta,
-            contentRef.current.scrollHeight - contentRef.current.clientHeight
-          );
-
-          if (
-            contentRef.current.scrollTop + contentRef.current.clientHeight >=
-            contentRef.current.scrollHeight - 1
-          ) {
-            setAutoScroll(false);
-            if (autoScrollIntervalRef.current) {
-              clearInterval(autoScrollIntervalRef.current);
-              autoScrollIntervalRef.current = null;
-            }
-          }
-        }, 50);
-      };
-
-      startAutoScroll();
-    } else {
-      if (autoScrollIntervalRef.current) {
-        clearInterval(autoScrollIntervalRef.current);
-        autoScrollIntervalRef.current = null;
-      }
-    }
-
-    return () => {
-      if (autoScrollIntervalRef.current) {
-        clearInterval(autoScrollIntervalRef.current);
-      }
-    };
-  }, [autoScroll, scrollSpeed]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -283,7 +193,7 @@ const Learning: React.FC<LearningProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handlePlay]);
 
-  // Enter/exit fullscreen when focus (distraction-free) mode changes
+  // Enter/exit fullscreen when focus mode changes
   useEffect(() => {
     const applyFullscreen = async () => {
       try {
@@ -313,7 +223,7 @@ const Learning: React.FC<LearningProps> = ({
     applyFullscreen();
   }, [focusMode, onFocusModeChange]);
 
-  // Keep focusMode in sync if user exits fullscreen with ESC or browser controls
+  // Sync focus mode with fullscreen state
   useEffect(() => {
     const onFsChange = () => {
       if (!document.fullscreenElement && focusMode) {
@@ -361,9 +271,10 @@ const Learning: React.FC<LearningProps> = ({
     };
   }, [lessonData, handleKeywordClick]);
 
+  // Loading state
   if (loading) {
     return (
-      <div className={`learning-container ${highContrast ? 'high-contrast' : ''}`}>
+      <div className="learning-container">
         <div className="learning-content">
           <p>{t('learning.loading')}</p>
         </div>
@@ -371,9 +282,10 @@ const Learning: React.FC<LearningProps> = ({
     );
   }
 
+  // Error state
   if (error || !lessonData) {
     return (
-      <div className={`learning-container ${highContrast ? 'high-contrast' : ''}`}>
+      <div className="learning-container">
         <ErrorFallback
           error={error || t('learning.error')}
           title={t('learning.errorTitle')}
@@ -398,10 +310,10 @@ const Learning: React.FC<LearningProps> = ({
     );
   }
 
-  // Show evaluation page if opened
+  // Evaluation view
   if (showEvaluation && lessonData) {
     return (
-      <div className={`learning-container ${highContrast ? 'high-contrast' : ''}`}>
+      <div className="learning-container">
         <Evaluation
           lessonId={lessonId}
           lessonTitle={lessonData.lesson.title}
@@ -412,74 +324,59 @@ const Learning: React.FC<LearningProps> = ({
   }
 
   const highlightedContent = highlightKeywords(lessonData.lesson.content);
-  const firstSentence = lessonData.lesson.content.split(/[.!?]\s/)[0]?.trim() || '';
+  const progressPercentage = totalLessons > 0 ? (lessonId / totalLessons) * 100 : 0;
 
   return (
-    <div className={`learning-container ${highContrast ? 'high-contrast' : ''}`}>
+    <div className="learning-container">
       <a className="skip-link" href="#content">
         {t('learning.skipToContent')}
       </a>
 
-      <header id="topbar" className="lesson-header">
-        <nav className="nav" aria-label="Main navigation">
+      {/* Minimal Header */}
+      <header className="lesson-header">
+        <nav className="nav" aria-label="Lesson navigation">
           <button
-            id="backBtn"
             onClick={() => {
-              if (lessonId > 1) {
-                if (onNavigateLesson) onNavigateLesson(lessonId - 1);
+              if (lessonId > 1 && onNavigateLesson) {
+                onNavigateLesson(lessonId - 1);
               } else {
                 onBack();
               }
             }}
-            aria-label={t('learning.navigation.previous')}
+            aria-label={lessonId > 1 ? t('learning.navigation.previous') : 'Back to lessons'}
           >
-            ◀ {t('learning.navigation.previous')}
+            ← {lessonId > 1 ? t('learning.navigation.previous') : 'Lessons'}
           </button>
-          <div className="nav-title" role="heading" aria-level={1}>
-            {t('learning.title')}
+
+          {/* Progress Indicator */}
+          <div className="progress-indicator">
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ width: `${progressPercentage}%` }}
+              />
+            </div>
+            <span>{lessonId} / {totalLessons}</span>
           </div>
+
           <button
-            id="nextBtn"
             onClick={() => {
-              if (onNavigateLesson) {
+              if (onNavigateLesson && lessonId < totalLessons) {
                 onNavigateLesson(lessonId + 1);
               }
             }}
+            disabled={lessonId >= totalLessons}
             aria-label={t('learning.navigation.next')}
           >
-            {t('learning.navigation.next')} ▶
+            {t('learning.navigation.next')} →
           </button>
         </nav>
-        <div className="controls" aria-hidden={focusMode}>
+
+        {/* Focus Mode Toggle Only */}
+        <div className="controls">
           <label>
             <input
               type="checkbox"
-              id="dyslexiaToggle"
-              checked={dyslexiaMode}
-              onChange={(e) => {
-                setDyslexiaMode(e.target.checked);
-                try {
-                  localStorage.setItem('dyslexia-mode', e.target.checked ? '1' : '0');
-                } catch (err) {
-                  // Ignore
-                }
-              }}
-            />
-            {t('learning.accessibility.dyslexiaFont')}
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              id="contrastToggle"
-              checked={highContrast}
-              onChange={(e) => setHighContrast(e.target.checked)}
-            />
-            {t('learning.accessibility.highContrast')}
-          </label>
-          <label>
-            <input
-              type="checkbox"
-              id="distractionToggle"
               checked={focusMode}
               onChange={(e) => onFocusModeChange(e.target.checked)}
             />
@@ -488,17 +385,16 @@ const Learning: React.FC<LearningProps> = ({
         </div>
       </header>
 
-      <main id="app" role="main" className="lesson-main">
-        <section id="lessonHeader" className="lesson-header-section">
+      {/* Main Content */}
+      <main className="lesson-main" role="main">
+        {/* Lesson Title Section */}
+        <section className="lesson-header-section">
           <h1 id="lessonTitle">{lessonData.lesson.title}</h1>
-          {firstSentence && (
-            <p id="lessonDefinition" className="definition" aria-live="polite">
-              {firstSentence}.
-            </p>
+          {lessonData.lesson.instructions && (
+            <p className="definition">{lessonData.lesson.instructions}</p>
           )}
           {lessonData.lesson.image_url && (
             <img
-              id="lessonImage"
               src={lessonData.lesson.image_url}
               alt={lessonData.lesson.title}
               className="lesson-image"
@@ -506,23 +402,24 @@ const Learning: React.FC<LearningProps> = ({
           )}
         </section>
 
-        <section id="controls" className="lesson-controls" aria-label="Playback and pacing controls">
+        {/* Audio Controls */}
+        <section className="lesson-controls" aria-label="Audio controls">
           <div className="tts-controls">
-            <button id="playBtn" onClick={isPaused ? handleResume : handlePlay} disabled={isPlaying && !isPaused}>
-              {isPaused ? t('learning.controls.play') : isPlaying ? t('learning.controls.pause') : t('learning.controls.play')}
+            <button
+              id="playBtn"
+              onClick={isPaused ? handleResume : handlePlay}
+              disabled={isPlaying && !isPaused}
+            >
+              {isPaused ? 'Resume' : isPlaying ? 'Playing...' : t('learning.controls.play')}
             </button>
-            {isPlaying && !isPaused && (
-              <button id="pauseBtn" onClick={handlePause}>
-                {t('learning.controls.pause')}
+            {(isPlaying || isPaused) && (
+              <button id="stopBtn" onClick={handleStop}>
+                {t('learning.controls.stop')}
               </button>
             )}
-            <button id="stopBtn" onClick={handleStop} disabled={!isPlaying && !isPaused}>
-              {t('learning.controls.stop')}
-            </button>
             <label>
-              {t('learning.controls.speed')}{' '}
+              {t('learning.controls.speed')}
               <input
-                id="speed"
                 type="range"
                 min="0.75"
                 max="1.5"
@@ -531,84 +428,26 @@ const Learning: React.FC<LearningProps> = ({
                 onChange={(e) => {
                   const newSpeed = parseFloat(e.target.value) as AudioSpeed;
                   updateAudioSpeed(newSpeed);
-                  if (synthRef.current && synthRef.current.speaking && utteranceRef.current) {
-                    const wasPaused = synthRef.current.paused;
-                    const currentText = utteranceRef.current.text;
-                    synthRef.current.cancel();
-                    if (!wasPaused) {
-                      speakText(currentText, newSpeed);
-                    }
-                  }
                 }}
-              />
-            </label>
-          </div>
-          <div className="pacing-controls">
-            <label>
-              {t('learning.controls.autoScroll')}{' '}
-              <input
-                id="autoscroll"
-                type="checkbox"
-                checked={autoScroll}
-                onChange={(e) => setAutoScroll(e.target.checked)}
-              />
-            </label>
-            <label>
-              {t('learning.controls.scrollSpeed')}{' '}
-              <input
-                id="scrollSpeed"
-                type="range"
-                min="200"
-                max="2000"
-                step="100"
-                value={scrollSpeed}
-                onChange={(e) => setScrollSpeed(parseInt(e.target.value, 10))}
               />
             </label>
           </div>
         </section>
 
-        {lessonData.lesson.instructions && (
-          <section id="instructions" className="lesson-instructions">
-            <h2>{t('learning.instructions')}</h2>
-            <div id="instructionText">{lessonData.lesson.instructions}</div>
-            <button id="instrAudio" onClick={handlePlayInstructions}>
-              {t('learning.playInstructions')}
-            </button>
-          </section>
-        )}
-
-        <div className="exercises-section">
-          <button
-            className="exercises-button"
-            onClick={onNavigateToExercises}
-            aria-label={t('lessons.goToExercises')}
-          >
-            {t('lessons.goToExercises')}
-          </button>
-          <button
-            className="evaluation-button"
-            onClick={() => setShowEvaluation(true)}
-            aria-label={t('lessons.evaluateYourself') || 'Evaluate yourself'}
-          >
-            {t('lessons.evaluateYourself') || 'Evaluate yourself'}
-          </button>
-        </div>
-
-
+        {/* Main Content Card */}
         <article
           id="content"
           ref={contentRef}
-          className="lesson-content"
           tabIndex={0}
           aria-live="polite"
           dangerouslySetInnerHTML={{ __html: highlightedContent }}
         />
 
+        {/* Keywords Section (Inline) */}
         {lessonData.keywords && lessonData.keywords.length > 0 && (
-          <aside id="keywords" className="keywords-sidebar" aria-label={t('learning.keywords')}>
+          <aside className="keywords-sidebar" aria-label={t('learning.keywords')}>
             <h3>{t('learning.keywords')}</h3>
-            <ul id="keywordList" className="keyword-list">
+            <ul className="keyword-list">
               {lessonData.keywords.map((kw, index) => (
                 <li key={index}>
                   <button
@@ -624,11 +463,29 @@ const Learning: React.FC<LearningProps> = ({
             </ul>
           </aside>
         )}
+
+        {/* Exercise Buttons */}
+        <div className="exercises-section">
+          <button
+            className="exercises-button"
+            onClick={onNavigateToExercises}
+            aria-label={t('lessons.goToExercises')}
+          >
+            {t('lessons.goToExercises')}
+          </button>
+          <button
+            className="evaluation-button"
+            onClick={() => setShowEvaluation(true)}
+            aria-label={t('lessons.evaluateYourself') || 'Evaluate yourself'}
+          >
+            {t('lessons.evaluateYourself') || 'Evaluate Yourself'}
+          </button>
+        </div>
       </main>
 
+      {/* Focus Mode Exit Button */}
       {focusMode && (
         <button
-          id="exitDistraction"
           className="exit-distraction"
           onClick={() => onFocusModeChange(false)}
           aria-label={t('learning.accessibility.exitDistraction')}

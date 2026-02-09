@@ -15,15 +15,7 @@ const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar, isSidebarOpen, onLogou
     return (
         <header className="top-bar">
             <div className="top-bar-left">
-                {!isSidebarOpen && (
-                    <button
-                        className="sidebar-toggle-btn"
-                        onClick={onToggleSidebar}
-                        aria-label="Open sidebar"
-                    >
-                        ☰
-                    </button>
-                )}
+                {/* Hamburger toggle removed per user request */}
             </div>
             <div className="top-bar-right">
                 <LanguageSwitcher />

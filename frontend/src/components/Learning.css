@@ -1,543 +1,756 @@
-/* Learning page - Matches epic1 layout exactly */
+/* Learning Page - Clean, Focused Reading Experience
+   Modern, professional design with content-first approach */
 
-/* CSS Variables matching epic1 */
+/* ========================================
+   Design Tokens
+   ======================================== */
 :root {
-  --bg: #ffffff;
-  --text: #111111;
-  --accent: #0066cc;
-  --muted: #666666;
-  --keyword-fg: #ffffff;
-  --instr-bg: #f8f9fb;
+  --content-max-width: 800px;
+  --content-line-height: 1.8;
+  --card-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
+  --card-shadow-hover: 0 8px 30px rgba(15, 23, 42, 0.1);
+  --learning-bg: #f8fafc;
+  --learning-card-bg: #ffffff;
+  --learning-text: #1e293b;
+  --learning-text-muted: #64748b;
+  --learning-accent: #3b82f6;
+  --learning-accent-hover: #2563eb;
+  --learning-border: #e2e8f0;
+  --learning-keyword-bg: rgba(59, 130, 246, 0.08);
+  --learning-keyword-border: rgba(59, 130, 246, 0.3);
 }
 
-/* Skip link */
+/* ========================================
+   Skip Link (Accessibility)
+   ======================================== */
 .skip-link {
   position: absolute;
   top: -40px;
   left: 0;
-  background: var(--accent);
+  background: var(--learning-accent);
   color: white;
-  padding: 8px;
+  padding: 8px 16px;
   text-decoration: none;
   z-index: 100;
+  border-radius: 0 0 8px 0;
 }
 
 .skip-link:focus {
   top: 0;
 }
 
-/* Header - matches epic1 exactly */
-header#topbar {
+/* ========================================
+   Main Container
+   ======================================== */
+.learning-container {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(180deg, var(--learning-bg) 0%, #f1f5f9 100%);
+  color: var(--learning-text);
+  padding-bottom: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ========================================
+   Minimal Header
+   ======================================== */
+.lesson-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 16px;
-  border-bottom: 1px solid #eee;
-  background: linear-gradient(#fff, #fafafa);
-  flex-wrap: wrap;
-  gap: 10px;
+  padding: 16px 40px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--learning-border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .nav {
   display: flex;
-  gap: 8px;
+  gap: 12px;
   align-items: center;
 }
 
 .nav-title {
-  font-weight: 600;
-  font-size: var(--base-font-size, 16px);
-  color: var(--text-primary);
+  display: none;
+  /* Hidden in clean design */
 }
 
-header#topbar button {
+.lesson-header button {
   background: transparent;
-  border: 1px solid #ddd;
-  color: var(--text);
-  padding: 6px 10px;
-  border-radius: 6px;
+  border: none;
+  color: var(--learning-text-muted);
+  padding: 8px 16px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: var(--base-font-size, 16px);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
 }
 
-header#topbar button:focus {
-  outline: 3px solid rgba(0, 102, 204, 0.25);
+.lesson-header button:hover {
+  background: var(--learning-border);
+  color: var(--learning-text);
 }
 
-header#topbar button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
+.lesson-header button:focus {
+  outline: 2px solid var(--learning-accent);
+  outline-offset: 2px;
 }
 
+/* Header Controls - Only Focus Mode */
 .controls {
   display: flex;
-  gap: 12px;
   align-items: center;
-  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .controls label {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: var(--base-font-size, 16px);
-  color: var(--text-primary);
+  gap: 8px;
+  font-size: 14px;
+  color: var(--learning-text-muted);
   cursor: pointer;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1px solid var(--learning-border);
+  transition: all 0.2s ease;
+}
+
+.controls label:hover {
+  background: var(--learning-border);
 }
 
 .controls input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
   cursor: pointer;
+  accent-color: var(--learning-accent);
 }
 
-/* Main layout - matches epic1 grid */
-main#app {
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 20px;
-  padding: 18px;
-  background-color: var(--bg-primary);
-  min-height: calc(100vh - 100px);
+/* Progress Indicator in Header */
+.progress-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--learning-text-muted);
+  font-weight: 500;
 }
 
-/* Lesson header section */
-#lessonHeader {
+.progress-indicator .progress-bar {
+  width: 100px;
+  height: 4px;
+  background: var(--learning-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-indicator .progress-fill {
+  height: 100%;
+  background: var(--learning-accent);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+/* ========================================
+   Main Content Area
+   ======================================== */
+.lesson-main {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  grid-column: 1 / -1;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 40px 24px;
+  gap: 32px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* Lesson Header Section */
+.lesson-header-section {
+  text-align: center;
+  max-width: var(--content-max-width);
+  width: 100%;
 }
 
 #lessonTitle {
-  font-size: var(--heading-1, 32px);
-  color: var(--text-primary);
-  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--learning-text);
+  margin: 0 0 12px 0;
+  letter-spacing: -0.5px;
+  line-height: 1.3;
 }
 
 .definition {
-  font-size: var(--base-font-size, 16px);
-  color: var(--text-secondary);
+  font-size: 16px;
+  color: var(--learning-text-muted);
   margin: 0;
+  line-height: 1.6;
 }
 
 .lesson-image {
   max-width: 100%;
   height: auto;
-  border-radius: 8px;
-  margin-top: 10px;
+  border-radius: 12px;
+  margin-top: 24px;
+  box-shadow: var(--card-shadow);
 }
 
-/* Controls section */
-#controls {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  grid-column: 1 / -1;
-  padding: 15px;
-  background-color: var(--bg-secondary);
-  border-radius: 8px;
-  border: 1px solid var(--border);
+/* ========================================
+   Content Card
+   ======================================== */
+#content {
+  max-width: var(--content-max-width);
+  width: 100%;
+  background: var(--learning-card-bg);
+  border-radius: 16px;
+  padding: 48px;
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  font-size: 17px;
+  line-height: var(--content-line-height);
+  color: var(--learning-text);
+  outline: none;
+  transition: box-shadow 0.3s ease;
 }
 
-.tts-controls,
-.pacing-controls {
+#content:focus {
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* ========================================
+   Keyword Highlighting
+   ======================================== */
+.kw-highlight {
+  background: transparent;
+  border-bottom: 2px solid var(--learning-keyword-border);
+  padding: 0 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 0;
+}
+
+.kw-highlight:hover {
+  background: var(--learning-keyword-bg);
+  border-bottom-color: var(--learning-accent);
+}
+
+.kw-highlight:focus {
+  outline: 2px solid var(--learning-accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ========================================
+   Instructions Section
+   ======================================== */
+#instructions {
+  max-width: var(--content-max-width);
+  width: 100%;
+  background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
+  border: 1px solid #bfdbfe;
+  border-left: 4px solid var(--learning-accent);
+  padding: 24px 32px;
+  border-radius: 12px;
+}
+
+#instructions h2 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--learning-text);
+  margin: 0 0 12px 0;
   display: flex;
-  gap: 8px;
   align-items: center;
-  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.tts-controls button,
-.pacing-controls button {
-  background-color: var(--accent);
+#instructions h2::before {
+  content: '📋';
+  font-size: 18px;
+}
+
+#instructionText {
+  font-size: 15px;
+  color: var(--learning-text-muted);
+  line-height: 1.6;
+}
+
+#instructions button {
+  margin-top: 16px;
+  background: var(--learning-accent);
   color: white;
   border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 10px 20px;
+  border-radius: 20px;
   cursor: pointer;
-  font-size: var(--base-font-size, 16px);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+#instructions button:hover {
+  background: var(--learning-accent-hover);
+}
+
+/* ========================================
+   Audio Controls (Simplified)
+   ======================================== */
+.lesson-controls {
+  max-width: var(--content-max-width);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.tts-controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--learning-card-bg);
+  padding: 16px 24px;
+  border-radius: 40px;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--learning-border);
+}
+
+.tts-controls button {
+  background: var(--learning-accent);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 24px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tts-controls button::before {
+  content: '🔊';
+}
+
+.tts-controls button#stopBtn::before {
+  content: '⏹';
+}
+
+.tts-controls button#pauseBtn::before {
+  content: '⏸';
+}
+
+.tts-controls button:hover {
+  background: var(--learning-accent-hover);
+  transform: translateY(-1px);
 }
 
 .tts-controls button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+  transform: none;
 }
 
-.tts-controls label,
-.pacing-controls label {
+.tts-controls label {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: var(--base-font-size, 16px);
-  color: var(--text-primary);
+  font-size: 13px;
+  color: var(--learning-text-muted);
 }
 
-.tts-controls input[type="range"],
-.pacing-controls input[type="range"] {
-  flex: 1;
-  min-width: 100px;
+.tts-controls input[type="range"] {
+  width: 80px;
+  accent-color: var(--learning-accent);
 }
 
-/* Instructions section - matches epic1 */
-#instructions {
-  background: var(--instr-bg);
-  border-left: 4px solid var(--accent);
-  padding: 12px;
-  border-radius: 6px;
-  color: var(--text);
-  grid-column: 1 / -1;
+/* Hide pacing controls in clean design */
+.pacing-controls {
+  display: none;
 }
 
-#instructions h2 {
-  font-size: var(--heading-3, 20px);
-  color: var(--text-primary);
-  margin: 0 0 10px 0;
+/* ========================================
+   Keywords Section (Inline)
+   ======================================== */
+.keywords-sidebar {
+  max-width: var(--content-max-width);
+  width: 100%;
+  background: var(--learning-card-bg);
+  border-radius: 12px;
+  padding: 24px 32px;
+  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+  border: 1px solid var(--learning-border);
 }
 
-#instructions button {
-  margin-top: 10px;
-  background-color: var(--accent);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: var(--base-font-size, 16px);
+.keywords-sidebar h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--learning-text);
+  margin: 0 0 16px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-/* Content area - matches epic1 */
-#content {
-  padding: 16px;
-  border-radius: 6px;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  min-height: 320px;
-  max-height: 600px;
-  overflow-y: auto;
-  outline: none;
-  font-size: var(--base-font-size, 16px);
-  line-height: 1.6;
-  color: var(--text-primary);
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+.keywords-sidebar h3::before {
+  content: '📌';
 }
 
-#content:focus {
-  outline: 3px solid rgba(0, 102, 204, 0.25);
-}
-
-/* Keywords sidebar - matches epic1 */
-#keywords {
-  padding: 12px;
-  border-left: 1px dashed #e6e6e6;
-  background-color: var(--bg-secondary);
-  border-radius: 6px;
-  max-height: 600px;
-  overflow-y: auto;
-}
-
-#keywords h3 {
-  font-size: var(--heading-3, 20px);
-  color: var(--text-primary);
-  margin: 0 0 15px 0;
-}
-
-#keywordList {
+.keyword-list {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
 }
 
-#keywordList li {
+.keyword-list li {
   display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin-bottom: 8px;
   flex-direction: column;
+  gap: 4px;
 }
 
 .keyword {
-  background: var(--accent);
-  color: var(--keyword-fg);
-  padding: 2px 6px;
-  border-radius: 4px;
+  background: var(--learning-keyword-bg);
+  color: var(--learning-accent);
+  padding: 6px 12px;
+  border-radius: 6px;
   cursor: pointer;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  font-size: var(--base-font-size, 16px);
+  border: 1px solid var(--learning-keyword-border);
+  font-size: 14px;
   font-weight: 600;
-  border: none;
-}
-
-.keyword:focus {
-  outline: 3px solid rgba(0, 0, 0, 0.12);
-}
-
-.keyword-explanation {
-  font-size: 0.95em;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
-/* Keyword highlighting in content */
-.kw-highlight {
-  background: rgba(255, 235, 59, 0.25);
-  padding: 2px 3px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.kw-highlight:hover {
-  background: rgba(255, 235, 59, 0.5);
-}
-
-.kw-highlight:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-/* Dyslexia mode - matches epic1 */
-.dyslexia-mode,
-.dyslexia-mode * {
-  font-family: 'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-.dyslexia-mode {
-  font-size: 1.06rem;
-  line-height: 1.7;
-  word-spacing: 0.12em;
-  letter-spacing: 0.02em;
+  transition: all 0.2s ease;
   text-align: left;
 }
 
-.dyslexia-mode #content,
-.dyslexia-mode #lessonHeader,
-.dyslexia-mode #instructions {
-  max-width: 90ch;
-}
-
-.dyslexia-mode h1,
-.dyslexia-mode h2,
-.dyslexia-mode h3 {
-  letter-spacing: 0.01em;
-}
-
-.dyslexia-mode p,
-.dyslexia-mode li {
-  margin-bottom: 0.9em;
-}
-
-.dyslexia-mode button,
-.dyslexia-mode input,
-.dyslexia-mode textarea,
-.dyslexia-mode select {
-  font-size: 1.03rem;
-}
-
-.dyslexia-mode .keyword {
-  padding: 6px 8px;
-  font-weight: 700;
-}
-
-/* High contrast - matches epic1 */
-.high-contrast {
-  --bg: #000000 !important;
-  --text: #ffffff !important;
-  --accent: #ffff00 !important;
-  --muted: #ffffff !important;
-  --instr-bg: #000000 !important;
-}
-
-.high-contrast #content {
-  background: #000;
-}
-
-.high-contrast header#topbar {
-  background: var(--bg);
-  border-bottom-color: var(--text);
-}
-
-.high-contrast header#topbar button {
-  background: var(--text);
-  color: var(--bg);
-  border-color: var(--text);
-}
-
-.high-contrast {
-  --keyword-fg: #000000;
-}
-
-.high-contrast .kw-highlight {
-  background: var(--accent);
-  color: var(--keyword-fg);
-  color: #000 !important;
-  padding: 2px 3px;
-  border-radius: 3px;
-}
-
-.high-contrast .keyword {
-  background: var(--accent);
-  color: var(--keyword-fg);
-  color: #000 !important;
-}
-
-/* Ensure any other yellow-highlighted inline spans show black text in high-contrast */
-.high-contrast span[style*="background: rgba(255, 235, 59"] {
-  color: #000 !important;
-}
-
-/* Ensure accent (yellow) buttons and elements use black text in high-contrast */
-.high-contrast .tts-controls button,
-.high-contrast #instructions button,
-.high-contrast .learning-back-button,
-.high-contrast .exit-distraction,
-.high-contrast .keyword,
-.high-contrast .kw-highlight {
-  background: var(--accent) !important;
-  color: #000 !important;
-  border-color: #000 !important;
-}
-
-/* Distraction-free (Focus Mode) - handled by app-container.focus-mode */
-.app-container.focus-mode header .nav,
-.app-container.focus-mode #keywords,
-.app-container.focus-mode .keywords-sidebar {
-  display: none;
-}
-
-.app-container.focus-mode header .controls {
-  visibility: hidden;
-}
-
-.app-container.focus-mode main#app {
-  grid-template-columns: 1fr;
-  transition: all 0.2s;
-}
-
-.exit-distraction {
-  position: fixed;
-  right: 12px;
-  top: 12px;
-  z-index: 1200;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: var(--accent);
-  color: var(--bg-primary);
-  border: none;
-  box-shadow: 0 4px 12px var(--shadow);
-  cursor: pointer;
-  display: none;
-  font-size: var(--base-font-size, 16px);
-  font-weight: 600;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.exit-distraction:focus {
-  outline: 3px solid rgba(255, 255, 255, 0.4);
-}
-
-.app-container.focus-mode .exit-distraction {
-  display: block;
-}
-
-/* Responsive - matches epic1 */
-@media (max-width: 900px) {
-  main#app {
-    grid-template-columns: 1fr;
-  }
-
-  #keywords {
-    order: 2;
-    border-left: none;
-    border-top: 1px dashed #e6e6e6;
-  }
-}
-
-/* Learning container */
-.learning-container {
-  min-height: 100vh;
-  background-color: var(--bg-primary);
-  color: var(--text-primary);
-}
-
-.learning-content {
-  padding: 20px;
-  text-align: center;
-  font-size: var(--base-font-size, 16px);
-  color: var(--text-primary);
-}
-
-.learning-back-button {
-  margin-top: 20px;
-  padding: 12px 30px;
-  font-size: var(--base-font-size, 16px);
-  font-weight: 600;
+.keyword:hover {
+  background: var(--learning-accent);
   color: white;
-  background-color: var(--accent);
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
+  border-color: var(--learning-accent);
 }
 
-/* Exercises section */
-.exercises-section {
-  grid-column: 1 / -1;
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  padding: 20px 0;
-  flex-wrap: wrap;
-}
-
-.exercises-button {
-  padding: 12px 30px;
-  font-size: var(--base-font-size, 16px);
-  font-weight: 600;
-  color: white;
-  background-color: #6366f1;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.exercises-button:hover {
-  background-color: #4f46e5;
-  transform: translateY(-2px);
-}
-
-.exercises-button:active {
-  transform: translateY(0);
-}
-
-.exercises-button:focus {
-  outline: 3px solid rgba(99, 102, 241, 0.4);
+.keyword:focus {
+  outline: 2px solid var(--learning-accent);
   outline-offset: 2px;
 }
 
-/* Evaluation button */
+.keyword-explanation {
+  font-size: 13px;
+  color: var(--learning-text-muted);
+  line-height: 1.5;
+  padding-left: 12px;
+}
+
+/* ========================================
+   Exercise Buttons
+   ======================================== */
+.exercises-section {
+  max-width: var(--content-max-width);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.exercises-button,
 .evaluation-button {
-  padding: 12px 30px;
-  font-size: var(--base-font-size, 16px);
+  padding: 14px 32px;
+  font-size: 15px;
   font-weight: 600;
   color: white;
-  background-color: #8b5cf6;
   border: none;
-  border-radius: 6px;
+  border-radius: 24px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.exercises-button {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+}
+
+.exercises-button:hover {
+  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+}
+
+.evaluation-button {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
 }
 
 .evaluation-button:hover {
-  background-color: #7c3aed;
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
   transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
 }
 
+.exercises-button:active,
 .evaluation-button:active {
   transform: translateY(0);
 }
 
+.exercises-button:focus,
 .evaluation-button:focus {
-  outline: 3px solid rgba(139, 92, 246, 0.4);
+  outline: 3px solid rgba(99, 102, 241, 0.4);
   outline-offset: 2px;
+}
+
+/* ========================================
+   Navigation Footer
+   ======================================== */
+.navigation-footer {
+  max-width: var(--content-max-width);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding-top: 24px;
+  border-top: 1px solid var(--learning-border);
+}
+
+.nav-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: transparent;
+  border: 1px solid var(--learning-border);
+  border-radius: 24px;
+  color: var(--learning-text-muted);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-button:hover {
+  background: var(--learning-border);
+  color: var(--learning-text);
+}
+
+/* ========================================
+   Focus Mode (Distraction-Free)
+   ======================================== */
+.app-container.focus-mode .lesson-header {
+  background: transparent;
+  border-bottom: none;
+}
+
+.app-container.focus-mode .lesson-header .nav {
+  opacity: 0.3;
+}
+
+.app-container.focus-mode .lesson-header .nav:hover {
+  opacity: 1;
+}
+
+.app-container.focus-mode .controls label:not(:last-child) {
+  display: none;
+}
+
+.app-container.focus-mode .keywords-sidebar {
+  display: none;
+}
+
+.app-container.focus-mode #content {
+  max-width: 90%;
+  padding: 64px;
+}
+
+.app-container.focus-mode .exercises-section {
+  display: none;
+}
+
+.exit-distraction {
+  position: fixed;
+  right: 24px;
+  top: 24px;
+  z-index: 1200;
+  padding: 12px 24px;
+  border-radius: 24px;
+  background: var(--learning-accent);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  display: none;
+  transition: all 0.2s ease;
+}
+
+.exit-distraction:hover {
+  background: var(--learning-accent-hover);
+  transform: translateY(-2px);
+}
+
+.app-container.focus-mode .exit-distraction {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.exit-distraction::before {
+  content: '✕';
+}
+
+/* ========================================
+   Loading State
+   ======================================== */
+.learning-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  gap: 16px;
+  color: var(--learning-text-muted);
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+@media (max-width: 768px) {
+  .lesson-header {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .controls {
+    order: -1;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .lesson-main {
+    padding: 24px 16px;
+    gap: 24px;
+  }
+
+  #lessonTitle {
+    font-size: 24px;
+  }
+
+  #content {
+    padding: 24px;
+    font-size: 16px;
+  }
+
+  .tts-controls {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    border-radius: 16px;
+    padding: 16px;
+  }
+
+  .keywords-sidebar {
+    padding: 20px;
+  }
+
+  .keyword-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================
+   Dark Theme Support
+   ======================================== */
+[data-theme="dark"] .learning-container {
+  background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+}
+
+[data-theme="dark"] .lesson-header {
+  background: rgba(26, 26, 26, 0.9);
+  border-bottom-color: #404040;
+}
+
+[data-theme="dark"] #content,
+[data-theme="dark"] .keywords-sidebar,
+[data-theme="dark"] .tts-controls {
+  background: #2d2d2d;
+  border-color: #404040;
+}
+
+[data-theme="dark"] #lessonTitle,
+[data-theme="dark"] .keyword-explanation {
+  color: #ffffff;
+}
+
+[data-theme="dark"] .definition,
+[data-theme="dark"] .tts-controls label,
+[data-theme="dark"] .controls label {
+  color: #b0b0b0;
+}
+
+/* ========================================
+   Dyslexia Mode Support
+   ======================================== */
+.dyslexia-mode #content {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+  line-height: 2;
+  letter-spacing: 0.05em;
+  word-spacing: 0.1em;
+}
+
+.dyslexia-mode #lessonTitle {
+  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
+}
+
+/* ========================================
+   High Contrast Mode Support
+   ======================================== */
+.high-contrast .learning-container {
+  background: #000000;
+}
+
+.high-contrast #content,
+.high-contrast .keywords-sidebar,
+.high-contrast .tts-controls,
+.high-contrast #instructions {
+  background: #000000;
+  border: 2px solid #ffffff;
+}
+
+.high-contrast #lessonTitle,
+.high-contrast #content {
+  color: #ffffff;
+}
+
+.high-contrast .tts-controls button,
+.high-contrast .exercises-button,
+.high-contrast .evaluation-button,
+.high-contrast .keyword {
+  background: #ffff00 !important;
+  color: #000000 !important;
+}
+
+.high-contrast .kw-highlight {
+  border-bottom-color: #ffff00;
+  color: #ffff00;
+}
+
+.high-contrast .kw-highlight:hover {
+  background: #ffff00;
+  color: #000000;
 }
