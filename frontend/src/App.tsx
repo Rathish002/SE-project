@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
 import { auth } from './firebase';
-import { initializeLanguageSettings } from './utils/languageManager';
+import { initializeLanguageSettings } from './utils/appSettings';
 import { useAccessibility, AccessibilityProvider } from './contexts/AccessibilityContext';
 import { initializeUserProfile } from './services/userService';
 import { setUserOnline, setUserOffline } from './services/presenceService';
@@ -21,6 +21,7 @@ import Collaboration from './components/Collaboration';
 import Exercises from './components/Exercises';
 import Navigation, { Page } from './components/Navigation';
 import AccessibilityOverlays from './components/AccessibilityOverlays';
+import TopBar from './components/TopBar';
 
 import './i18n/i18n'; // Initialize i18n
 import './App.css';
@@ -38,6 +39,12 @@ function App() {
   const focusMode = preferences.distractionFreeMode;
   const setFocusMode = updateDistractionFreeMode;
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   // Initialize language settings
   useEffect(() => {
     const { interfaceLanguage } = initializeLanguageSettings();
@@ -46,7 +53,7 @@ function App() {
 
   // Auth state listener
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser: User | null) => {
       if (currentUser) {
         try {
           await initializeUserProfile(currentUser);
@@ -134,8 +141,7 @@ function App() {
               <Navigation
                 currentPage="lessons"
                 onNavigate={handleNavigate}
-                onLogout={handleLogout}
-                showSideArrows={false}
+                isOpen={false} // Force closed in learning mode? Or just hidden? Logic was: hidden if focusMode.
               />
             )}
 
@@ -158,17 +164,26 @@ function App() {
 
     return (
       <AccessibilityProvider>
-        <div className={`app-container ${isFocusModePage && focusMode ? 'focus-mode' : ''}`}>
+        <div className={`app-container ${isFocusModePage && focusMode ? 'focus-mode' : ''} ${!isSidebarOpen ? 'sidebar-closed' : ''}`}>
           {!(isFocusModePage && focusMode) && (
             <Navigation
               currentPage={currentPage}
               onNavigate={handleNavigate}
-              onLogout={handleLogout}
-              showSideArrows={true}
+              isOpen={isSidebarOpen}
+              onToggle={toggleSidebar}
             />
           )}
 
           <div className="main-content">
+            {!(isFocusModePage && focusMode) && (
+              <TopBar
+                isSidebarOpen={isSidebarOpen}
+                onToggleSidebar={toggleSidebar}
+                onLogout={handleLogout}
+                onNavigate={handleNavigate}
+              />
+            )}
+
             {currentPage === 'home' && <Home currentUser={user} />}
             {currentPage === 'lessons' && (
               <LessonSelection onSelectLesson={handleSelectLesson} />
@@ -195,7 +210,7 @@ function App() {
   }
 
   return (
-    <div className="app-container">
+    <div className="app-container auth-mode">
       {showSignup ? (
         <Signup onSwitchToLogin={() => setShowSignup(false)} />
       ) : (

@@ -6,8 +6,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { User } from 'firebase/auth';
-import { 
-  subscribeToMessages, 
+import {
+  subscribeToMessages,
   sendMessage,
   sendImageMessage,
   sendVideoMessage,
@@ -53,7 +53,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const [isBlocked, setIsBlocked] = useState(false);
   const [messageStates, setMessageStates] = useState<LocalMessageState>({});
   const [translatedMessages, setTranslatedMessages] = useState<{ [messageId: string]: string }>({});
-  
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const unsubscribeMessagesRef = useRef<(() => void) | null>(null);
   const unsubscribeConversationRef = useRef<(() => void) | null>(null);
@@ -66,7 +66,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   // Subscribe to messages
   useEffect(() => {
     if (!currentUser?.uid) return;
-    
+
     unsubscribeMessagesRef.current = subscribeToMessages(conversationId, currentUser.uid, (newMessages: Message[]) => {
       setMessages(newMessages);
       setConnectionStatus('connected');
@@ -84,7 +84,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
     const conversationRef = doc(db, 'conversations', conversationId);
     unsubscribeConversationRef.current = onSnapshot(
       conversationRef,
-      async (snap) => {
+      async (snap: any) => {
         if (snap.exists()) {
           const data = snap.data();
           setConversation({
@@ -114,7 +114,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           setParticipants(participantData);
         }
       },
-      (error) => {
+      (error: any) => {
         console.error('Conversation subscription error:', error);
         setConnectionStatus('reconnecting');
       }
@@ -217,7 +217,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           const duration = Math.floor((Date.now() - startTime) / 1000);
           const blob = new Blob(chunks, { type: 'audio/webm' });
           const file = new File([blob], `voice_${Date.now()}.webm`, { type: 'audio/webm' });
-          
+
           // Upload the voice message
           try {
             setUploadingVoice(true);
@@ -228,7 +228,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           } finally {
             setUploadingVoice(false);
           }
-          
+
           // Stop all tracks
           stream.getTracks().forEach(track => track.stop());
         };
@@ -258,7 +258,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       if (!currentUser?.uid) return;
       const currentLang = i18n.language || 'en';
       await sendMessage(conversationId, currentUser!.uid, textToSend, currentLang);
-      
+
       // Mark as sent
       setMessageStates(prev => ({ ...prev, [tempId]: 'sent' }));
       setTimeout(() => {
@@ -319,7 +319,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
 
   const handleTranslateMessage = async (messageId: string, text: string, originalLang: string) => {
     const targetLang = i18n.language || 'en';
-    
+
     // Don't translate if already in target language
     if (originalLang === targetLang) {
       alert('Message is already in your current language');
@@ -360,16 +360,16 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         </button>
         <div className="chat-header-info">
           <h2 className="chat-title">
-            {conversation?.type === 'group' 
+            {conversation?.type === 'group'
               ? (conversation.groupName || conversation.participantNames.join(', '))
-              : conversation?.participantNames.find((name, idx) => 
-                  conversation.participants[idx] !== currentUser!.uid
-                ) || t('collaboration.chat.unknownUser')
+              : conversation?.participantNames.find((name, idx) =>
+                conversation.participants[idx] !== currentUser!.uid
+              ) || t('collaboration.chat.unknownUser')
             }
           </h2>
           <div className="chat-status">
             <span className={`chat-status-indicator ${connectionStatus === 'connected' ? 'connected' : 'reconnecting'}`}></span>
-            {connectionStatus === 'connected' 
+            {connectionStatus === 'connected'
               ? t('collaboration.chat.connected')
               : t('collaboration.chat.reconnecting')
             }
@@ -377,8 +377,8 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         </div>
         {/* Show block/unblock button for direct chats only */}
         {conversation?.type === 'direct' && (
-          <button 
-            className="chat-block-button" 
+          <button
+            className="chat-block-button"
             onClick={handleBlockToggle}
             title={isBlocked ? 'Unblock user' : 'Block user'}
           >
@@ -504,7 +504,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                 // Refresh conversation to get updated participants
                 if (conversationId) {
                   const ref = doc(db, 'conversations', conversationId);
-                  onSnapshot(ref, (snap) => {
+                  onSnapshot(ref, (snap: any) => {
                     if (snap.exists()) {
                       setConversation({
                         id: snap.id,

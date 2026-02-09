@@ -3,12 +3,12 @@
  * Handles friend search, friend requests, and friend list management
  */
 
-import { 
-  collection, 
-  query, 
-  where, 
-  getDocs, 
-  doc, 
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
   setDoc,
   deleteDoc,
   getDoc,
@@ -59,7 +59,7 @@ export async function searchUsersByEmail(
   const blockedSet = new Set(blockedUids);
 
   const results: UserProfile[] = [];
-  querySnapshot.forEach((docSnap) => {
+  querySnapshot.forEach((docSnap: any) => {
     const data = docSnap.data();
     // Exclude current user and blocked users
     if (data.uid !== currentUid && !blockedSet.has(data.uid)) {
@@ -102,14 +102,14 @@ export async function sendFriendRequest(
 
   // Create request document with auto-generated ID
   const requestRef = doc(requestsRef);
-  
+
   await setDoc(requestRef, {
     fromUid,
     toUid,
     status: 'pending',
     createdAt: serverTimestamp(),
   });
-  
+
   return requestRef.id;
 }
 
@@ -137,7 +137,7 @@ export async function acceptFriendRequest(
 
   // Step 2: Update request status - triggers sender's listener
   const requestRef = doc(db, 'friendRequests', requestId);
-  await setDoc(requestRef, { 
+  await setDoc(requestRef, {
     status: 'accepted',
     acceptedAt: serverTimestamp(),
   }, { merge: true });
@@ -165,7 +165,7 @@ export async function removeFriend(
   // Remove from both friend lists
   const user1FriendRef = doc(db, 'friends', user1Uid, 'list', user2Uid);
   const user2FriendRef = doc(db, 'friends', user2Uid, 'list', user1Uid);
-  
+
   await Promise.all([
     deleteDoc(user1FriendRef),
     deleteDoc(user2FriendRef),
@@ -178,30 +178,30 @@ export async function removeFriend(
  */
 export async function cleanupStaleFriendRequests(uid: string): Promise<void> {
   const requestsRef = collection(db, 'friendRequests');
-  
+
   // Get all requests involving this user
   const sentQuery = query(requestsRef, where('fromUid', '==', uid));
   const receivedQuery = query(requestsRef, where('toUid', '==', uid));
-  
+
   const [sentSnapshot, receivedSnapshot] = await Promise.all([
     getDocs(sentQuery),
     getDocs(receivedQuery),
   ]);
-  
+
   const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
-  
+
   const deletePromises: Promise<void>[] = [];
-  
+
   for (const docSnap of [...sentSnapshot.docs, ...receivedSnapshot.docs]) {
     const data = docSnap.data();
     const createdAt = data.createdAt?.toDate?.() || new Date(0);
-    
+
     // Delete if older than 30 days or if status is not pending
     if (createdAt < thirtyDaysAgo || data.status !== 'pending') {
       deletePromises.push(deleteDoc(doc(db, 'friendRequests', docSnap.id)));
     }
   }
-  
+
   await Promise.all(deletePromises);
 }
 
@@ -214,34 +214,34 @@ export async function validateFriendRequest(requestId: string): Promise<{
 }> {
   const requestRef = doc(db, 'friendRequests', requestId);
   const requestSnap = await getDoc(requestRef);
-  
+
   if (!requestSnap.exists()) {
     return { valid: false, reason: 'Request not found' };
   }
-  
+
   const data = requestSnap.data();
-  
+
   if (data.status !== 'pending') {
     return { valid: false, reason: 'Request already handled' };
   }
-  
+
   // Check if both users still exist
   const fromUserRef = doc(db, 'users', data.fromUid);
   const toUserRef = doc(db, 'users', data.toUid);
-  
+
   const [fromSnap, toSnap] = await Promise.all([
     getDoc(fromUserRef),
     getDoc(toUserRef),
   ]);
-  
+
   if (!fromSnap.exists()) {
     return { valid: false, reason: 'Sender account not found' };
   }
-  
+
   if (!toSnap.exists()) {
     return { valid: false, reason: 'Recipient account not found' };
   }
-  
+
   return { valid: true };
 }
 
@@ -269,7 +269,7 @@ export function setupAcceptanceListener(uid: string): () => void {
 
       // Write to sender's friend list (the sender's own list - always allowed)
       const senderFriendRef = doc(db, 'friends', uid, 'list', toUid);
-      
+
       // Check if already in list to avoid re-writing
       const existing = await getDoc(senderFriendRef);
       if (!existing.exists()) {
@@ -298,7 +298,7 @@ export function subscribeToFriendRequests(
 
   return onSnapshot(q, async (snapshot: QuerySnapshot<DocumentData>) => {
     const requests: FriendRequest[] = [];
-    
+
     for (const docSnap of snapshot.docs) {
       const data = docSnap.data();
       requests.push({
@@ -327,7 +327,7 @@ export function subscribeToFriends(
   const profileUnsubscribes: Map<string, () => void> = new Map();
   let currentFriends: Map<string, Friend> = new Map();
   let blockedUids: Set<string> = new Set();
-  
+
   // Subscribe to blocked users
   const blockedUnsubscribe = subscribeToBlockedUsers(uid, (blocked) => {
     blockedUids = new Set(blocked);
@@ -341,21 +341,21 @@ export function subscribeToFriends(
   const friendsUnsubscribe = onSnapshot(friendsRef, async (snapshot: QuerySnapshot<DocumentData>) => {
     // Track which friend UIDs are currently in the list
     const friendUids = new Set<string>();
-    
+
     for (const docSnap of snapshot.docs) {
       const friendUid = docSnap.data().uid;
       friendUids.add(friendUid);
-      
+
       // Skip if blocked
       if (blockedUids.has(friendUid)) continue;
-      
+
       // If we're not already watching this friend's profile, start watching
       if (!profileUnsubscribes.has(friendUid)) {
         const profile = await getUserProfile(friendUid);
         const presenceRef = doc(db, 'presence', friendUid);
         const presenceSnap = await getDoc(presenceRef);
         const presence = presenceSnap.data();
-        
+
         if (profile) {
           currentFriends.set(friendUid, {
             uid: profile.uid,
@@ -365,9 +365,9 @@ export function subscribeToFriends(
             lastActive: presence?.lastActive,
           });
         }
-        
+
         // Subscribe to profile changes
-        const profileUnsubscribe = onSnapshot(doc(db, 'users', friendUid), (profileSnap) => {
+        const profileUnsubscribe = onSnapshot(doc(db, 'users', friendUid), (profileSnap: any) => {
           if (profileSnap.exists()) {
             const profileData = profileSnap.data();
             const existing = currentFriends.get(friendUid);
@@ -384,9 +384,9 @@ export function subscribeToFriends(
             }
           }
         });
-        
+
         // Subscribe to presence changes
-        const presenceUnsubscribe = onSnapshot(presenceRef, (presenceSnap) => {
+        const presenceUnsubscribe = onSnapshot(presenceRef, (presenceSnap: any) => {
           const presenceData = presenceSnap.data();
           const existing = currentFriends.get(friendUid);
           if (existing && !blockedUids.has(friendUid)) {
@@ -401,14 +401,14 @@ export function subscribeToFriends(
             callback(filteredFriends);
           }
         });
-        
+
         profileUnsubscribes.set(friendUid, () => {
           profileUnsubscribe();
           presenceUnsubscribe();
         });
       }
     }
-    
+
     // Unsubscribe from friends who are no longer in the list
     Array.from(profileUnsubscribes.entries()).forEach(([trackedUid, unsubscribe]) => {
       if (!friendUids.has(trackedUid)) {
@@ -417,7 +417,7 @@ export function subscribeToFriends(
         currentFriends.delete(trackedUid);
       }
     });
-    
+
     // Filter blocked users before calling callback
     const filteredFriends = Array.from(currentFriends.values()).filter(
       friend => !blockedUids.has(friend.uid)
