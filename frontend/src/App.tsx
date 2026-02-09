@@ -136,23 +136,26 @@ function App() {
     if (selectedLessonId !== null) {
       return (
         <AccessibilityProvider>
-          <div className={`app-container ${focusMode ? 'focus-mode' : ''}`}>
+          <div className={`app-container ${focusMode ? 'focus-mode' : ''} ${!isSidebarOpen ? 'sidebar-closed' : ''}`}>
             {!focusMode && (
               <Navigation
                 currentPage="lessons"
                 onNavigate={handleNavigate}
-                isOpen={false} // Force closed in learning mode? Or just hidden? Logic was: hidden if focusMode.
+                isOpen={isSidebarOpen}
+                onToggle={toggleSidebar}
               />
             )}
 
-            <Learning
-              lessonId={selectedLessonId}
-              onBack={handleBackFromLearning}
-              onNavigateLesson={handleNavigateLesson}
-              focusMode={focusMode}
-              onFocusModeChange={setFocusMode}
-              onNavigateToExercises={() => handleNavigate('exercises')}
-            />
+            <div className="main-content">
+              <Learning
+                lessonId={selectedLessonId}
+                onBack={handleBackFromLearning}
+                onNavigateLesson={handleNavigateLesson}
+                focusMode={focusMode}
+                onFocusModeChange={setFocusMode}
+                onNavigateToExercises={() => handleNavigate('exercises')}
+              />
+            </div>
 
             <AccessibilityOverlays />
           </div>

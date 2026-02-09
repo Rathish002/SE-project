@@ -64,10 +64,9 @@
   margin: 0 auto;
 }
 
-.sidebar.closed .nav-text,
-.sidebar.closed .sidebar-header .collapse-btn {
+.sidebar.closed .nav-text {
   display: none;
-  /* Hide text and internal toggle when closed */
+  /* Hide text when closed */
 }
 
 .sidebar.closed .nav-button {

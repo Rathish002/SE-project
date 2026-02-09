@@ -15,6 +15,18 @@
   --heading-1: 32px;
   --heading-2: 24px;
   --heading-3: 20px;
+
+  /* Lesson Page Enhanced Colors */
+  --lesson-bg: #f8fafc;
+  --lesson-card-bg: #ffffff;
+  --lesson-text-primary: #1e293b;
+  --lesson-text-secondary: #64748b;
+  --lesson-accent-soft: #eff6ff;
+  --lesson-accent-border: #bfdbfe;
+  --lesson-shadow: rgba(15, 23, 42, 0.08);
+  --lesson-shadow-hover: rgba(15, 23, 42, 0.12);
+  --progress-complete: #10b981;
+  --progress-bg: #e2e8f0;
 }
 
 [data-theme="dark"] {
