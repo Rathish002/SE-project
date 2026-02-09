@@ -11,6 +11,7 @@
     "@types/node": "^16.18.126",
     "@types/react": "^19.2.8",
     "@types/react-dom": "^19.2.3",
+    "axios": "^1.13.5",
     "firebase": "^10.13.0",
     "i18next": "^23.16.8",
     "react": "^19.2.3",
@@ -24,6 +25,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:ci": "powershell -ExecutionPolicy Bypass -File scripts/test-ci.ps1",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

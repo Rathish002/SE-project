@@ -1039,7 +1039,7 @@ const user = await apiRequest('/api/users/me');
 
 ## 📚 Additional Resources
 
-- [Backend README](../server/README.md)
+- [Server Test Guide](server/TEST_GUIDE.md)
 - [Testing Guide](TESTING.md)
 - [Architecture](ARCHITECTURE.md)
 - [Contributing](CONTRIBUTING.md)

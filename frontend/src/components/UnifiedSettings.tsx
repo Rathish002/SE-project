@@ -16,7 +16,7 @@ import {
   LearningDirection,
 } from '../utils/languageManager';
 import { getUserProfile, updateUserName, changePassword, deleteUserAccount } from '../services/userService';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth } from '../firebase';
 import type { ThemeMode, FontSize, AudioSpeed } from '../types/accessibility';
 import './UnifiedSettings.css';
@@ -175,7 +175,7 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
 
   // Load current user's profile for username editing
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user: User | null) => {
       if (user) {
         setUid(user.uid);
         setEmail(user.email || '');

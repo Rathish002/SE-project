@@ -458,6 +458,11 @@ main#app {
   min-height: 100vh;
   background-color: var(--bg-primary);
   color: var(--text-primary);
+  transition: margin-left 0.3s ease;
+}
+
+.learning-container.has-sidebar {
+  margin-left: 80px;
 }
 
 .learning-content {
@@ -484,7 +489,9 @@ main#app {
   grid-column: 1 / -1;
   display: flex;
   justify-content: center;
+  gap: 16px;
   padding: 20px 0;
+  flex-wrap: wrap;
 }
 
 .exercises-button {
@@ -510,5 +517,32 @@ main#app {
 
 .exercises-button:focus {
   outline: 3px solid rgba(99, 102, 241, 0.4);
+  outline-offset: 2px;
+}
+
+/* Evaluation button */
+.evaluation-button {
+  padding: 12px 30px;
+  font-size: var(--base-font-size, 16px);
+  font-weight: 600;
+  color: white;
+  background-color: #8b5cf6;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.evaluation-button:hover {
+  background-color: #7c3aed;
+  transform: translateY(-2px);
+}
+
+.evaluation-button:active {
+  transform: translateY(0);
+}
+
+.evaluation-button:focus {
+  outline: 3px solid rgba(139, 92, 246, 0.4);
   outline-offset: 2px;
 }

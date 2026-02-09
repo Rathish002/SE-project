@@ -47,28 +47,34 @@ const ProfileMenu: React.FC<Props> = ({ onSignOut, onProfile, onSettings }) => {
     return () => document.removeEventListener('click', handleClick);
   }, []);
 
-  const pickDefault = (grad: string) => {
-    const key = `gradient:${grad}`;
-    setAvatar(key);
-    localStorage.setItem(STORAGE_KEY, key);
+  const clearAvatar = () => {
+    setAvatar(null);
+    try { localStorage.removeItem(STORAGE_KEY); } catch (e) { }
   };
 
-  const handleUpload = () => {
-    const file = fileRef.current?.files?.[0];
-    if (!file) return;
+  const pickDefault = (grad: string) => {
+    const key = `gradient:${grad}`;
+    if (avatar === key) {
+      // toggle off if same selected
+      clearAvatar();
+      return;
+    }
+    setAvatar(key);
+    try { localStorage.setItem(STORAGE_KEY, key); } catch (e) { }
+  };
+
+  const handleUpload = (file?: File) => {
+    // Support both direct file (drag/drop) or ref (input change)
+    const f = file || (fileRef.current?.files?.[0]);
+    if (!f) return;
 
     const reader = new FileReader();
     reader.onload = () => {
       const data = reader.result as string;
       setAvatar(data);
-      localStorage.setItem(STORAGE_KEY, data);
+      try { localStorage.setItem(STORAGE_KEY, data); } catch (e) { }
     };
-    reader.readAsDataURL(file);
-  };
-
-  const clearAvatar = () => {
-    setAvatar(null);
-    localStorage.removeItem(STORAGE_KEY);
+    reader.readAsDataURL(f);
   };
 
   const renderAvatar = () => {
@@ -108,7 +114,7 @@ const ProfileMenu: React.FC<Props> = ({ onSignOut, onProfile, onSettings }) => {
               {DEFAULT_GRADIENTS.map((g, i) => (
                 <button
                   key={i}
-                  className="default-avatar"
+                  className={`default-avatar ${avatar === `gradient:${g}` ? 'selected' : ''}`}
                   style={{ background: g }}
                   onClick={() => pickDefault(g)}
                   aria-label={`Avatar option ${i + 1}`}
@@ -128,7 +134,7 @@ const ProfileMenu: React.FC<Props> = ({ onSignOut, onProfile, onSettings }) => {
                 ref={fileRef}
                 type="file"
                 accept="image/*"
-                onChange={handleUpload}
+                onChange={() => handleUpload()}
               />
             </div>
           </div>

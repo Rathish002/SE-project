@@ -2,6 +2,15 @@
 .app-container {
   min-height: 100vh;
   width: 100%;
+  display: flex;
+  /* Sidebar layout */
+}
+
+/* Authentication Layout (Centered) */
+.app-container.auth-mode {
+  justify-content: center;
+  align-items: center;
+  background-color: var(--bg-body, #f1f5f9);
 }
 
 /* Loading state */
@@ -104,10 +113,15 @@
 
 /* Main content area */
 .main-content {
-  min-height: calc(100vh - 60px);
+  flex: 1;
+  min-height: 100vh;
+  margin-left: 250px;
+  /* Width of sidebar */
   padding-top: 0;
   background-color: var(--bg-primary);
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, margin-left 0.3s ease;
+  width: calc(100% - 250px);
+  /* Ensure it doesn't overflow */
 }
 
 /* Focus mode - hide navigation */
@@ -115,7 +129,34 @@
   display: none;
 }
 
+.app-container.focus-mode .main-content {
+  margin-left: 0;
+  width: 100%;
+  padding: 0;
+}
+
 /* Ensure focus mode resets on page load */
 .app-container {
   transition: all 0.3s ease;
+}
+
+
+
+.app-container.sidebar-closed .main-content {
+  margin-left: 80px;
+  /* Width of closed sidebar */
+  width: calc(100% - 80px);
+}
+
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+    min-height: auto;
+    flex: auto;
+  }
 }
