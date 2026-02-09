@@ -170,8 +170,8 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate }) => {
             <div className="lesson-container">
                 <div className="main-card completion-celebration">
                     <div className="emoji">🎉</div>
-                    <h2 style={{ color: '#2193b0', marginBottom: '20px' }}>Congratulations!</h2>
-                    <p style={{ fontSize: '18px', marginBottom: '30px' }}>
+                    <h2 className="completion-title">Congratulations!</h2>
+                    <p className="completion-message">
                         You've completed the Scaffold Learning System!
                     </p>
 
@@ -190,7 +190,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate }) => {
                         </div>
                     </div>
 
-                    <div style={{ marginTop: '30px' }}>
+                    <div className="completion-actions">
                         <button onClick={resetProgress} className="success-btn">
                             Start Over
                         </button>
@@ -209,6 +209,13 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate }) => {
 
             {!distractionFree && (
                 <header className="lesson-header">
+                    <button
+                        className="back-btn"
+                        onClick={() => onNavigate?.('lessons')}
+                        aria-label="Back to Lessons"
+                    >
+                        ← Back to Lessons
+                    </button>
                     <h2>🎓 Scaffold Learning System</h2>
                 </header>
             )}
