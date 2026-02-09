@@ -1,178 +1,163 @@
-/* Collaboration Landing Page Styling */
+/* ================== PAGE ================== */
 
 .collaboration-landing {
-  min-height: calc(100vh - 60px);
-  padding: 20px;
-  background-color: var(--bg-primary);
+  min-height: 100vh;
+  padding: 24px;
+  background: var(--bg-primary);
+  transition: background 0.2s ease;
 }
+
+/* ================== HEADER ================== */
 
 .collaboration-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
+  margin-bottom: 28px;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 14px;
 }
 
 .collaboration-header h1 {
-  font-size: var(--heading-1, 32px);
+  font-size: var(--heading-1, 30px);
   color: var(--text-primary);
   margin: 0;
-  flex: 1;
-  min-width: 200px;
 }
 
+/* Right side controls */
 .header-controls {
   display: flex;
-  gap: 15px;
   align-items: center;
-  flex-wrap: wrap;
+  gap: 12px;
 }
+
+/* ================== FOCUS TOGGLE ================== */
 
 .collaboration-focus-toggle {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: var(--base-font-size, 16px);
+  font-size: 14px;
   color: var(--text-primary);
   cursor: pointer;
-  white-space: nowrap;
 }
 
-.collaboration-focus-toggle input[type="checkbox"] {
-  cursor: pointer;
-}
+/* ================== CREATE GROUP ================== */
 
 .create-group-btn {
-  padding: 10px 16px;
-  background-color: #2196f3;
-  color: white;
+  padding: 9px 14px;
+  background: var(--accent);
+  color: #fff;
   border: none;
   border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
-  font-size: 14px;
-  transition: all 0.2s;
-  white-space: nowrap;
+  transition: all 0.18s ease;
 }
 
 .create-group-btn:hover {
-  background-color: #1976d2;
-  box-shadow: 0 2px 8px rgba(33, 150, 243, 0.3);
+  background: var(--accent-hover);
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
 }
 
-.create-group-btn:active {
-  transform: scale(0.98);
-}
-
-.collaboration-loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 400px;
-  color: var(--text-secondary);
-}
+/* ================== GRID ================== */
 
 .collaboration-content-grid {
   display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 30px;
+  grid-template-columns: 1fr 340px;
+  gap: 26px;
 }
+
+/* ================== MAIN ================== */
 
 .collaboration-main {
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 22px;
 }
 
+/* ================== SIDEBAR ================== */
+
 .collaboration-sidebar {
-  background-color: var(--bg-secondary);
+  background: var(--bg-secondary);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 20px;
+  border-radius: 10px;
+  padding: 18px;
   height: fit-content;
   position: sticky;
   top: 20px;
 }
 
+/* Sidebar header */
 .collaboration-sidebar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
-  background-color: var(--bg-secondary);
-  border-bottom: 2px solid var(--border);
-  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .collaboration-sidebar-title {
-  font-size: var(--heading-3, 20px);
+  font-size: 18px;
+  font-weight: 600;
   color: var(--text-primary);
   margin: 0;
-  flex: 1;
 }
 
+/* ================== ARCHIVE BUTTON ================== */
+
 .toggle-hidden-btn {
-  padding: 8px 12px;
-  font-size: 13px;
+  padding: 6px 10px;
+  font-size: 12px;
   font-weight: 600;
-  background-color: var(--accent);
-  color: white;
+  background: var(--accent);
+  color: #fff;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s;
-  white-space: nowrap;
 }
 
 .toggle-hidden-btn:hover {
-  background-color: var(--accent-hover);
+  background: var(--accent-hover);
 }
 
-.collaboration-empty {
-  text-align: center;
-  padding: 40px;
-  color: var(--text-secondary);
-}
+/* ================== CONVERSATIONS ================== */
 
 .collaboration-conversations {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .collaboration-conversation-item {
   padding: 12px;
-  background-color: var(--bg-primary);
+  background: var(--bg-primary);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s, border-color 0.2s;
+  transition: all 0.15s ease;
 }
 
 .collaboration-conversation-item:hover {
-  background-color: var(--bg-secondary);
+  background: var(--bg-hover);
   border-color: var(--accent);
 }
 
+/* Conversation header */
 .conversation-item-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
 }
 
 .conversation-item-name {
-  font-size: var(--base-font-size, 16px);
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
 }
 
+/* Preview text */
 .conversation-item-preview {
-  display: flex;
-  gap: 6px;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-secondary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -183,31 +168,62 @@
   font-weight: 500;
 }
 
-.conversation-item-text {
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* Hide / Unhide buttons */
+.hide-conversation-btn,
+.unhide-conversation-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
+.collaboration-conversation-item:hover .hide-conversation-btn,
+.collaboration-conversation-item:hover .unhide-conversation-btn {
+  opacity: 1;
+}
+
+/* ================== EMPTY / LOADING ================== */
+
+.collaboration-empty,
+.collaboration-loading {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+}
+
+/* ================== EXIT FOCUS BUTTON ================== */
+/* Exit Focus button aligned RIGHT side of header */
+
 .collaboration-exit-focus {
-  position: fixed;
-  right: 20px;
-  top: 80px;
-  padding: 12px 24px;
-  font-size: var(--base-font-size, 16px);
+  margin-left: auto;              /* Push to right side */
+  padding: 8px 18px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--bg-primary);
   background-color: var(--accent);
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.3s;
-  z-index: 1000;
+  transition: background-color 0.25s ease, transform 0.1s ease;
+
+  /* Vertical alignment slightly below title */
+  align-self: center;
+  position: relative;
+  top: 3px;
 }
 
 .collaboration-exit-focus:hover {
   background-color: var(--accent-hover);
 }
+
+.collaboration-exit-focus:active {
+  transform: scale(0.97);
+}
+
+
+/* ================== RESPONSIVE ================== */
 
 @media (max-width: 1024px) {
   .collaboration-content-grid {

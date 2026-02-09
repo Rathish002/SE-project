@@ -11,8 +11,8 @@ import FriendList from './FriendList';
 import FriendRequests from './FriendRequests';
 import ChatUI from './ChatUI';
 import GroupChatCreate from './GroupChatCreate';
-import { 
-  subscribeToFriends, 
+import {
+  subscribeToFriends,
   subscribeToFriendRequests,
   type Friend,
   type FriendRequest,
@@ -22,7 +22,6 @@ import {
   getOrCreateDirectConversation,
   type Conversation,
 } from '../services/chatService';
-import { saveActivity } from '../utils/activityTracker';
 import './Collaboration.css';
 
 interface CollaborationProps {
@@ -31,7 +30,11 @@ interface CollaborationProps {
   onFocusModeChange: (enabled: boolean) => void;
 }
 
-const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, onFocusModeChange }) => {
+const Collaboration: React.FC<CollaborationProps> = ({
+  currentUser,
+  focusMode,
+  onFocusModeChange,
+}) => {
   const { t } = useTranslation();
   const [friends, setFriends] = useState<Friend[]>([]);
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
@@ -39,202 +42,149 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showGroupCreate, setShowGroupCreate] = useState(false);
-  const [hiddenConversations, setHiddenConversations] = useState<Set<string>>(new Set());
-  const [showHidden, setShowHidden] = useState(false);
 
-  // Load hidden conversations from localStorage
-  useEffect(() => {
-    if (!currentUser?.uid) return;
-    const storageKey = `hiddenConversations_${currentUser.uid}`;
-    const stored = localStorage.getItem(storageKey);
-    if (stored) {
-      try {
-        const hiddenIds = JSON.parse(stored);
-        setHiddenConversations(new Set(hiddenIds));
-      } catch (e) {
-        console.error('Failed to parse hidden conversations:', e);
-      }
+  /* ================= FULLSCREEN ================= */
+
+  const enterFullscreen = () => {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) elem.requestFullscreen().catch(() => {});
+  };
+
+  const exitFullscreen = () => {
+    if (document.fullscreenElement && document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
     }
-  }, [currentUser?.uid]);
+  };
 
-  // Subscribe to friends
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      if (!document.fullscreenElement) onFocusModeChange(false);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, [onFocusModeChange]);
+
+  /* ================= DATA ================= */
+
   useEffect(() => {
     if (!currentUser?.uid) return;
-    const unsubscribe = subscribeToFriends(currentUser.uid, (newFriends) => {
-      setFriends(newFriends);
+    return subscribeToFriends(currentUser.uid, (f) => {
+      setFriends(f);
       setLoading(false);
     });
-
-    return () => unsubscribe();
   }, [currentUser?.uid]);
 
-  // Subscribe to friend requests
   useEffect(() => {
     if (!currentUser?.uid) return;
-    const unsubscribe = subscribeToFriendRequests(currentUser.uid, (requests) => {
-      setFriendRequests(requests);
-    });
-
-    return () => unsubscribe();
+    return subscribeToFriendRequests(currentUser.uid, setFriendRequests);
   }, [currentUser?.uid]);
 
-  // Subscribe to conversations
   useEffect(() => {
     if (!currentUser?.uid) return;
-    const unsubscribe = subscribeToConversations(currentUser.uid, (newConversations) => {
-      setConversations(newConversations);
-    });
-
-    return () => unsubscribe();
+    return subscribeToConversations(currentUser.uid, setConversations);
   }, [currentUser?.uid]);
+
+  /* ================= CHAT ================= */
 
   const handleStartChat = async (friendUid: string) => {
-    try {
-      if (!currentUser?.uid) return;
-      const conversationId = await getOrCreateDirectConversation(currentUser.uid, friendUid);
-      setActiveConversationId(conversationId);
-      
-      const friend = friends.find(f => f.uid === friendUid);
-      saveActivity({
-        lastConversationId: conversationId,
-        lastConversationName: friend?.name || 'Chat',
-        lastFriendUid: friendUid,
-        lastFriendName: friend?.name,
-      });
-      // update lastActive on user action
-      try {
-        const { updateLastActive } = await import('../services/presenceService');
-        if (currentUser?.uid) await updateLastActive(currentUser.uid);
-      } catch (e) {
-        // ignore presence update failures
-      }
-    } catch (error: any) {
-      console.error('Error starting chat:', error);
-      alert(t('collaboration.chat.startError'));
-    }
-  };
-
-  const handleOpenConversation = (conversationId: string) => {
-    setActiveConversationId(conversationId);
-    const conversation = conversations.find(c => c.id === conversationId);
-    saveActivity({
-      lastConversationId: conversationId,
-      lastConversationName: conversation?.participantNames.join(', ') || 'Chat',
-    });
-  };
-
-  const handleBackToLanding = () => {
-    setActiveConversationId(null);
-  };
-
-  const handleHideConversation = (conversationId: string, event: React.MouseEvent) => {
-    event.stopPropagation();
     if (!currentUser?.uid) return;
-    
-    const newHidden = new Set(hiddenConversations);
-    newHidden.add(conversationId);
-    setHiddenConversations(newHidden);
-    
-    // Save to localStorage
-    const storageKey = `hiddenConversations_${currentUser.uid}`;
-    localStorage.setItem(storageKey, JSON.stringify(Array.from(newHidden)));
+    const id = await getOrCreateDirectConversation(currentUser.uid, friendUid);
+    setActiveConversationId(id);
   };
 
-  const handleUnhideConversation = (conversationId: string, event: React.MouseEvent) => {
-    event.stopPropagation();
-    if (!currentUser?.uid) return;
-    
-    const newHidden = new Set(hiddenConversations);
-    newHidden.delete(conversationId);
-    setHiddenConversations(newHidden);
-    
-    // Save to localStorage
-    const storageKey = `hiddenConversations_${currentUser.uid}`;
-    localStorage.setItem(storageKey, JSON.stringify(Array.from(newHidden)));
-  };
-
-  // If auth not ready or no user, show loading
   if (!currentUser) {
-    return (
-      <div className="collaboration-loading">
-        <p>{t('collaboration.loading')}</p>
-      </div>
-    );
+    return <div className="collaboration-loading"><p>{t('collaboration.loading')}</p></div>;
   }
 
-  // Show chat UI if conversation is active
   if (activeConversationId) {
     return (
       <ChatUI
         conversationId={activeConversationId}
         currentUser={currentUser}
-        onBack={handleBackToLanding}
+        onBack={() => setActiveConversationId(null)}
       />
     );
   }
 
-  // Show group create modal if needed
-  if (showGroupCreate && currentUser?.uid) {
+  if (showGroupCreate && currentUser.uid) {
     return (
       <GroupChatCreate
         currentUid={currentUser.uid}
-        onGroupCreated={(conversationId) => {
+        onGroupCreated={(id) => {
           setShowGroupCreate(false);
-          setActiveConversationId(conversationId);
+          setActiveConversationId(id);
         }}
         onCancel={() => setShowGroupCreate(false)}
       />
     );
   }
 
-  // Show landing page
+  /* ================= MAIN ================= */
+
   return (
     <div className="collaboration-landing">
+
+      {/* HEADER */}
       <div className="collaboration-header">
         <h1>{t('collaboration.title')}</h1>
+
         <div className="header-controls">
+
+          {/* Focus Toggle */}
           {!focusMode && (
             <label className="collaboration-focus-toggle">
               <input
                 type="checkbox"
                 checked={focusMode}
-                onChange={(e) => onFocusModeChange(e.target.checked)}
-                aria-label={t('learning.accessibility.distractionFree')}
+                onChange={(e) => {
+                  const enabled = e.target.checked;
+                  onFocusModeChange(enabled);
+                  enabled ? enterFullscreen() : exitFullscreen();
+                }}
               />
               {t('learning.accessibility.distractionFree')}
             </label>
           )}
+
+          {/* Create Group */}
           {friends.length > 0 && !focusMode && (
             <button
               className="create-group-btn"
               onClick={() => setShowGroupCreate(true)}
-              title="Create a new group chat"
             >
               ➕ Create Group
             </button>
           )}
+
+          {/* EXIT FOCUS beside title */}
+          {focusMode && (
+            <button
+              className="collaboration-exit-focus"
+              onClick={() => {
+                onFocusModeChange(false);
+                exitFullscreen();
+              }}
+            >
+              Exit Focus
+            </button>
+          )}
+
         </div>
       </div>
 
+      {/* CONTENT */}
       {loading ? (
         <div className="collaboration-loading">
           <p>{t('collaboration.loading')}</p>
         </div>
       ) : (
         <div className="collaboration-content-grid">
+
           <div className="collaboration-main">
-            <FriendSearch
-              currentUid={currentUser.uid}
-              onRequestSent={() => {}}
-            />
-
+            <FriendSearch currentUid={currentUser.uid} onRequestSent={() => {}} />
             {friendRequests.length > 0 && (
-              <FriendRequests
-                requests={friendRequests}
-                onRequestHandled={() => {}}
-              />
+              <FriendRequests requests={friendRequests} onRequestHandled={() => {}} />
             )}
-
             <FriendList
               friends={friends}
               currentUid={currentUser.uid}
@@ -243,83 +193,20 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
           </div>
 
           <div className="collaboration-sidebar">
-            <div className="collaboration-sidebar-header">
-              <h3 className="collaboration-sidebar-title">{t('collaboration.conversations.title')}</h3>
-              {hiddenConversations.size > 0 && (
-                <button
-                  className="toggle-hidden-btn"
-                  onClick={() => setShowHidden(!showHidden)}
-                  title={showHidden ? 'Hide archived chats' : 'Show archived chats'}
-                >
-                  {showHidden ? '📂 Hide Archived' : `📁 Show Archived (${hiddenConversations.size})`}
-                </button>
-              )}
-            </div>
-            {conversations.length === 0 ? (
-              <div className="collaboration-empty">
-                <p>{t('collaboration.conversations.empty')}</p>
+            {conversations.map((c) => (
+              <div
+                key={c.id}
+                className="collaboration-conversation-item"
+                onClick={() => setActiveConversationId(c.id)}
+              >
+                {c.type === 'group'
+                  ? c.groupName || 'Group Chat'
+                  : c.participantNames.join(', ')}
               </div>
-            ) : (
-              <div className="collaboration-conversations">
-                {conversations
-                  .filter(conv => showHidden ? hiddenConversations.has(conv.id) : !hiddenConversations.has(conv.id))
-                  .map((conversation) => (
-                  <div
-                    key={conversation.id}
-                    className="collaboration-conversation-item"
-                    onClick={() => handleOpenConversation(conversation.id)}
-                  >
-                    <div className="conversation-item-header">
-                      <span className="conversation-item-name">
-                        {conversation.type === 'group'
-                          ? conversation.groupName || 'Group Chat'
-                          : conversation.participantNames.find(name => name !== currentUser.displayName) || 'User'
-                        }
-                      </span>
-                      {showHidden ? (
-                        <button
-                          className="unhide-conversation-btn"
-                          onClick={(e) => handleUnhideConversation(conversation.id, e)}
-                          title="Unarchive chat"
-                        >
-                          ↩️
-                        </button>
-                      ) : (
-                        <button
-                          className="hide-conversation-btn"
-                          onClick={(e) => handleHideConversation(conversation.id, e)}
-                          title="Archive chat"
-                        >
-                          🗂️
-                        </button>
-                      )}
-                    </div>
-                    {conversation.lastMessage && (
-                      <div className="conversation-item-preview">
-                        <span className="conversation-item-sender">
-                          {conversation.lastMessage.senderName}:
-                        </span>
-                        <span className="conversation-item-text">
-                          {conversation.lastMessage.text}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+            ))}
           </div>
-        </div>
-      )}
 
-      {focusMode && (
-        <button
-          className="collaboration-exit-focus"
-          onClick={() => onFocusModeChange(false)}
-          aria-label={t('learning.accessibility.exitDistraction')}
-        >
-          {t('learning.accessibility.exitDistraction')}
-        </button>
+        </div>
       )}
     </div>
   );
