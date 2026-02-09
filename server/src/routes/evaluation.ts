@@ -188,7 +188,8 @@ router.post(
         totalWeight === 0 ? 0 : keywordScore / totalWeight;
 
       // 4️⃣ Hybrid scoring formula
-      const finalScore = semanticScore * 0.7 + normalizedKeywordScore * 0.3;
+      const finalScore = semanticScore
+      //0.7 * semanticScore + 0.3 * normalizedKeywordScore;
 
       // 5️⃣ Feedback
       let feedback = "Needs improvement.";
@@ -196,11 +197,11 @@ router.post(
       else if (finalScore >= 0.6) feedback = "Good understanding.";
       else if (finalScore >= 0.4) feedback = "Fair understanding.";
 
+      /*semanticScore,
+        keywordScore: normalizedKeywordScore,
+        matchedKeywords,*/
       res.json({
         finalScore,
-        semanticScore,
-        keywordScore: normalizedKeywordScore,
-        matchedKeywords,
         feedback
       });
 
