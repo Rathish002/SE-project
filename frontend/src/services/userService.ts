@@ -124,8 +124,8 @@ export function subscribeToUserProfile(
   callback: (profile: UserProfile | null) => void
 ): () => void {
   const userRef = doc(db, 'users', uid);
-  
-  return onSnapshot(userRef, (snapshot) => {
+
+  return onSnapshot(userRef, (snapshot: any) => {
     if (snapshot.exists()) {
       const data = snapshot.data();
       callback({
@@ -138,7 +138,7 @@ export function subscribeToUserProfile(
     } else {
       callback(null);
     }
-  }, (error) => {
+  }, (error: any) => {
     console.error('Error subscribing to user profile:', error);
     callback(null);
   });

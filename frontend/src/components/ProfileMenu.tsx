@@ -14,7 +14,7 @@ const DEFAULT_GRADIENTS = [
 
 const STORAGE_KEY = 'se_profile_avatar';
 
-const ProfileMenu: React.FC<{ onSignOut?: () => void; onProfile?: () => void; onSettings?: () => void }> = ({ onSignOut, onProfile, onSettings }) => {
+const ProfileMenu: React.FC<{ onSignOut?: () => void; onProfile?: () => void; onSettings?: () => void; isOpen?: boolean }> = ({ onSignOut, onProfile, onSettings, isOpen = true }) => {
 	const [open, setOpen] = useState(false);
 	const [avatar, setAvatar] = useState<string | null>(null);
 	const fileRef = useRef<HTMLInputElement | null>(null);
@@ -51,7 +51,7 @@ const ProfileMenu: React.FC<{ onSignOut?: () => void; onProfile?: () => void; on
 			return;
 		}
 		setAvatar(key);
-		try { localStorage.setItem(STORAGE_KEY, key); } catch (e) {}
+		try { localStorage.setItem(STORAGE_KEY, key); } catch (e) { }
 	};
 
 	const handleUpload = (file?: File) => {
@@ -61,14 +61,14 @@ const ProfileMenu: React.FC<{ onSignOut?: () => void; onProfile?: () => void; on
 		reader.onload = () => {
 			const data = reader.result as string;
 			setAvatar(data);
-			try { localStorage.setItem(STORAGE_KEY, data); } catch (e) {}
+			try { localStorage.setItem(STORAGE_KEY, data); } catch (e) { }
 		};
 		reader.readAsDataURL(f);
 	};
 
 	const clearAvatar = () => {
 		setAvatar(null);
-		try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+		try { localStorage.removeItem(STORAGE_KEY); } catch (e) { }
 	};
 
 	const avatarNode = () => {
@@ -98,13 +98,23 @@ const ProfileMenu: React.FC<{ onSignOut?: () => void; onProfile?: () => void; on
 									const key = `gradient:${g}`;
 									const selected = avatar === key;
 									return (
-										<button key={idx} className={`default-avatar ${selected ? 'selected' : ''}`} style={{ background: g }} onClick={() => pickDefault(g)} aria-label={`Choose avatar ${idx+1}`} />
+										<button key={idx} className={`default-avatar ${selected ? 'selected' : ''}`} style={{ background: g }} onClick={() => pickDefault(g)} aria-label={`Choose avatar ${idx + 1}`} />
 									);
 								})}
 								<button className="default-avatar clear" onClick={clearAvatar} aria-label="Clear avatar">✕</button>
 							</div>
 							<div className="upload-row">
-								<input ref={fileRef} type="file" accept="image/*" onChange={() => handleUpload()} />
+								<label htmlFor="avatar-upload" className="upload-btn">
+									Choose Image
+								</label>
+								<input
+									id="avatar-upload"
+									ref={fileRef}
+									type="file"
+									accept="image/*"
+									onChange={() => handleUpload()}
+									style={{ display: 'none' }}
+								/>
 							</div>
 						</div>
 					</div>
