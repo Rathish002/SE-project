@@ -83,9 +83,9 @@
 }
 
 .progress-count {
-  font-size: 13px;
-  color: var(--lesson-text-secondary, #64748b);
-  font-weight: 500;
+  font-size: 14px;
+  color: var(--lesson-text-primary, #1e293b);
+  font-weight: 600;
 }
 
 .progress-bar-container {
@@ -370,6 +370,16 @@
   background: #ffff00;
   color: #000000;
   box-shadow: none;
+}
+
+.high-contrast .progress-section {
+  background: #000000;
+  border: 2px solid #ffffff;
+}
+
+.high-contrast .progress-label,
+.high-contrast .progress-count {
+  color: #ffffff;
 }
 
 .high-contrast .progress-bar-fill {
