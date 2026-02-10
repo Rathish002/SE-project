@@ -476,9 +476,9 @@ const Learning: React.FC<LearningProps> = ({
           <button
             className="evaluation-button"
             onClick={() => setShowEvaluation(true)}
-            aria-label={t('lessons.evaluateYourself') || 'Evaluate yourself'}
+            aria-label={'Evaluate yourself'}
           >
-            {t('lessons.evaluateYourself') || 'Evaluate Yourself'}
+            {'Evaluate Yourself'}
           </button>
         </div>
       </main>
