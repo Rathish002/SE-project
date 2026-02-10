@@ -17,7 +17,7 @@ router.get("/:id", async (req: Request, res: Response) => {
     }
 
     const keywordsResult = await pool.query(
-      "SELECT keyword, explanation FROM lesson_keywords WHERE lesson_id = $1",
+      "SELECT keyword, expanation as explanation FROM lesson_keywords WHERE lesson_id = $1",
       [lessonId]
     );
 

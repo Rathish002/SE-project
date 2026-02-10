@@ -41,16 +41,26 @@ const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => 
     const loadLessons = async () => {
       try {
         const lessonIds = getAvailableLessonIds();
+        console.log('Available lesson IDs:', lessonIds);
+        
         const lessonPromises = lessonIds.map(async (id) => {
-          const data: LessonData = await fetchLesson(id, learningDir);
-          return {
-            id,
-            title: data.lesson.title,
-            description: data.lesson.content?.substring(0, 150) + '...',
-          };
+          try {
+            const data: LessonData = await fetchLesson(id, learningDir);
+            return {
+              id,
+              title: data.lesson.title,
+              description: data.lesson.content?.substring(0, 150) + '...',
+            };
+          } catch (error) {
+            console.error(`Error loading lesson ${id}:`, error);
+            return null;
+          }
         });
+        
         const loadedLessons = await Promise.all(lessonPromises);
-        setLessons(loadedLessons);
+        const filteredLessons = loadedLessons.filter((lesson) => lesson !== null);
+        console.log('Loaded lessons:', filteredLessons);
+        setLessons(filteredLessons as LessonInfo[]);
       } catch (error) {
         console.error('Error loading lessons:', error);
       } finally {
