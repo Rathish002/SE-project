@@ -677,30 +677,39 @@
    Dark Theme Support
    ======================================== */
 [data-theme="dark"] .learning-container {
-  background: linear-gradient(180deg, #1a1a1a 0%, #0f0f0f 100%);
+  background: linear-gradient(180deg, var(--bg-primary) 0%, #0f0f0f 100%);
 }
 
 [data-theme="dark"] .lesson-header {
-  background: rgba(26, 26, 26, 0.9);
-  border-bottom-color: #404040;
+  background: rgba(30, 30, 30, 0.95);
+  border-bottom-color: var(--border);
 }
 
 [data-theme="dark"] #content,
 [data-theme="dark"] .keywords-sidebar,
 [data-theme="dark"] .tts-controls {
-  background: #2d2d2d;
-  border-color: #404040;
+  background: var(--bg-secondary);
+  border-color: var(--border);
+  color: var(--text-primary);
 }
 
 [data-theme="dark"] #lessonTitle,
 [data-theme="dark"] .keyword-explanation {
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 [data-theme="dark"] .definition,
 [data-theme="dark"] .tts-controls label,
 [data-theme="dark"] .controls label {
-  color: #b0b0b0;
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .controls label {
+  border-color: var(--border);
+}
+
+[data-theme="dark"] .controls label:hover {
+  background: var(--bg-secondary);
 }
 
 /* ========================================

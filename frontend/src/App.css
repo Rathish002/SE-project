@@ -38,20 +38,20 @@
 
 .welcome-box h1 {
   font-size: 32px;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 20px;
 }
 
 .welcome-box p {
   font-size: 18px;
-  color: #666;
+  color: var(--text-secondary);
   margin: 10px 0;
 }
 
 .user-email {
   font-size: 20px;
   font-weight: 600;
-  color: #4a90e2;
+  color: var(--accent);
   margin: 20px 0;
 }
 
@@ -61,7 +61,7 @@
   font-size: 16px;
   font-weight: 600;
   color: white;
-  background-color: #dc3545;
+  background-color: var(--error);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -84,7 +84,7 @@
   font-size: 16px;
   font-weight: 600;
   color: white;
-  background-color: #4a90e2;
+  background-color: var(--accent);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -101,7 +101,7 @@
   font-size: 16px;
   font-weight: 600;
   color: white;
-  background-color: #6c757d;
+  background-color: var(--text-secondary);
   border: none;
   border-radius: 4px;
   cursor: pointer;
