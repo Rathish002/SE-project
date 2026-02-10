@@ -375,3 +375,7 @@
 .high-contrast .progress-bar-fill {
   background: #ffff00;
 }
+
+.high-contrast .progress-count {
+  color: #000000 !important;
+}
