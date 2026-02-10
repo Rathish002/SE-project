@@ -1,164 +1,361 @@
+/* Professional Profile Menu Styles */
 .profile-menu {
 	position: relative;
 	display: inline-block;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
 .profile-btn {
 	background: transparent;
-	border: none;
-	padding: 6px;
+	border: 1px solid transparent;
+	/* invisible border to maintain size */
+	border-radius: 50%;
+	padding: 4px;
+	/* Slightly tighter padding */
 	cursor: pointer;
+	transition: background 0.2s, box-shadow 0.2s;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	z-index: 2000;
+	/* Ensure button is above other overlays */
+}
+
+/* Ensure button handles clicks properly even if child elements are clicked */
+.profile-btn>* {
+	pointer-events: none;
+}
+
+.profile-btn:hover,
+.profile-btn[aria-expanded="true"] {
+	background: var(--bg-secondary, #f0f0f0);
+}
+
+.profile-btn:focus-visible {
+	outline: 2px solid var(--accent, #4a90e2);
+	outline-offset: 2px;
+}
+
+/* Avatar Styles */
+.avatar-img,
+.avatar-gradient,
+.avatar-placeholder {
+	border-radius: 50%;
+	object-fit: cover;
+	border: 1px solid var(--border, #e0e0e0);
 }
 
 .avatar-placeholder {
-	width: 36px;
-	height: 36px;
-	border-radius: 50%;
-	background: #ddd;
+	background-color: var(--bg-secondary, #e0e0e0);
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/%3E%3C/svg%3E");
+	background-size: cover;
 }
 
-.avatar-gradient {
-	width: 36px;
-	height: 36px;
-	border-radius: 50%;
-	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
-}
-
-.avatar-img {
-	width: 36px;
-	height: 36px;
-	border-radius: 50%;
-	object-fit: cover;
-}
-
+/* Dropdown Container */
 .profile-dropdown {
 	position: absolute;
 	right: 0;
-	top: 46px;
-	width: 320px;
-	background: var(--bg-primary);
-	border: 1px solid var(--border);
-	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
-	border-radius: 8px;
-	padding: 10px;
-	z-index: 1400;
+	top: calc(100% + 8px);
+	width: 300px;
+	/* Standard width */
+	background: var(--bg-primary, #ffffff);
+	border: 1px solid var(--border, #e0e0e0);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+	border-radius: 12px;
+	overflow: hidden;
+	z-index: 1000;
+	animation: dropdown-fade-in 0.15s ease-out;
+	transform-origin: top right;
 }
 
-.profile-section {
-	margin-bottom: 10px;
+@keyframes dropdown-fade-in {
+	from {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
 }
 
-.profile-avatar-preview {
-	display: flex;
-	justify-content: center;
-	margin-bottom: 8px;
+/* Sections */
+.profile-header {
+	padding: 16px;
+	background: var(--bg-secondary, #f8f9fa);
+	border-bottom: 1px solid var(--border, #eaeaea);
 }
 
-.profile-username {
-	text-align: center;
-	font-weight: 600;
-	margin-top: 4px;
-	color: var(--text-primary);
-}
-
-.profile-avatar-actions .defaults {
-	display: flex;
-	gap: 6px;
-	align-items: center;
-	justify-content: center;
-}
-
-.default-avatar {
-	width: 36px;
-	height: 36px;
-	border-radius: 50%;
-	border: 2px solid rgba(0, 0, 0, 0.06);
-	cursor: pointer;
-}
-
-.default-avatar.clear {
+.profile-header-user {
 	display: flex;
 	align-items: center;
-	justify-content: center;
-	background: #fff;
+	gap: 12px;
+	margin-bottom: 12px;
 }
 
-.upload-btn {
-	cursor: pointer;
-	font-size: 13px;
-	color: var(--accent);
-	font-weight: 500;
-}
-
-.upload-btn:hover {
-	text-decoration: underline;
-}
-
-.upload-row {
-	display: flex;
-	justify-content: center;
-	margin-top: 4px;
-}
-
-.upload-row input[type="file"] {
-	width: 100%;
-}
-
-/* Close button in dropdown */
-.dropdown-close {
-	position: absolute;
-	right: 8px;
-	top: 8px;
-	background: transparent;
-	border: none;
-	font-size: 16px;
-	cursor: pointer;
-}
-
-/* Selected gradient overlay */
-.default-avatar {
+.profile-header-avatar {
 	position: relative;
+}
+
+.avatar-edit-overlay {
+	position: absolute;
+	bottom: -4px;
+	right: -4px;
+	background: var(--bg-primary, white);
+	border: 1px solid var(--border, #ddd);
+	border-radius: 50%;
+	width: 20px;
+	height: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	color: var(--text-secondary, #666);
+}
+
+.avatar-edit-overlay:hover {
+	color: var(--accent, #007bff);
+}
+
+.avatar-edit-overlay svg {
+	width: 12px;
+	height: 12px;
+}
+
+
+.profile-header-info {
+	flex: 1;
 	overflow: hidden;
 }
 
-.default-avatar.selected {
-	box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06) inset;
+.profile-name {
+	font-weight: 600;
+	color: var(--text-primary, #24292e);
+	font-size: 15px;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
-.appearance-title {
-	font-weight: 700;
-	margin-bottom: 6px;
-	color: var(--text-primary);
+.profile-email {
+	font-size: 13px;
+	color: var(--text-secondary, #586069);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
-.appearance-options label {
-	display: inline-flex;
-	gap: 6px;
-	align-items: center;
-	margin-right: 8px;
-	color: var(--text-primary);
-	cursor: pointer;
-}
-
-.appearance-options label:hover {
-	opacity: 0.8;
-}
-
-.actions {
+.profile-avatar-selector {
 	display: flex;
 	gap: 8px;
-	justify-content: space-between;
+	justify-content: center;
+	padding-top: 8px;
 }
 
-.menu-btn {
-	padding: 8px 12px;
+.avatar-choice {
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+	border: 2px solid transparent;
+	cursor: pointer;
+	padding: 0;
+	transition: transform 0.1s;
+}
+
+.avatar-choice:hover {
+	transform: scale(1.1);
+}
+
+.avatar-choice.selected {
+	border-color: var(--accent, #0969da);
+	box-shadow: 0 0 0 2px var(--bg-primary, white) inset;
+}
+
+.avatar-choice.clear {
+	border: 1px solid var(--border, #ddd);
+	background: white;
+	color: #666;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 12px;
+}
+
+.profile-divider {
+	height: 1px;
+	background: var(--border, #eaeaea);
+	margin: 0;
+}
+
+.profile-section {
+	padding: 8px 0;
+}
+
+.section-title {
+	padding: 8px 16px 4px;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	color: var(--text-secondary, #586069);
+	letter-spacing: 0.5px;
+}
+
+/* Theme Toggle */
+.theme-toggle-group {
+	display: flex;
+	padding: 4px 16px;
+	gap: 4px;
+}
+
+.theme-btn {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 4px;
+	padding: 8px;
+	background: transparent;
+	border: 1px solid var(--border, #eaeaea);
 	border-radius: 6px;
-	background: var(--accent);
-	color: #000;
+	cursor: pointer;
+	color: var(--text-secondary, #586069);
+	font-size: 11px;
+	transition: all 0.2s;
+}
+
+.theme-btn:hover {
+	background: var(--bg-secondary, #f6f8fa);
+}
+
+.theme-btn.active {
+	background: var(--accent-subtle, #f0f6fc);
+	border-color: var(--accent, #0969da);
+	color: var(--accent, #0969da);
+}
+
+/* Menu Items */
+.menu-item {
+	width: 100%;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 16px;
+	background: transparent;
 	border: none;
 	cursor: pointer;
+	text-align: left;
+	color: var(--text-primary, #24292e);
+	font-size: 14px;
+	transition: background 0.15s;
 }
 
-.menu-btn:hover {
-	opacity: 0.95;
+.menu-item:hover {
+	background: var(--accent, #0969da);
+	color: white;
+}
+
+.menu-item:hover svg {
+	stroke: white;
+}
+
+.menu-item svg {
+	color: var(--text-secondary, #57606a);
+	transition: color 0.15s;
+}
+
+.menu-item.danger {
+	color: #cf222e;
+}
+
+.menu-item.danger svg {
+	color: #cf222e;
+}
+
+.menu-item.danger:hover {
+	background: #cf222e;
+	color: white;
+}
+
+.menu-item.danger:hover svg {
+	stroke: white;
+}
+
+
+/* 
+   HIGH CONTRAST MODE FIX 
+   This ensures that when [data-theme="high-contrast"] is active on the root,
+   the ProfileMenu gets the correct variables even if they aren't inheriting correctly 
+   or if we need specific overrides.
+*/
+[data-theme="high-contrast"] .profile-dropdown,
+html[data-theme="high-contrast"] .profile-dropdown {
+	background: #000000;
+	border: 2px solid #ffffff;
+}
+
+[data-theme="high-contrast"] .profile-name,
+[data-theme="high-contrast"] .menu-item,
+[data-theme="high-contrast"] .section-title,
+[data-theme="high-contrast"] .theme-btn {
+	color: #ffffff;
+}
+
+[data-theme="high-contrast"] .profile-email {
+	color: #ffff00;
+}
+
+[data-theme="high-contrast"] .theme-btn {
+	border: 1px solid #ffffff;
+}
+
+[data-theme="high-contrast"] .theme-btn.active {
+	background: #ffff00;
+	color: #000000;
+	border-color: #ffffff;
+}
+
+[data-theme="high-contrast"] .theme-btn.active svg {
+	stroke: #000000;
+}
+
+[data-theme="high-contrast"] .menu-item:hover,
+[data-theme="high-contrast"] .menu-item:focus {
+	background: #ffff00;
+	color: #000000;
+	outline: 2px solid #ffffff;
+}
+
+[data-theme="high-contrast"] .menu-item:hover svg,
+[data-theme="high-contrast"] .menu-item:focus svg {
+	stroke: #000000;
+}
+
+[data-theme="high-contrast"] .profile-header {
+	background: #000;
+	border-bottom: 1px solid #fff;
+}
+
+[data-theme="high-contrast"] .profile-divider {
+	background: #fff;
+}
+
+[data-theme="high-contrast"] .avatar-choice.selected {
+	border-color: #ffff00;
+	box-shadow: 0 0 0 2px #000 inset;
+}
+
+/* Ensure avatar is visible in high contrast */
+[data-theme="high-contrast"] .avatar-placeholder {
+	background-color: #333;
+	border: 1px solid #fff;
+}
+
+[data-theme="high-contrast"] .profile-btn:focus-visible,
+[data-theme="high-contrast"] .profile-btn:hover {
+	outline: 2px solid #ffffff;
+	background: #333;
 }
