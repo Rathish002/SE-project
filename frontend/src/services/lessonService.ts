@@ -1,8 +1,7 @@
 /**
  * Lesson Service
- * Abstracts lesson data fetching with fallback to mock data
- * Sprint 1: Uses mock data (backend not ready)
- * Sprint 2: Will use backend API when available
+ * Fetches lesson data from backend API
+ * Falls back to mock data if backend is unavailable
  */
 
 export interface Lesson {
@@ -11,11 +10,15 @@ export interface Lesson {
   content: string;
   instructions?: string;
   image_url?: string;
+  text_content?: string;
+  english_text_content?: string;
+  language_code?: string;
 }
 
 export interface Keyword {
   keyword: string;
   explanation: string;
+  expanation?: string; // Database typo fallback
 }
 
 export interface LessonData {
@@ -24,7 +27,7 @@ export interface LessonData {
 }
 
 /**
- * Mock lesson data for Sprint 1 demo
+ * Mock lesson data for fallback
  * Direction-aware content (English ↔ Hindi)
  */
 const MOCK_LESSONS: Record<number, { en: LessonData; hi: LessonData }> = {
@@ -169,8 +172,8 @@ const MOCK_LESSONS: Record<number, { en: LessonData; hi: LessonData }> = {
 };
 
 /**
- * Fetch lesson data
- * Tries backend API first, falls back to mock data
+ * Fetch lesson data from backend API
+ * Falls back to mock data if backend is unavailable
  */
 export const fetchLesson = async (
   lessonId: number,
@@ -178,19 +181,49 @@ export const fetchLesson = async (
 ): Promise<LessonData> => {
   // Try backend API first
   try {
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3000';
-    const response = await fetch(`${apiUrl}/lesson/${lessonId}`);
-
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+    console.log(`Fetching lesson ${lessonId} from ${apiUrl}/lesson/${lessonId}`);
+    
+    const response = await fetch(`${apiUrl}/lesson/${lessonId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
     if (response.ok) {
       const data = await response.json();
-      return {
-        lesson: data.lesson,
-        keywords: data.keywords || [],
+      console.log(`Successfully fetched lesson ${lessonId}:`, data);
+      
+      // Map database fields to lesson object
+      const lesson = data.lesson;
+      const mappedLesson: Lesson = {
+        id: lesson.id,
+        title: lesson.title,
+        // Use text_content from database, fallback to content if it exists
+        content: learningDirection === 'hi-to-en' 
+          ? (lesson.english_text_content || lesson.text_content || '')
+          : (lesson.text_content || lesson.content || ''),
+        instructions: lesson.instructions || `Read slowly and practice. Use the Play button to listen. Toggle Dyslexia font or High Contrast for readability.`,
+        image_url: lesson.image_url,
       };
+      
+      // Map keywords - handle the typo in database column name
+      const keywords: Keyword[] = (data.keywords || []).map((kw: any) => ({
+        keyword: kw.keyword,
+        explanation: kw.explanation || kw.expanation || '', // Handle both correct spelling and typo
+      }));
+      
+      return {
+        lesson: mappedLesson,
+        keywords: keywords,
+      };
+    } else {
+      console.warn(`Backend returned status ${response.status} for lesson ${lessonId}`);
     }
   } catch (error) {
     // Backend not available, use mock data
-    console.log('Backend not available, using mock data');
+    console.log(`Backend error for lesson ${lessonId}, falling back to mock data:`, error);
   }
 
   // Fallback to mock data
@@ -199,6 +232,7 @@ export const fetchLesson = async (
     throw new Error(`Lesson ${lessonId} not found`);
   }
 
+  console.log(`Using mock data for lesson ${lessonId}`);
   // Return direction-appropriate content
   return learningDirection === 'hi-to-en' ? mockData.en : mockData.hi;
 };
