@@ -40,14 +40,34 @@
 }
 
 [data-theme="dark"] {
-  --bg-primary: #1a1a1a;
-  --bg-secondary: #2d2d2d;
-  --text-primary: #ffffff;
-  --text-secondary: #b0b0b0;
-  --accent: #5ba3f5;
+  /* Dark theme (Accessibility-Friendly) */
+  --bg-primary: #1E1E1E;
+  --bg-secondary: #2A2A2A;
+  --text-primary: #EDEDED;
+  --text-secondary: #B0B0B0;
+  --accent: #5AA9FF;
+  --secondary: #4EC9B0;
   --accent-hover: #4a90e2;
-  --border: #404040;
+  /* Slightly darker/desaturated for hover */
+  --border: #3A3A3A;
   --shadow: rgba(0, 0, 0, 0.3);
+
+  /* Semantic Colors Overrides for Dark Mode */
+  --success: #7CD992;
+  --error: #FF6B6B;
+  --warning: #E9B872;
+  --info: #5AA9FF;
+  --focus-ring: #5AA9FF;
+
+  /* Lesson colors adapted for dark mode */
+  --lesson-bg: #1E1E1E;
+  --lesson-card-bg: #2A2A2A;
+  --lesson-text-primary: #EDEDED;
+  --lesson-text-secondary: #B0B0B0;
+  --lesson-accent-soft: rgba(90, 169, 255, 0.15);
+  --lesson-accent-border: #3A3A3A;
+  --lesson-shadow: rgba(0, 0, 0, 0.4);
+  --progress-bg: #3A3A3A;
 }
 
 /* High Contrast Mode CSS Class */
