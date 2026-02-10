@@ -33,6 +33,7 @@ function App() {
   const [showSignup, setShowSignup] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
+  const [previousLessonId, setPreviousLessonId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   const { preferences, updateDistractionFreeMode } = useAccessibility();
@@ -119,6 +120,23 @@ function App() {
     setSelectedLessonId(newLessonId);
   };
 
+  const handleNavigateToExercises = () => {
+    // Save current lesson before navigating to exercises
+    setPreviousLessonId(selectedLessonId);
+    handleNavigate('exercises');
+  };
+
+  const handleBackToLesson = () => {
+    // Navigate back to the lesson we came from
+    if (previousLessonId !== null) {
+      setSelectedLessonId(previousLessonId);
+      setCurrentPage('lessons'); // Stays in lessons context but shows specific lesson
+    } else {
+      // Fallback to lesson list if no previous lesson
+      handleNavigate('lessons');
+    }
+  };
+
   const handleLogout = async () => {
     if (user) {
       try {
@@ -153,7 +171,7 @@ function App() {
                 onNavigateLesson={handleNavigateLesson}
                 focusMode={focusMode}
                 onFocusModeChange={setFocusMode}
-                onNavigateToExercises={() => handleNavigate('exercises')}
+                onNavigateToExercises={handleNavigateToExercises}
               />
             </div>
 
@@ -192,7 +210,7 @@ function App() {
               <LessonSelection onSelectLesson={handleSelectLesson} />
             )}
             {currentPage === 'exercises' && (
-              <Exercises onNavigate={handleNavigate} />
+              <Exercises onNavigate={handleNavigate} onBackToLesson={handleBackToLesson} />
             )}
             {currentPage === 'collaboration' && (
               <Collaboration
