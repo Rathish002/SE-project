@@ -41,7 +41,7 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
         setError(null);
       } catch (err: any) {
         console.error('Error fetching questions:', err);
-        setError(t('evaluation.error.fetchQuestions') || 'Failed to load evaluation questions');
+        setError('Failed to load evaluation questions');
       } finally {
         setQuestionLoading(false);
       }
@@ -56,7 +56,7 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
 
   const handleEvaluate = async () => {
     if (!userAnswer.trim()) {
-      setError(t('evaluation.error.emptyAnswer') || 'Please enter an answer');
+      setError('Please enter an answer');
       return;
     }
 
@@ -77,7 +77,7 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
       setAllScores((prev) => [...prev, result.finalScore]);
     } catch (err: any) {
       console.error('Error evaluating answer:', err);
-      setError(t('evaluation.error.evaluate') || 'Failed to evaluate answer');
+      setError('Failed to evaluate answer');
     } finally {
       setLoading(false);
     }
@@ -102,9 +102,9 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
         : 0;
 
     alert(
-      `${t('evaluation.complete') || 'Evaluation Complete!'}\n\n` +
-      `${t('evaluation.summary.totalQuestions') || 'Total Questions'}: ${questions.length}\n` +
-      `${t('evaluation.summary.averageScore') || 'Average Score'}: ${(avgScore * 100).toFixed(1)}%`
+      `${'Evaluation Complete!'}\n\n` +
+      `${'Total Questions'}: ${questions.length}\n` +
+      `${'Average Score'}: ${(avgScore * 100).toFixed(1)}%`
     );
     onExit();
   };
@@ -121,7 +121,7 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
     return (
       <div className="evaluation-page">
         <div className="loading-spinner">
-          {t('evaluation.loading') || 'Loading evaluation questions...'}
+          {'Loading evaluation questions...'}
         </div>
       </div>
     );
@@ -131,9 +131,9 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
     return (
       <div className="evaluation-page">
         <div className="no-questions">
-          <h2>{t('evaluation.noQuestions') || 'No evaluation questions available'}</h2>
+          <h2>{'No evaluation questions available'}</h2>
           <button className="button button-primary" onClick={onExit}>
-            {t('evaluation.exit') || 'Exit'}
+            {'Exit'}
           </button>
         </div>
       </div>
@@ -144,7 +144,7 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
     <div className="evaluation-page">
       {/* Header */}
       <header className="evaluation-header">
-        <h1>{t('evaluation.title') || 'Self-Evaluation'}</h1>
+        <h1>{'Self-Evaluation'}</h1>
         <p>{lessonTitle}</p>
       </header>
 
@@ -185,7 +185,7 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
                   <p className="score-feedback">{evaluationResult!.feedback}</p>
                   {evaluationResult!.matchedKeywords && evaluationResult!.matchedKeywords.length > 0 && (
                     <div className="matched-keywords">
-                      <p className="keywords-label">{t('evaluation.matchedKeywords') || 'Matched Concepts'}:</p>
+                      <p className="keywords-label">{'Matched Concepts'}:</p>
                       <div className="keywords-list">
                         {evaluationResult!.matchedKeywords.map((keyword, idx) => (
                           <span key={idx} className="keyword-badge">
@@ -200,19 +200,19 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
 
               {/* Your Answer Display */}
               <div className="your-answer">
-                <h3>{t('evaluation.yourAnswer') || 'Your Answer'}</h3>
+                <h3>{'Your Answer'}</h3>
                 <p className="answer-text">{userAnswer}</p>
               </div>
             </>
           ) : (
             <>
-              <label htmlFor="answer-input">{t('evaluation.enterAnswer') || 'Enter your answer'}</label>
+              <label htmlFor="answer-input">{'Enter your answer'}</label>
               <textarea
                 id="answer-input"
                 className="answer-input"
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
-                placeholder={t('evaluation.answerPlaceholder') || 'Type your answer here...'}
+                placeholder={'Type your answer here...'}
                 disabled={loading}
                 rows={5}
               />
@@ -240,8 +240,8 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
                 onClick={handleNextQuestion}
               >
                 {isLastQuestion
-                  ? `${t('evaluation.finish') || 'Finish'} →`
-                  : `${t('evaluation.next') || 'Next'} →`}
+                  ? `${'Finish'} →`
+                  : `${'Next'} →`}
               </button>
             </>
           ) : (
@@ -250,7 +250,7 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
               onClick={handleEvaluate}
               disabled={loading}
             >
-              {loading ? `${t('evaluation.evaluating') || 'Evaluating'}...` : (t('evaluation.evaluate') || 'Evaluate Answer')}
+              {loading ? `${'Evaluating'}...` : ('Evaluate Answer')}
             </button>
           )}
 
@@ -269,17 +269,17 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
           <h3>{t('evaluation.yourProgress') || 'Your Progress'}</h3>
           <div className="stats-grid">
             <div className="stat-item">
-              <span className="stat-label">{t('evaluation.completed') || 'Completed'}</span>
+              <span className="stat-label">{'Completed'}</span>
               <span className="stat-value">{allScores.length}</span>
             </div>
             <div className="stat-item">
-              <span className="stat-label">{t('evaluation.average') || 'Average'}</span>
+              <span className="stat-label">{'Average'}</span>
               <span className="stat-value">
                 {((allScores.reduce((a, b) => a + b, 0) / allScores.length) * 100).toFixed(1)}%
               </span>
             </div>
             <div className="stat-item">
-              <span className="stat-label">{t('evaluation.best') || 'Best Score'}</span>
+              <span className="stat-label">{'Best Score'}</span>
               <span className="stat-value">
                 {(Math.max(...allScores) * 100).toFixed(1)}%
               </span>
