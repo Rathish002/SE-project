@@ -15,7 +15,7 @@ import {
   InterfaceLanguage,
   LearningDirection,
 } from '../utils/languageManager';
-import { getUserProfile, updateUserName, changePassword, deleteUserAccount } from '../services/userService';
+import { getUserProfile, updateUserName, changePassword, changeUsername, deleteUserAccount } from '../services/userService';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth } from '../firebase';
 import type { ThemeMode, FontSize, AudioSpeed } from '../types/accessibility';
@@ -60,6 +60,13 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordMessage, setPasswordMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
   const [passwordLoading, setPasswordLoading] = useState(false);
+
+  // Username change modal
+  const [showChangeUsername, setShowChangeUsername] = useState(false);
+  const [newUsername, setNewUsername] = useState('');
+  const [usernamePassword, setUsernamePassword] = useState('');
+  const [usernameMessage, setUsernameMessage] = useState<{ type: 'error' | 'success'; text: string } | null>(null);
+  const [usernameLoading, setUsernameLoading] = useState(false);
 
   // Delete account modal
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -149,6 +156,39 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
     }
   };
 
+  // Handle change username
+  const handleChangeUsername = async () => {
+    if (!newUsername || !usernamePassword) {
+      setUsernameMessage({ type: 'error', text: 'Please fill in all fields' });
+      return;
+    }
+
+    try {
+      setUsernameLoading(true);
+      const currentUser = auth.currentUser;
+      if (!currentUser) throw new Error('User not logged in');
+
+      await changeUsername(currentUser, usernamePassword, newUsername);
+      setUsernameMessage({ type: 'success', text: 'Username changed successfully' });
+
+      // Update local state
+      setUsername(newUsername.trim());
+
+      // Reset form
+      setNewUsername('');
+      setUsernamePassword('');
+      setTimeout(() => {
+        setShowChangeUsername(false);
+        setUsernameMessage(null);
+      }, 2000);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to change username';
+      setUsernameMessage({ type: 'error', text: message });
+    } finally {
+      setUsernameLoading(false);
+    }
+  };
+
   // Handle delete account
   const handleDeleteAccount = async () => {
     if (deleteConfirmText !== 'DELETE' || !deletePassword) {
@@ -227,6 +267,63 @@ const UnifiedSettings: React.FC<UnifiedSettingsProps> = ({ onBack }) => {
           />
           {!uid && <p className="settings-note">{t('settings.loginToEdit')}</p>}
         </div>
+
+        {/* Change Username */}
+        {uid && (
+          <div className="settings-subsection">
+            <h3>Change Username</h3>
+            <button
+              className="button button-secondary"
+              onClick={() => setShowChangeUsername(!showChangeUsername)}
+            >
+              {showChangeUsername ? 'Cancel' : 'Change Username'}
+            </button>
+
+            {showChangeUsername && (
+              <div className="modal-form">
+                <div className="settings-group">
+                  <label htmlFor="new-username">New Username</label>
+                  <input
+                    id="new-username"
+                    type="text"
+                    value={newUsername}
+                    onChange={(e) => setNewUsername(e.target.value)}
+                    className="settings-input"
+                    placeholder="Enter new username"
+                    disabled={usernameLoading}
+                  />
+                </div>
+
+                <div className="settings-group">
+                  <label htmlFor="username-password">Confirm Password</label>
+                  <input
+                    id="username-password"
+                    type="password"
+                    value={usernamePassword}
+                    onChange={(e) => setUsernamePassword(e.target.value)}
+                    className="settings-input"
+                    placeholder="Enter your password to confirm"
+                    disabled={usernameLoading}
+                  />
+                </div>
+
+                <button
+                  className="button button-primary"
+                  onClick={handleChangeUsername}
+                  disabled={usernameLoading}
+                >
+                  {usernameLoading ? 'Updating...' : 'Update Username'}
+                </button>
+
+                {usernameMessage && (
+                  <div className={`status-message ${usernameMessage.type}`}>
+                    {usernameMessage.text}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
       </section>
 
       {/* Language Settings Section */}
