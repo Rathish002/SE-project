@@ -115,6 +115,60 @@ const MOCK_LESSONS: Record<number, { en: LessonData; hi: LessonData }> = {
       ],
     },
   },
+  4: {
+    en: {
+      lesson: {
+        id: 4,
+        title: 'Basic Sentence Formation',
+        content: 'A sentence has three main parts: Subject, Verb, and Object. The Subject is who performs the action. The Verb is the action word. The Object receives the action. Let\'s look at some examples: "I eat rice" - Here, "I" is the subject, "eat" is the verb, and "rice" is the object. "She reads a book" - "She" is the subject, "reads" is the verb, and "a book" is the object. "They play football" - "They" is the subject, "play" is the verb, and "football" is the object. Practice making your own sentences using this pattern.',
+        instructions: 'Read the examples carefully. Identify the subject, verb, and object in each sentence. Practice creating your own sentences.',
+      },
+      keywords: [
+        { keyword: 'Subject', explanation: 'Who performs the action in a sentence' },
+        { keyword: 'Verb', explanation: 'The action word that tells what someone does' },
+        { keyword: 'Object', explanation: 'Receives the action in a sentence' },
+      ],
+    },
+    hi: {
+      lesson: {
+        id: 4,
+        title: 'बुनियादी वाक्य निर्माण',
+        content: 'एक वाक्य के तीन मुख्य भाग होते हैं: कर्ता, क्रिया और कर्म। कर्ता वह है जो क्रिया करता है। क्रिया कार्य शब्द है। कर्म क्रिया को प्राप्त करता है। आइए कुछ उदाहरण देखें: "मैं चावल खाता हूँ" - यहाँ, "मैं" कर्ता है, "खाता हूँ" क्रिया है, और "चावल" कर्म है। "वह किताब पढ़ती है" - "वह" कर्ता है, "पढ़ती है" क्रिया है, और "किताब" कर्म है। "वे फुटबॉल खेलते हैं" - "वे" कर्ता है, "खेलते हैं" क्रिया है, और "फुटबॉल" कर्म है। इस पैटर्न का उपयोग करके अपने स्वयं के वाक्य बनाने का अभ्यास करें।',
+        instructions: 'उदाहरणों को ध्यान से पढ़ें। प्रत्येक वाक्य में कर्ता, क्रिया और कर्म की पहचान करें। अपने स्वयं के वाक्य बनाने का अभ्यास करें।',
+      },
+      keywords: [
+        { keyword: 'कर्ता', explanation: 'वाक्य में क्रिया करने वाला' },
+        { keyword: 'क्रिया', explanation: 'कार्य शब्द जो बताता है कि कोई क्या करता है' },
+        { keyword: 'कर्म', explanation: 'वाक्य में क्रिया को प्राप्त करने वाला' },
+      ],
+    },
+  },
+  5: {
+    en: {
+      lesson: {
+        id: 5,
+        title: 'Everyday Vocabulary',
+        content: 'Let\'s learn some common words we use every day. Apple - An apple is a fruit. It is sweet and healthy. Book - A book is used for reading. We read books to learn new things. Water - Water is what we drink. We need water every day to stay healthy. Teacher - A teacher is someone who helps us learn. Teachers work in schools. Friend - A friend is someone we like and trust. Friends play and talk with us. Learning these words helps you communicate better in daily life.',
+        instructions: 'Read each word and its meaning. Try to use these words in sentences. Practice saying them out loud.',
+      },
+      keywords: [
+        { keyword: 'Vocabulary', explanation: 'The collection of words and their meanings' },
+        { keyword: 'Daily words', explanation: 'Words we use in everyday conversations' },
+      ],
+    },
+    hi: {
+      lesson: {
+        id: 5,
+        title: 'रोजमर्रा की शब्दावली',
+        content: 'आइए कुछ सामान्य शब्द सीखें जिनका हम रोजाना उपयोग करते हैं। सेब - सेब एक फल है। यह मीठा और स्वास्थ्यवर्धक होता है। किताब - किताब पढ़ने के लिए उपयोग की जाती है। हम नई चीजें सीखने के लिए किताबें पढ़ते हैं। पानी - पानी वह है जो हम पीते हैं। स्वस्थ रहने के लिए हमें रोजाना पानी की जरूरत होती है। शिक्षक - शिक्षक वह व्यक्ति है जो हमें सीखने में मदद करता है। शिक्षक स्कूलों में काम करते हैं। दोस्त - दोस्त वह है जिसे हम पसंद करते हैं और भरोसा करते हैं। दोस्त हमारे साथ खेलते और बात करते हैं। इन शब्दों को सीखने से आपको दैनिक जीवन में बेहतर संवाद करने में मदद मिलती है।',
+        instructions: 'प्रत्येक शब्द और उसके अर्थ को पढ़ें। इन शब्दों को वाक्यों में उपयोग करने का प्रयास करें। उन्हें जोर से बोलने का अभ्यास करें।',
+      },
+      keywords: [
+        { keyword: 'शब्दावली', explanation: 'शब्दों और उनके अर्थों का संग्रह' },
+        { keyword: 'दैनिक शब्द', explanation: 'रोजमर्रा की बातचीत में उपयोग किए जाने वाले शब्द' },
+      ],
+    },
+  },
 };
 
 /**

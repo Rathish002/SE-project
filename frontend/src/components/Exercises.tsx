@@ -16,9 +16,10 @@ interface Stats {
 
 interface ExercisesProps {
     onNavigate?: (page: Page) => void;
+    onBackToLesson?: () => void;
 }
 
-const Exercises: React.FC<ExercisesProps> = ({ onNavigate }) => {
+const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson }) => {
     const [lessonIndex, setLessonIndex] = useState(() =>
         parseInt(localStorage.getItem('currentLesson') || '0')
     );
@@ -75,6 +76,53 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate }) => {
             stepHeaderRef.current.focus();
         }
     }, [stepIndex, lessonIndex]);
+
+    // Enter/exit fullscreen when focus mode (distractionFree) changes
+    useEffect(() => {
+        const applyFullscreen = async () => {
+            try {
+                const el: any = document.documentElement;
+                if (distractionFree) {
+                    if (!document.fullscreenElement) {
+                        if (el.requestFullscreen) {
+                            await el.requestFullscreen();
+                        } else if (el.webkitRequestFullscreen) {
+                            el.webkitRequestFullscreen();
+                        }
+                    }
+                } else {
+                    if (document.fullscreenElement) {
+                        if (document.exitFullscreen) {
+                            await document.exitFullscreen();
+                        } else if ((document as any).webkitExitFullscreen) {
+                            (document as any).webkitExitFullscreen();
+                        }
+                    }
+                }
+            } catch (err) {
+                console.warn('Fullscreen API error:', err);
+            }
+        };
+
+        applyFullscreen();
+    }, [distractionFree]);
+
+    // Sync focus mode with fullscreen state (ESC key handling)
+    useEffect(() => {
+        const onFsChange = () => {
+            if (!document.fullscreenElement && distractionFree) {
+                setDistractionFree(false);
+            }
+        };
+
+        document.addEventListener('fullscreenchange', onFsChange);
+        document.addEventListener('webkitfullscreenchange', onFsChange as EventListener);
+        return () => {
+            document.removeEventListener('fullscreenchange', onFsChange);
+            document.removeEventListener('webkitfullscreenchange', onFsChange as EventListener);
+        };
+    }, [distractionFree]);
+
 
     const checkAnswer = () => {
         // Logic for "Free" text type (always correct/self-evaluated for now)
@@ -211,10 +259,10 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate }) => {
                 <header className="lesson-header">
                     <button
                         className="back-btn"
-                        onClick={() => onNavigate?.('lessons')}
+                        onClick={() => onBackToLesson ? onBackToLesson() : onNavigate?.('lessons')}
                         aria-label="Back to Lessons"
                     >
-                        ← Back to Lessons
+                        ← Back to Lesson
                     </button>
                     <h2>🎓 Scaffold Learning System</h2>
                 </header>
