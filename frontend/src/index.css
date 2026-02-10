@@ -1,14 +1,24 @@
 /* CSS Variables for Theming */
 :root {
-  /* Light theme (default) */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f5f5f5;
-  --text-primary: #333333;
-  --text-secondary: #666666;
-  --accent: #4a90e2;
+  /* Light theme (Accessibility-Friendly) */
+  --bg-primary: #F7F7F5;
+  --bg-secondary: #FFFFFF;
+  --text-primary: #2E2E2E;
+  --text-secondary: #6B6B6B;
+  --accent: #4A90E2;
+  --secondary: #5FBDB0;
+  /* Added requested secondary color */
   --accent-hover: #357abd;
-  --border: #e0e0e0;
-  --shadow: rgba(0, 0, 0, 0.1);
+  /* Derived darker shade for hover */
+  --border: #E0E0E0;
+  --shadow: rgba(0, 0, 0, 0.08);
+
+  /* Semantic Colors */
+  --success: #6FBF73;
+  --error: #D64545;
+  --warning: #F4A261;
+  --info: #4A90E2;
+  --focus-ring: #4A90E2;
 
   /* Font Size Defaults */
   --base-font-size: 16px;
@@ -25,7 +35,7 @@
   --lesson-accent-border: #bfdbfe;
   --lesson-shadow: rgba(15, 23, 42, 0.08);
   --lesson-shadow-hover: rgba(15, 23, 42, 0.12);
-  --progress-complete: #10b981;
+  --progress-complete: var(--success);
   --progress-bg: #e2e8f0;
 }
 
