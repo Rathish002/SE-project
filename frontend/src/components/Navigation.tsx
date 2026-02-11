@@ -20,7 +20,7 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate, isOpen
   return (
     <nav className={`navigation sidebar ${!isOpen ? 'closed' : ''}`} role="navigation" aria-label="Main navigation">
       <div className="sidebar-header">
-        <h1 className="app-brand white-text">{isOpen ? 'VaultGuard' : 'VG'}</h1>
+        <h1 className="app-brand white-text">{isOpen ? 'LexAble' : 'LA'}</h1>
         {onToggle && (
           <button className="collapse-btn" onClick={onToggle} aria-label="Toggle sidebar">
             {isOpen ? '◀' : '▶'}
