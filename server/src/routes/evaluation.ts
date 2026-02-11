@@ -153,14 +153,6 @@ router.post(
 
       const referenceAnswer = intentResult.rows[0].reference_answer;
 
-      // 2️⃣ Call NLP service for semantic similarity
-      const nlpResponse = await axios.post(NLP_SERVICE_URL, {
-        reference_answers: [referenceAnswer],  // Must be array!
-        user_answer: answer
-      });
-
-      const semanticScore: number = nlpResponse.data.similarity;
-
       // 3️⃣ Keyword-based scoring (intent-specific concept coverage)
       const keywordsResult = await pool.query(
         `
@@ -171,25 +163,22 @@ router.post(
         [evaluationIntentId]
       );
 
-      let keywordScore = 0;
-      let totalWeight = 0;
-      const matchedKeywords: string[] = [];
+      const keywords = keywordsResult.rows.map(r => r.keyword);
 
-      for (const row of keywordsResult.rows) {
-        totalWeight += row.weight;
+      // 2️⃣ Call NLP service for semantic similarity
+      const nlpResponse = await axios.post(NLP_SERVICE_URL, {
+        reference_answers: [referenceAnswer],  // Must be array!
+        user_answer: answer,
+        keywords: keywords
+      });
 
-        if (answer.toLowerCase().includes(row.keyword.toLowerCase())) {
-          keywordScore += row.weight;
-          matchedKeywords.push(row.keyword);
-        }
-      }
-
-      const normalizedKeywordScore =
-        totalWeight === 0 ? 0 : keywordScore / totalWeight;
-
+      
+      const semanticScore = nlpResponse.data.semantic_similarity;
+      const keywordScore = nlpResponse.data.keyword_similarity_score;
+      const matchedKeywords = nlpResponse.data.matched_keywords;
+      
       // 4️⃣ Hybrid scoring formula
-      const finalScore = semanticScore
-      //0.7 * semanticScore + 0.3 * normalizedKeywordScore;
+      const finalScore = 0.7 * semanticScore + 0.3 * keywordScore;
 
       // 5️⃣ Feedback
       let feedback = "Needs improvement.";
@@ -201,6 +190,8 @@ router.post(
         keywordScore: normalizedKeywordScore,
         matchedKeywords,*/
       res.json({
+        semanticScore,
+        keywordScore,
         finalScore,
         feedback
       });
