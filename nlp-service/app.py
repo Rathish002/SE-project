@@ -5,8 +5,13 @@ from utils.transliterate import roman_to_hindi
 import re
 
 app = FastAPI()
-model = SentenceTransformer("sentence-transformers/distiluse-base-multilingual-cased-v2")
 
+# Original / baseline model
+model = SentenceTransformer(
+    "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
+)
+# Earlier model you tried:
+# "sentence-transformers/distiluse-base-multilingual-cased-v2"
 
 class SimilarityRequest(BaseModel):
     reference_answers: list[str]   # already Hindi
