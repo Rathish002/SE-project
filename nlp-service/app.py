@@ -14,8 +14,10 @@ model = SentenceTransformer(
 # "sentence-transformers/distiluse-base-multilingual-cased-v2"
 
 class SimilarityRequest(BaseModel):
-    reference_answers: list[str]   # already Hindi
-    user_answer: str               # may be romanized
+    reference_answers: list[str] #already hindi
+    user_answer: str   #may be romanized
+    keywords: list[str] = []   
+
 
 def is_romanized(text: str) -> bool:
     return bool(re.match(r"^[a-zA-Z\s]+$", text))
@@ -38,7 +40,28 @@ def semantic_similarity(req: SimilarityRequest):
     similarities = util.cos_sim(user_emb, ref_embs)[0]
     max_similarity = float(similarities.max())
 
+     # ===== SEMANTIC KEYWORD MATCHING =====
+    matched_keywords = []
+    keyword_score = 0
+
+    if req.keywords:
+        keyword_embs = model.encode(req.keywords, convert_to_tensor=True)
+        keyword_similarities = util.cos_sim(user_emb, keyword_embs)[0]
+
+        for idx, score in enumerate(keyword_similarities):
+            if float(score) > 0.6:   # threshold (tunable)
+                matched_keywords.append(req.keywords[idx])
+                keyword_score += 1
+
+        keyword_score = keyword_score / len(req.keywords)
+    
+    print("Normalized User:", normalized_user)
+    print("Keywords:", req.keywords)
+    print("Keyword similarities:", keyword_similarities)
+
     return {
-        "similarity": max_similarity,
+        "semantic_similarity": max_similarity,
+        "keyword_similarity_score": keyword_score,
+        "matched_keywords": matched_keywords,
         "normalized_user_answer": normalized_user
     }
