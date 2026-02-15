@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS exercise_steps (
 -- ✅ 5) exercise_progress
 CREATE TABLE IF NOT EXISTS exercise_progress (
   id SERIAL PRIMARY KEY,
-  user_id INT NOT NULL,
+  user_id TEXT NOT NULL,
   exercise_id INT REFERENCES exercises(id) ON DELETE CASCADE,
 
   current_step INT DEFAULT 1,
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS exercise_step_options (
 -- 7) exercise_answers
 CREATE TABLE IF NOT EXISTS exercise_answers (
   id SERIAL PRIMARY KEY,
-  user_id INT NOT NULL,
+  user_id TEXT NOT NULL,
   step_id INT REFERENCES exercise_steps(id) ON DELETE CASCADE,
   selected_option_id INT REFERENCES exercise_step_options(id),
   is_correct BOOLEAN,
