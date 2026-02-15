@@ -41,7 +41,7 @@ app.get("/", (_req: Request, res: Response) => {
 
 app.use("/lesson", lessonRoutes);
 app.use("/evaluation", evaluationRoutes);
-app.use("/exercise", exerciseRoutes);
+app.use("/exercises", exerciseRoutes);
 app.use("/translations", translationRoutes);
 // Protect preferences with Firebase token verification middleware
 app.use("/preferences", firebaseAuth, preferencesRoutes);
