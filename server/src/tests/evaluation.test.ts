@@ -3,7 +3,6 @@ import express from "express";
 import evaluationRoutes from "../routes/evaluation";
 import axios from "axios";
 
-// ✅ mock pool.query
 jest.mock("../db", () => ({
   query: jest.fn()
 }));
@@ -52,7 +51,7 @@ describe("POST /evaluation/evaluate-intent", () => {
     expect(res.body.feedback).toBe("Excellent understanding!");
   });
 
-  test("should return 500 on db error", async () => {
+  test("should return 500 on DB error", async () => {
     (pool.query as jest.Mock).mockRejectedValueOnce(new Error("DB down"));
 
     const res = await request(app)
@@ -62,4 +61,5 @@ describe("POST /evaluation/evaluate-intent", () => {
     expect(res.status).toBe(500);
     expect(res.body.error).toBe("Intent evaluation failed");
   });
+
 });
