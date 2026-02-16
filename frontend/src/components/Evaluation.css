@@ -204,6 +204,36 @@
   margin: 0 0 16px 0;
 }
 
+.score-breakdown {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 16px 0;
+  padding: 12px 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.score-breakdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.score-breakdown-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary, #718096);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.score-breakdown-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--heading-color, #2d3748);
+}
+
 .matched-keywords {
   margin-top: 16px;
 }

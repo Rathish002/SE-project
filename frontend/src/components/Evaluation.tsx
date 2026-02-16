@@ -181,8 +181,29 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
                   </span>
                 </div>
                 <div className="score-details">
-                  <p className="score-label">{t('evaluation.score') || 'Score'}</p>
+                  <p className="score-label">{'Score'}</p>
                   <p className="score-feedback">{evaluationResult!.feedback}</p>
+                  
+                  {/* Semantic Score and Keyword Score */}
+                  <div className="score-breakdown">
+                    {evaluationResult!.semanticScore !== undefined && (
+                      <div className="score-breakdown-item">
+                        <span className="score-breakdown-label">{'Meaning Correctness'}</span>
+                        <span className="score-breakdown-value">
+                          {(evaluationResult!.semanticScore * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                    )}
+                    {evaluationResult!.keywordScore !== undefined && (
+                      <div className="score-breakdown-item">
+                        <span className="score-breakdown-label">{'Concept Coverage'}</span>
+                        <span className="score-breakdown-value">
+                          {(evaluationResult!.keywordScore * 100).toFixed(1)}%
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
                   {evaluationResult!.matchedKeywords && evaluationResult!.matchedKeywords.length > 0 && (
                     <div className="matched-keywords">
                       <p className="keywords-label">{'Matched Concepts'}:</p>
@@ -232,7 +253,7 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
                   className="button button-secondary"
                   onClick={handlePreviousQuestion}
                 >
-                  ← {t('evaluation.previous') || 'Previous'}
+                  ← {'Previous'}
                 </button>
               )}
               <button
@@ -266,7 +287,7 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
       {/* Summary Stats */}
       {allScores.length > 0 && (
         <div className="evaluation-stats">
-          <h3>{t('evaluation.yourProgress') || 'Your Progress'}</h3>
+          <h3>{'Your Progress'}</h3>
           <div className="stats-grid">
             <div className="stat-item">
               <span className="stat-label">{'Completed'}</span>
