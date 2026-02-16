@@ -176,4 +176,75 @@ router.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
+/* ======================================================
+   GET /exercise/lesson/:lessonId
+   Fetch ALL exercises for a given lesson
+   ====================================================== */
+router.get("/lesson/:lessonId", async (req: Request, res: Response) => {
+  const lessonId = Number(req.params.lessonId);
+
+  if (isNaN(lessonId)) {
+    return res.status(400).json({ message: "Invalid lesson id" });
+  }
+
+  try {
+    // 1. Get all exercises for the lesson
+    const exercises = await pool.query(
+      "SELECT * FROM exercises WHERE lesson_id = $1 ORDER BY id",
+      [lessonId]
+    );
+
+    if (exercises.rows.length === 0) {
+      return res.json({ exercises: [] }); // Return empty array if no exercises
+    }
+
+    // 2. For each exercise, get its steps and options
+    const exercisesWithSteps = await Promise.all(
+      exercises.rows.map(async (exercise) => {
+        const steps = await pool.query(
+          `
+            SELECT 
+              s.id AS step_id,
+              s.step_number,
+              s.prompt,
+              s.prompt_audio_url,
+              s.hint_1,
+              s.hint_2,
+              s.hint_3,
+              s.correct_option_id, 
+              json_agg(
+                json_build_object(
+                  'id', o.id,
+                  'text', o.option_text,
+                  'audio', o.option_audio_url,
+                  'order', o.option_order
+                )
+                ORDER BY o.option_order
+              ) AS options
+            FROM exercise_steps s
+            LEFT JOIN exercise_step_options o ON o.step_id = s.id
+            WHERE s.exercise_id = $1
+            GROUP BY s.id
+            ORDER BY s.step_number;
+            `,
+          [exercise.id]
+        );
+
+        return {
+          ...exercise,
+          steps: steps.rows
+        };
+      })
+    );
+
+    res.json({
+      exercises: exercisesWithSteps
+    });
+
+  } catch (err) {
+    console.error("Lesson exercises fetch error:", err);
+    res.status(500).json({ error: "Failed to fetch exercises for lesson" });
+  }
+});
+
 export default router;
