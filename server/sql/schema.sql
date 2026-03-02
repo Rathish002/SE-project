@@ -106,6 +106,24 @@ CREATE TABLE IF NOT EXISTS evaluation_rules (
   evaluation_intent_id INT NOT NULL REFERENCES evaluation_intents(id) ON DELETE CASCADE
 );
 
+-- ✅ 8) accessibility_preferences
+-- User accessibility and display preferences
+CREATE TABLE IF NOT EXISTS accessibility_preferences (
+  id SERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL UNIQUE,
+  theme VARCHAR(50) DEFAULT 'light',
+  font_size VARCHAR(50) DEFAULT 'medium',
+  audio_speed VARCHAR(50) DEFAULT 'normal',
+  contrast_mode BOOLEAN DEFAULT FALSE,
+  distraction_free_mode BOOLEAN DEFAULT FALSE,
+  reduced_motion BOOLEAN DEFAULT FALSE,
+  dyslexia_font BOOLEAN DEFAULT FALSE,
+  blue_light_filter BOOLEAN DEFAULT FALSE,
+  reading_mask BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 /* 
 "create db":
 psql -U postgres
