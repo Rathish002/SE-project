@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from sentence_transformers import SentenceTransformer, util
 from utils.transliterate import roman_to_hindi
 import re
 from functools import lru_cache
+from typing import Any
 
 app = FastAPI()
 
@@ -18,7 +18,9 @@ def health():
     return {"status": "healthy"}
 
 @lru_cache(maxsize=1)
-def get_model() -> SentenceTransformer:
+def get_model() -> Any:
+    from sentence_transformers import SentenceTransformer
+
     return SentenceTransformer(
         "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
     )
@@ -34,6 +36,8 @@ def is_romanized(text: str) -> bool:
 
 @app.post("/semantic-similarity")
 def semantic_similarity(req: SimilarityRequest):
+    from sentence_transformers import util
+
     model = get_model()
 
     # 🔁 Transliterate ONLY if user typed in Roman script
