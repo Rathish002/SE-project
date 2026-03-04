@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer, util
 from utils.transliterate import roman_to_hindi
 import re
+from functools import lru_cache
 
 app = FastAPI()
 
@@ -16,12 +17,11 @@ def root():
 def health():
     return {"status": "healthy"}
 
-# Original / baseline model
-model = SentenceTransformer(
-    "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
-)
-# Earlier model you tried:
-# "sentence-transformers/distiluse-base-multilingual-cased-v2"
+@lru_cache(maxsize=1)
+def get_model() -> SentenceTransformer:
+    return SentenceTransformer(
+        "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
+    )
 
 class SimilarityRequest(BaseModel):
     reference_answers: list[str] #already hindi
@@ -34,6 +34,8 @@ def is_romanized(text: str) -> bool:
 
 @app.post("/semantic-similarity")
 def semantic_similarity(req: SimilarityRequest):
+    model = get_model()
+
     # 🔁 Transliterate ONLY if user typed in Roman script
     if is_romanized(req.user_answer):
         normalized_user = roman_to_hindi(req.user_answer)
@@ -53,6 +55,7 @@ def semantic_similarity(req: SimilarityRequest):
      # ===== SEMANTIC KEYWORD MATCHING =====
     matched_keywords = []
     keyword_score = 0
+    keyword_similarities = []
 
     if req.keywords:
         keyword_embs = model.encode(req.keywords, convert_to_tensor=True)
