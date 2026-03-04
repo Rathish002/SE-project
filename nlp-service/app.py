@@ -6,6 +6,16 @@ import re
 
 app = FastAPI()
 
+
+@app.get("/")
+def root():
+    return {"status": "ok", "service": "nlp-service"}
+
+
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
 # Original / baseline model
 model = SentenceTransformer(
     "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
