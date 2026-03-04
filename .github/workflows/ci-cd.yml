@@ -99,13 +99,14 @@ jobs:
         env:
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
         run: |
-          if [ -n "$FIREBASE_PROJECT_ID" ] && [ -n "$FIREBASE_TOKEN" ]; then
+          if [ -n "$FIREBASE_PROJECT_ID" ] && [ -n "$FIREBASE_TOKEN" ] && [ -n "$REACT_APP_API_URL" ]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
-            echo "Firebase secrets found."
+            echo "Firebase and frontend API URL secrets found."
           else
             echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "Missing FIREBASE_PROJECT_ID and/or FIREBASE_TOKEN. Skipping Firebase deploy."
+            echo "Missing FIREBASE_PROJECT_ID, FIREBASE_TOKEN, and/or REACT_APP_API_URL. Skipping Firebase deploy."
           fi
 
       - name: Checkout
@@ -122,6 +123,8 @@ jobs:
 
       - name: Install and build frontend
         if: steps.firebase-secrets.outputs.ready == 'true'
+        env:
+          REACT_APP_API_URL: ${{ secrets.REACT_APP_API_URL }}
         run: |
           cd frontend
           npm ci
