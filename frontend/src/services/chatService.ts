@@ -33,7 +33,7 @@ export interface Message {
   type?: 'user' | 'system' | 'image' | 'video' | 'voice' | 'file';
   state?: 'sending' | 'sent' | 'failed'; // Message delivery state (client-side only)
   originalLang?: string; // Original language of the message (ISO code: 'en', 'hi')
-  
+
   // System message fields (when type === 'system')
   actionType?: 'join' | 'leave' | 'add_member';
   actorUid?: string; // who performed action
@@ -41,7 +41,7 @@ export interface Message {
   targetUid?: string; // who was affected (add_member only)
   targetUsername?: string; // cached username
   i18nKey?: string; // 'collaboration.chat.systemMessages.userJoined'
-  
+
   // Media fields (when type is 'image' | 'video' | 'voice' | 'file')
   mediaUrl?: string; // Firebase Storage URL
   mediaSize?: number; // bytes
@@ -126,7 +126,7 @@ export async function createGroupConversation(
 ): Promise<string> {
   // Ensure creator and all participants are unique and included
   const uniqueParticipants = Array.from(new Set([creatorUid, ...participantUids]));
-  
+
   if (uniqueParticipants.length < 2) {
     throw new Error('Group must have at least 2 participants');
   }
@@ -195,15 +195,15 @@ export async function sendMessage(
   originalLang?: string
 ): Promise<void> {
   const senderProfile = await getUserProfile(senderUid);
-  
+
   // Fallback: if profile has no name or is stale, use auth user
   let senderName = senderProfile?.name || 'User';
-  
+
   // Extra fallback: get current auth user and resolve username
   if (!senderProfile && auth.currentUser?.uid === senderUid) {
     senderName = resolveUsername(auth.currentUser);
   }
-  
+
   const messagesRef = collection(db, 'conversations', conversationId, 'messages');
 
   await addDoc(messagesRef, {
@@ -244,7 +244,7 @@ export async function sendImageMessage(
   // Get sender profile
   const senderProfile = await getUserProfile(senderUid);
   let senderName = senderProfile?.name || 'User';
-  
+
   if (!senderProfile && auth.currentUser?.uid === senderUid) {
     senderName = resolveUsername(auth.currentUser);
   }
@@ -301,7 +301,7 @@ export async function sendVideoMessage(
   // Get sender profile
   const senderProfile = await getUserProfile(senderUid);
   let senderName = senderProfile?.name || 'User';
-  
+
   if (!senderProfile && auth.currentUser?.uid === senderUid) {
     senderName = resolveUsername(auth.currentUser);
   }
@@ -353,7 +353,7 @@ export async function sendVoiceMessage(
   // Get sender profile
   const senderProfile = await getUserProfile(senderUid);
   let senderName = senderProfile?.name || 'User';
-  
+
   if (!senderProfile && auth.currentUser?.uid === senderUid) {
     senderName = resolveUsername(auth.currentUser);
   }
@@ -406,7 +406,7 @@ export async function sendFileMessage(
   // Get sender profile
   const senderProfile = await getUserProfile(senderUid);
   let senderName = senderProfile?.name || 'User';
-  
+
   if (!senderProfile && auth.currentUser?.uid === senderUid) {
     senderName = resolveUsername(auth.currentUser);
   }
@@ -456,7 +456,7 @@ export async function leaveGroupChat(
   }
 
   const data = conversationSnap.data();
-  
+
   if (data.type !== 'group') {
     throw new Error('Can only leave group chats');
   }
@@ -464,7 +464,7 @@ export async function leaveGroupChat(
   // Remove user from participants
   const participants: string[] = data.participants || [];
   const participantNames: string[] = data.participantNames || [];
-  
+
   const userIndex = participants.indexOf(uid);
   if (userIndex === -1) {
     throw new Error('User is not a member of this group');
@@ -595,14 +595,14 @@ export async function addMemberToGroup(
       collection(db, 'blocks', actorUid, 'list')
     );
     actorBlockedUsers = new Set(
-      actorBlocksSnap.docs.map(doc => doc.id)
+      actorBlocksSnap.docs.map((doc: any) => doc.id)
     );
 
     const targetBlocksSnap = await getDocs(
       collection(db, 'blocks', targetUid, 'list')
     );
     targetBlockedUsers = new Set(
-      targetBlocksSnap.docs.map(doc => doc.id)
+      targetBlocksSnap.docs.map((doc: any) => doc.id)
     );
   } catch (error) {
     // If blocks don't exist yet, that's okay
@@ -657,21 +657,21 @@ export function subscribeToMessages(
 
   // Also subscribe to conversation to get lastClearedAt
   const conversationRef = doc(db, 'conversations', conversationId);
-  const unsubConv = onSnapshot(conversationRef, (convSnap) => {
+  const unsubConv = onSnapshot(conversationRef, (convSnap: any) => {
     const convData = convSnap.data();
     const lastClearedAt = convData?.lastClearedAt?.[currentUid];
 
     // Now subscribe to messages with filtering
     const unsubMessages = onSnapshot(q, (snapshot: QuerySnapshot<DocumentData>) => {
       const messages: Message[] = [];
-      snapshot.forEach((docSnap) => {
+      snapshot.forEach((docSnap: any) => {
         const data = docSnap.data();
-        
+
         // Filter out messages before lastClearedAt
         if (lastClearedAt && data.timestamp && data.timestamp.toMillis() < lastClearedAt.toMillis()) {
           return; // Skip this message
         }
-        
+
         messages.push({
           id: docSnap.id,
           senderUid: data.senderUid,
@@ -727,7 +727,7 @@ export function subscribeToConversations(
 
     for (const docSnap of snapshot.docs) {
       const data = docSnap.data();
-      
+
       // Skip archived groups (don't maintain listeners for them)
       if (data.archived) {
         continue;
@@ -737,7 +737,7 @@ export function subscribeToConversations(
       const messagesRef = collection(db, 'conversations', docSnap.id, 'messages');
       const messagesQuery = query(messagesRef, orderBy('timestamp', 'desc'));
       const messagesSnap = await getDocs(messagesQuery);
-      
+
       let lastMessage: Message | undefined;
       if (!messagesSnap.empty) {
         const lastMsgDoc = messagesSnap.docs[0];
@@ -811,7 +811,7 @@ export async function clearChatForUser(
 ): Promise<void> {
   const conversationRef = doc(db, 'conversations', conversationId);
   const conversationSnap = await getDoc(conversationRef);
-  
+
   if (!conversationSnap.exists()) {
     throw new Error('Conversation not found');
   }

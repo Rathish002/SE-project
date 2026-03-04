@@ -58,7 +58,7 @@ export async function isUserBlocked(blockerUid: string, blockedUid: string): Pro
 export async function getBlockedUsers(uid: string): Promise<string[]> {
   const blocksRef = collection(db, 'blocks', uid, 'list');
   const snapshot = await getDocs(blocksRef);
-  return snapshot.docs.map(doc => doc.data().uid);
+  return snapshot.docs.map((doc: any) => doc.data().uid);
 }
 
 /**
@@ -69,9 +69,9 @@ export function subscribeToBlockedUsers(
   callback: (blockedUids: string[]) => void
 ): () => void {
   const blocksRef = collection(db, 'blocks', uid, 'list');
-  
-  return onSnapshot(blocksRef, (snapshot) => {
-    const blockedUids = snapshot.docs.map(doc => doc.data().uid);
+
+  return onSnapshot(blocksRef, (snapshot: any) => {
+    const blockedUids = snapshot.docs.map((doc: any) => doc.data().uid);
     callback(blockedUids);
   });
 }

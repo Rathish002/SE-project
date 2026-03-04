@@ -124,8 +124,8 @@ export function subscribeToUserProfile(
   callback: (profile: UserProfile | null) => void
 ): () => void {
   const userRef = doc(db, 'users', uid);
-  
-  return onSnapshot(userRef, (snapshot) => {
+
+  return onSnapshot(userRef, (snapshot: any) => {
     if (snapshot.exists()) {
       const data = snapshot.data();
       callback({
@@ -138,7 +138,7 @@ export function subscribeToUserProfile(
     } else {
       callback(null);
     }
-  }, (error) => {
+  }, (error: any) => {
     console.error('Error subscribing to user profile:', error);
     callback(null);
   });
@@ -159,6 +159,47 @@ export async function changePassword(user: User, currentPassword: string, newPas
 
   // Update password
   await updatePassword(user, newPassword);
+}
+
+/**
+ * Change user's display name
+ * Requires password for reauthentication
+ * Updates both Firebase Auth displayName and Firestore profile
+ */
+export async function changeUsername(user: User, password: string, newUsername: string): Promise<void> {
+  if (!user.email) {
+    throw new Error('User email not found');
+  }
+
+  // Validate new username
+  const trimmedUsername = newUsername.trim();
+  if (!trimmedUsername) {
+    throw new Error('Username cannot be empty');
+  }
+  if (trimmedUsername.length < 2) {
+    throw new Error('Username must be at least 2 characters');
+  }
+  if (trimmedUsername.length > 50) {
+    throw new Error('Username must be less than 50 characters');
+  }
+
+  try {
+    // Reauthenticate user
+    const credential = EmailAuthProvider.credential(user.email, password);
+    await reauthenticateWithCredential(user, credential);
+
+    // Update Firebase Auth displayName
+    const { updateProfile } = await import('firebase/auth');
+    await updateProfile(user, { displayName: trimmedUsername });
+
+    // Update Firestore profile and propagate to conversations
+    await updateUserName(user.uid, trimmedUsername);
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('auth/wrong-password')) {
+      throw new Error('Invalid password');
+    }
+    throw error;
+  }
 }
 
 /**

@@ -114,14 +114,14 @@ export function subscribeToPreferences(
 ): () => void {
   if (!uid) {
     console.error('uid is required for preferences subscription');
-    return () => {};
+    return () => { };
   }
 
   const prefRef = doc(db, 'users', uid, 'settings', 'accessibility');
 
   return onSnapshot(
     prefRef,
-    (snapshot) => {
+    (snapshot: any) => {
       if (snapshot.exists()) {
         const data = snapshot.data();
         callback({
@@ -148,7 +148,7 @@ export function subscribeToPreferences(
         });
       }
     },
-    (error) => {
+    (error: any) => {
       console.error('Error subscribing to preferences:', error);
       // Return defaults on error
       callback({

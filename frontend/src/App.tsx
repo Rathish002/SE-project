@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { User, onAuthStateChanged } from 'firebase/auth';
 import { useTranslation } from 'react-i18next';
 import { auth } from './firebase';
-import { initializeLanguageSettings } from './utils/languageManager';
+import { initializeLanguageSettings } from './utils/appSettings';
 import { useAccessibility, AccessibilityProvider } from './contexts/AccessibilityContext';
 import { initializeUserProfile } from './services/userService';
 import { setUserOnline, setUserOffline } from './services/presenceService';
@@ -21,6 +21,7 @@ import Collaboration from './components/Collaboration';
 import Exercises from './components/Exercises';
 import Navigation, { Page } from './components/Navigation';
 import AccessibilityOverlays from './components/AccessibilityOverlays';
+import TopBar from './components/TopBar';
 
 import './i18n/i18n'; // Initialize i18n
 import './App.css';
@@ -32,11 +33,18 @@ function App() {
   const [showSignup, setShowSignup] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
+  const [previousLessonId, setPreviousLessonId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   const { preferences, updateDistractionFreeMode } = useAccessibility();
   const focusMode = preferences.distractionFreeMode;
   const setFocusMode = updateDistractionFreeMode;
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
   // Initialize language settings
   useEffect(() => {
@@ -46,7 +54,7 @@ function App() {
 
   // Auth state listener
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser: User | null) => {
       if (currentUser) {
         try {
           await initializeUserProfile(currentUser);
@@ -112,6 +120,23 @@ function App() {
     setSelectedLessonId(newLessonId);
   };
 
+  const handleNavigateToExercises = () => {
+    // Save current lesson before navigating to exercises
+    setPreviousLessonId(selectedLessonId);
+    handleNavigate('exercises');
+  };
+
+  const handleBackToLesson = () => {
+    // Navigate back to the lesson we came from
+    if (previousLessonId !== null) {
+      setSelectedLessonId(previousLessonId);
+      setCurrentPage('lessons'); // Stays in lessons context but shows specific lesson
+    } else {
+      // Fallback to lesson list if no previous lesson
+      handleNavigate('lessons');
+    }
+  };
+
   const handleLogout = async () => {
     if (user) {
       try {
@@ -129,24 +154,26 @@ function App() {
     if (selectedLessonId !== null) {
       return (
         <AccessibilityProvider>
-          <div className={`app-container ${focusMode ? 'focus-mode' : ''}`}>
+          <div className={`app-container ${focusMode ? 'focus-mode' : ''} ${!isSidebarOpen ? 'sidebar-closed' : ''}`}>
             {!focusMode && (
               <Navigation
                 currentPage="lessons"
                 onNavigate={handleNavigate}
-                onLogout={handleLogout}
-                showSideArrows={false}
+                isOpen={isSidebarOpen}
+                onToggle={toggleSidebar}
               />
             )}
 
-            <Learning
-              lessonId={selectedLessonId}
-              onBack={handleBackFromLearning}
-              onNavigateLesson={handleNavigateLesson}
-              focusMode={focusMode}
-              onFocusModeChange={setFocusMode}
-              onNavigateToExercises={() => handleNavigate('exercises')}
-            />
+            <div className="main-content">
+              <Learning
+                lessonId={selectedLessonId}
+                onBack={handleBackFromLearning}
+                onNavigateLesson={handleNavigateLesson}
+                focusMode={focusMode}
+                onFocusModeChange={setFocusMode}
+                onNavigateToExercises={handleNavigateToExercises}
+              />
+            </div>
 
             <AccessibilityOverlays />
           </div>
@@ -158,23 +185,36 @@ function App() {
 
     return (
       <AccessibilityProvider>
-        <div className={`app-container ${isFocusModePage && focusMode ? 'focus-mode' : ''}`}>
+        <div className={`app-container ${isFocusModePage && focusMode ? 'focus-mode' : ''} ${!isSidebarOpen ? 'sidebar-closed' : ''}`}>
           {!(isFocusModePage && focusMode) && (
             <Navigation
               currentPage={currentPage}
               onNavigate={handleNavigate}
-              onLogout={handleLogout}
-              showSideArrows={true}
+              isOpen={isSidebarOpen}
+              onToggle={toggleSidebar}
             />
           )}
 
           <div className="main-content">
+            {!(isFocusModePage && focusMode) && (
+              <TopBar
+                isSidebarOpen={isSidebarOpen}
+                onToggleSidebar={toggleSidebar}
+                onLogout={handleLogout}
+                onNavigate={handleNavigate}
+              />
+            )}
+
             {currentPage === 'home' && <Home currentUser={user} />}
             {currentPage === 'lessons' && (
               <LessonSelection onSelectLesson={handleSelectLesson} />
             )}
             {currentPage === 'exercises' && (
-              <Exercises onNavigate={handleNavigate} />
+              <Exercises
+                onNavigate={handleNavigate}
+                onBackToLesson={handleBackToLesson}
+                lessonId={previousLessonId ?? undefined} // Pass the lesson ID
+              />
             )}
             {currentPage === 'collaboration' && (
               <Collaboration
@@ -195,7 +235,7 @@ function App() {
   }
 
   return (
-    <div className="app-container">
+    <div className="app-container auth-mode">
       {showSignup ? (
         <Signup onSwitchToLogin={() => setShowSignup(false)} />
       ) : (

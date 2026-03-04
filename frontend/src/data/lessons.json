@@ -35,23 +35,23 @@
   {
     "id": 4,
     "title": {
-      "en": "Food and Dining",
-      "hi": "भोजन और भोजन"
+      "en": "Basic Sentence Formation",
+      "hi": "बुनियादी वाक्य निर्माण"
     },
     "description": {
-      "en": "Explore food vocabulary and phrases for ordering and dining.",
-      "hi": "भोजन की शब्दावली और ऑर्डर करने और भोजन करने के लिए वाक्यांशों का अन्वेषण करें।"
+      "en": "Learn simple Subject + Verb + Object sentence structure.",
+      "hi": "सरल कर्ता + क्रिया + कर्म वाक्य संरचना सीखें।"
     }
   },
   {
     "id": 5,
     "title": {
-      "en": "Daily Activities",
-      "hi": "दैनिक गतिविधियाँ"
+      "en": "Everyday Vocabulary",
+      "hi": "रोजमर्रा की शब्दावली"
     },
     "description": {
-      "en": "Learn to talk about your daily routine and activities.",
-      "hi": "अपनी दैनिक दिनचर्या और गतिविधियों के बारे में बात करना सीखें।"
+      "en": "Learn common daily-use words and their meanings.",
+      "hi": "सामान्य दैनिक उपयोग के शब्द और उनके अर्थ सीखें।"
     }
   }
 ]
