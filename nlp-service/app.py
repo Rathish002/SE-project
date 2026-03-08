@@ -1,5 +1,6 @@
 from fastapi import FastAPI,Form,UploadFile,File
 from pydantic import BaseModel
+from sentence_transformers import SentenceTransformer, util
 from utils.transliterate import roman_to_hindi
 import whisper
 from fastapi import UploadFile, File
@@ -46,10 +47,6 @@ def normalize_digits_to_hindi(text: str) -> str:
 
 @app.post("/semantic-similarity")
 def semantic_similarity(req: SimilarityRequest):
-    from sentence_transformers import util
-
-    model = get_model()
-
     # 🔁 Transliterate ONLY if user typed in Roman script
     if is_romanized(req.user_answer):
         normalized_user = roman_to_hindi(req.user_answer)
