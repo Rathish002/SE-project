@@ -1,5 +1,6 @@
 import React from 'react';
 import LanguageSwitcher from './LanguageSwitcher';
+import NotificationMenu from './NotificationMenu';
 import ProfileMenu from './ProfileMenu';
 import './TopBar.css';
 import { Page } from './Navigation';
@@ -19,6 +20,7 @@ const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar, isSidebarOpen, onLogou
             </div>
             <div className="top-bar-right">
                 <LanguageSwitcher />
+                <NotificationMenu onNavigate={onNavigate} />
                 <ProfileMenu
                     onSignOut={onLogout}
                     onSettings={() => onNavigate('settings')}
