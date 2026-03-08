@@ -153,6 +153,75 @@
   background: rgba(245, 101, 101, 0.1);
 }
 
+.score-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 4px solid currentColor;
+  flex-shrink: 0;
+}
+
+.score-number {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.score-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+
+.difficulty-tag {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.difficulty-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-secondary, #718096);
+}
+
+.difficulty-value {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.difficulty-value.supportive {
+  background: #e6fffa;
+  color: #319795;
+  border: 1px solid #b2f5ea;
+}
+
+.difficulty-value.balanced {
+  background: #ebf8ff;
+  color: #3182ce;
+  border: 1px solid #bee3f8;
+}
+
+.difficulty-value.challenging {
+  background: #faf5ff;
+  color: #805ad5;
+  border: 1px solid #e9d8fd;
+}
+
 .score-circle {
   display: flex;
   align-items: center;

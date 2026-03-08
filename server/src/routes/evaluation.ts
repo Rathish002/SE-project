@@ -3,6 +3,7 @@ import axios from "axios";
 import pool from "../db";
 import multer from "multer";
 import FormData from "form-data";
+import { getAdaptiveThreshold, saveEvaluationProgress, thresholdToLabel } from "../utils/adaptive_threshold";
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -134,7 +135,7 @@ router.get(
 router.post(
   "/evaluate-intent",
   async (req: Request, res: Response) => {
-    const { lessonId, evaluationIntentId, answer } = req.body;
+    const { lessonId, evaluationIntentId, answer, userId } = req.body;
 
     if (!lessonId || !evaluationIntentId || !answer) {
       return res.status(400).json({ message: "Invalid input" });
@@ -157,7 +158,7 @@ router.post(
 
       const referenceAnswer = intentResult.rows[0].reference_answer;
 
-      // 3️⃣ Keyword-based scoring (intent-specific concept coverage)
+      // 2️⃣ Keyword-based scoring (intent-specific concept coverage)
       const keywordsResult = await pool.query(
         `
         SELECT keyword, weight
@@ -169,27 +170,39 @@ router.post(
 
       const keywords = keywordsResult.rows.map(r => r.keyword);
 
-      // 2️⃣ Call NLP service for semantic similarity
-      const nlpResponse = await axios.post(NLP_SERVICE_URL, {
-        reference_answers: [referenceAnswer],  // Must be array!
-        user_answer: answer,
-        keywords: keywords
-      });
+      // 3️⃣ Compute adaptive threshold from user's history
+      const adaptiveThreshold = userId
+        ? await getAdaptiveThreshold(userId, lessonId)
+        : 0.60;
 
+      console.log(`Adaptive threshold for user ${userId ?? 'anonymous'}: ${adaptiveThreshold}`);
+
+      // 4️⃣ Call NLP service for semantic similarity
+      const nlpResponse = await axios.post(NLP_SERVICE_URL, {
+        reference_answers: [referenceAnswer],
+        user_answer: answer,
+        keywords: keywords,
+        threshold: adaptiveThreshold
+      });
 
       const semanticScore = nlpResponse.data.semantic_similarity;
       const keywordScore = nlpResponse.data.keyword_similarity_score;
       const matchedKeywords = nlpResponse.data.matched_keywords || [];
       const missedKeywords = keywords.filter(k => !matchedKeywords.includes(k));
 
-      // 4️⃣ Hybrid scoring formula
+      // 5️⃣ Hybrid scoring formula
       const finalScore = 0.7 * semanticScore + 0.3 * keywordScore;
 
-      // 5️⃣ Feedback
+      // 6️⃣ Feedback
       let feedback = "Needs improvement.";
       if (finalScore >= 0.8) feedback = "Excellent understanding!";
       else if (finalScore >= 0.6) feedback = "Good understanding.";
       else if (finalScore >= 0.4) feedback = "Fair understanding.";
+
+      // 7️⃣ Persist progress asynchronously (non-blocking)
+      if (userId) {
+        saveEvaluationProgress(userId, lessonId, evaluationIntentId, finalScore);
+      }
 
       res.json({
         semanticScore,
@@ -197,7 +210,9 @@ router.post(
         finalScore,
         feedback,
         matchedKeywords,
-        missedKeywords
+        missedKeywords,
+        adaptiveThreshold,
+        difficultyLabel: thresholdToLabel(adaptiveThreshold)
       });
 
     } catch (err) {
@@ -250,7 +265,17 @@ router.post(
 
       const keywords = keywordsResult.rows.map(r => r.keyword);
 
-      // 3️⃣ Call NLP service for speech similarity with form data
+      // 3️⃣ Get user ID for adaptive threshold (fallback to body if not in auth)
+      const userId = req.body.userId;
+
+      // 4️⃣ Compute adaptive threshold
+      const adaptiveThreshold = userId
+        ? await getAdaptiveThreshold(userId, Number(lessonId))
+        : 0.60;
+
+      console.log(`Adaptive speech threshold for user ${userId ?? 'anonymous'}: ${adaptiveThreshold}`);
+
+      // 5️⃣ Call NLP service for speech similarity with form data
       const formData = new FormData();
       formData.append("audio", audioContent.buffer, {
         filename: audioContent.originalname || "recording.webm",
@@ -259,6 +284,7 @@ router.post(
 
       formData.append("reference_answers", JSON.stringify([referenceAnswer]));
       formData.append("keywords", JSON.stringify(keywords));
+      formData.append("threshold", String(adaptiveThreshold)); // Pass threshold to NLP
 
       const nlpResponse = await axios.post(NLP_SPEECH_SERVICE_URL, formData, {
         headers: {
@@ -273,14 +299,19 @@ router.post(
       const transcript = nlpResponse.data.transcript;
       const normalizedAnswer = nlpResponse.data.normalized_user_answer;
 
-      // 4️⃣ Hybrid scoring formula
+      // 6️⃣ Hybrid scoring formula
       const finalScore = 0.7 * semanticScore + 0.3 * keywordScore;
 
-      // 5️⃣ Feedback
+      // 7️⃣ Feedback
       let feedback = "Needs improvement.";
       if (finalScore >= 0.8) feedback = "Excellent understanding!";
       else if (finalScore >= 0.6) feedback = "Good understanding.";
       else if (finalScore >= 0.4) feedback = "Fair understanding.";
+
+      // 8️⃣ Persist progress asynchronously
+      if (userId) {
+        saveEvaluationProgress(userId, Number(lessonId), Number(evaluationIntentId), finalScore);
+      }
 
       res.json({
         semanticScore,
@@ -290,7 +321,9 @@ router.post(
         matchedKeywords,
         missedKeywords,
         transcript,
-        normalizedAnswer
+        normalizedAnswer,
+        adaptiveThreshold,
+        difficultyLabel: thresholdToLabel(adaptiveThreshold)
       });
 
     } catch (err: any) {
