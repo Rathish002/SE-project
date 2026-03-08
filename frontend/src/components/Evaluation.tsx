@@ -3,9 +3,9 @@
  * Displays evaluation questions one by one with scoring
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getEvaluationQuestions, evaluateAnswer } from '../services/evaluationService';
+import { getEvaluationQuestions, evaluateAnswer, evaluateSpeechAnswer } from '../services/evaluationService';
 import type { EvaluationQuestion, EvaluationResult } from '../services/evaluationService';
 import './Evaluation.css';
 
@@ -30,6 +30,12 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [answers, setAnswers] = useState<{ [key: number]: EvaluationResult }>({});
   const [allScores, setAllScores] = useState<number[]>([]);
+
+  // Audio Recording State
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   // Fetch evaluation questions on mount
   useEffect(() => {
@@ -68,7 +74,7 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
         currentQuestion.id,
         userAnswer
       );
-      
+
       setEvaluationResult(result);
       setAnswers((prev) => ({
         ...prev,
@@ -83,6 +89,77 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
     }
   };
 
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = recorder;
+      audioChunksRef.current = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          audioChunksRef.current.push(e.data);
+        }
+      };
+
+      recorder.onstop = () => {
+        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        setAudioBlob(blob);
+      };
+
+      recorder.start();
+      setIsRecording(true);
+      setAudioBlob(null);
+      setError(null);
+    } catch (err) {
+      console.error('Error accessing microphone:', err);
+      setError('Could not access microphone. Please review site permissions.');
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.stream.getTracks().forEach((track) => track.stop());
+      setIsRecording(false);
+    }
+  };
+
+  const handleEvaluateAudio = async () => {
+    if (!audioBlob) {
+      setError('Please record an answer first');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      const result = await evaluateSpeechAnswer(
+        lessonId,
+        currentQuestion.id,
+        audioBlob
+      );
+
+      if (result.transcript) {
+        setUserAnswer(result.transcript);
+      } else {
+        setUserAnswer(result.normalizedAnswer || '(Audio evaluated)');
+      }
+
+      setEvaluationResult(result);
+      setAnswers((prev) => ({
+        ...prev,
+        [currentQuestion.id]: result,
+      }));
+      setAllScores((prev) => [...prev, result.finalScore]);
+    } catch (err: any) {
+      console.error('Error evaluating audio answer:', err);
+      setError('Failed to evaluate audio answer');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleNextQuestion = () => {
     if (isLastQuestion) {
       // All questions completed - show summary
@@ -91,6 +168,7 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
       setCurrentQuestionIndex((prev) => prev + 1);
       setUserAnswer('');
       setEvaluationResult(null);
+      setAudioBlob(null);
     }
   };
 
@@ -114,6 +192,7 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
       setCurrentQuestionIndex((prev) => prev - 1);
       setUserAnswer('');
       setEvaluationResult(null);
+      setAudioBlob(null);
     }
   };
 
@@ -183,7 +262,7 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
                 <div className="score-details">
                   <p className="score-label">{'Score'}</p>
                   <p className="score-feedback">{evaluationResult!.feedback}</p>
-                  
+
                   {/* Semantic Score and Keyword Score */}
                   <div className="score-breakdown">
                     {evaluationResult!.semanticScore !== undefined && (
@@ -234,9 +313,39 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
                 value={userAnswer}
                 onChange={(e) => setUserAnswer(e.target.value)}
                 placeholder={'Type your answer here...'}
-                disabled={loading}
+                disabled={loading || isRecording}
                 rows={5}
               />
+
+              <div className="audio-controls" style={{ marginTop: '1rem', display: 'flex', gap: '1rem', alignItems: 'center' }}>
+                {!isRecording ? (
+                  <button
+                    className="button button-secondary"
+                    onClick={startRecording}
+                    disabled={loading}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                  >
+                    🎤 {'Start Recording'}
+                  </button>
+                ) : (
+                  <button
+                    className="button button-secondary"
+                    onClick={stopRecording}
+                    disabled={loading}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#ffebee', color: '#c62828', borderColor: '#c62828' }}
+                  >
+                    ⏹ {'Stop Recording'}
+                  </button>
+                )}
+
+                {isRecording && <span className="recording-indicator" style={{ color: '#d32f2f', fontWeight: 'bold' }}>Recording...</span>}
+
+                {audioBlob && !isRecording && (
+                  <span className="audio-ready-indicator" style={{ color: '#2e7d32', fontWeight: 'bold' }}>
+                    Audio ready to evaluate
+                  </span>
+                )}
+              </div>
             </>
           )}
         </div>
@@ -266,13 +375,26 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
               </button>
             </>
           ) : (
-            <button
-              className="button button-primary"
-              onClick={handleEvaluate}
-              disabled={loading}
-            >
-              {loading ? `${'Evaluating'}...` : ('Evaluate Answer')}
-            </button>
+            <div className="evaluation-modes" style={{ display: 'flex', gap: '1rem' }}>
+              <button
+                className="button button-primary"
+                onClick={handleEvaluate}
+                disabled={loading || (!userAnswer.trim() && !audioBlob)}
+              >
+                {loading && !audioBlob ? `${'Evaluating'}...` : ('Evaluate Text')}
+              </button>
+
+              {audioBlob && (
+                <button
+                  className="button button-primary"
+                  onClick={handleEvaluateAudio}
+                  disabled={loading}
+                  style={{ backgroundColor: '#2e7d32' }}
+                >
+                  {loading ? `${'Evaluating'}...` : ('Evaluate Audio')}
+                </button>
+              )}
+            </div>
           )}
 
           <button

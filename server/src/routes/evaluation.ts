@@ -1,9 +1,13 @@
 import { Router, Request, Response } from "express";
 import axios from "axios";
 import pool from "../db";
+import multer from "multer";
+import FormData from "form-data";
 
 const router = Router();
+const upload = multer({ storage: multer.memoryStorage() });
 const NLP_SERVICE_URL = "http://localhost:8000/semantic-similarity";
+const NLP_SPEECH_SERVICE_URL = "http://localhost:8000/speech-similarity";
 
 /**
  * ============================================================
@@ -172,11 +176,11 @@ router.post(
         keywords: keywords
       });
 
-      
+
       const semanticScore = nlpResponse.data.semantic_similarity;
       const keywordScore = nlpResponse.data.keyword_similarity_score;
       const matchedKeywords = nlpResponse.data.matched_keywords;
-      
+
       // 4️⃣ Hybrid scoring formula
       const finalScore = 0.7 * semanticScore + 0.3 * keywordScore;
 
@@ -199,6 +203,100 @@ router.post(
     } catch (err) {
       console.error("Intent evaluation error:", err);
       res.status(500).json({ error: "Intent evaluation failed" });
+    }
+  }
+);
+
+/**
+ * Evaluate ONE audio answer for ONE question (intent-level)
+ */
+router.post(
+  "/evaluate-speech-intent",
+  upload.single("audio"),
+  async (req: Request, res: Response): Promise<any> => {
+    const { lessonId, evaluationIntentId } = req.body;
+    const audioContent = req.file;
+
+    if (!lessonId || !evaluationIntentId || !audioContent) {
+      return res.status(400).json({ message: "Invalid input" });
+    }
+
+    try {
+      // 1️⃣ Fetch reference answer for this specific question
+      const intentResult = await pool.query(
+        `
+        SELECT reference_answer
+        FROM evaluation_intents
+        WHERE id = $1 AND lesson_id = $2
+        `,
+        [evaluationIntentId, lessonId]
+      );
+
+      if (intentResult.rows.length === 0) {
+        return res.status(404).json({ message: "Evaluation intent not found" });
+      }
+
+      const referenceAnswer = intentResult.rows[0].reference_answer;
+
+      // 2️⃣ Keyword-based scoring (intent-specific concept coverage)
+      const keywordsResult = await pool.query(
+        `
+        SELECT keyword, weight
+        FROM evaluation_rules
+        WHERE evaluation_intent_id = $1
+        `,
+        [evaluationIntentId]
+      );
+
+      const keywords = keywordsResult.rows.map(r => r.keyword);
+
+      // 3️⃣ Call NLP service for speech similarity with form data
+      const formData = new FormData();
+      formData.append("audio", audioContent.buffer, {
+        filename: audioContent.originalname || "recording.webm",
+        contentType: audioContent.mimetype || "audio/webm",
+      });
+
+      formData.append("reference_answers", JSON.stringify([referenceAnswer]));
+      formData.append("keywords", JSON.stringify(keywords));
+
+      const nlpResponse = await axios.post(NLP_SPEECH_SERVICE_URL, formData, {
+        headers: {
+          ...formData.getHeaders(),
+        },
+      });
+
+      const semanticScore = nlpResponse.data.semantic_similarity;
+      const keywordScore = nlpResponse.data.keyword_similarity_score;
+      const matchedKeywords = nlpResponse.data.matched_keywords;
+      const transcript = nlpResponse.data.transcript;
+      const normalizedAnswer = nlpResponse.data.normalized_user_answer;
+
+      // 4️⃣ Hybrid scoring formula
+      const finalScore = 0.7 * semanticScore + 0.3 * keywordScore;
+
+      // 5️⃣ Feedback
+      let feedback = "Needs improvement.";
+      if (finalScore >= 0.8) feedback = "Excellent understanding!";
+      else if (finalScore >= 0.6) feedback = "Good understanding.";
+      else if (finalScore >= 0.4) feedback = "Fair understanding.";
+
+      res.json({
+        semanticScore,
+        keywordScore,
+        finalScore,
+        feedback,
+        matchedKeywords,
+        transcript,
+        normalizedAnswer
+      });
+
+    } catch (err: any) {
+      console.error("Speech intent evaluation error:", err.message);
+      if (err.response) {
+        console.error("NLP service error details:", err.response.data);
+      }
+      res.status(500).json({ error: "Speech intent evaluation failed" });
     }
   }
 );
