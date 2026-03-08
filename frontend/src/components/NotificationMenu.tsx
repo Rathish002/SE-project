@@ -10,6 +10,7 @@ const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onN
     const [open, setOpen] = useState(false);
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
+    const [readConversations, setReadConversations] = useState<Set<string>>(new Set());
     const menuRef = useRef<HTMLDivElement | null>(null);
 
     const currentUser = auth.currentUser;
@@ -24,13 +25,16 @@ const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onN
             // from someone other than the current user as "unread" for the notification badge
             // In a real app, this would use a proper read receipt system
             const count = newConversations.filter(
-                (conv) => conv.lastMessage && conv.lastMessage.senderUid !== currentUser.uid
+                (conv) => 
+                    conv.lastMessage && 
+                    conv.lastMessage.senderUid !== currentUser.uid &&
+                    !readConversations.has(conv.id)
             ).length;
             setUnreadCount(count);
         });
 
         return () => unsubscribe();
-    }, [currentUser?.uid]);
+    }, [currentUser?.uid, readConversations]);
 
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
@@ -42,11 +46,24 @@ const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onN
         return () => document.removeEventListener('click', handleClick);
     }, []);
 
-    const handleNotificationClick = () => {
+    const handleNotificationClick = (conversationId?: string) => {
         setOpen(false);
+        if (conversationId) {
+            setReadConversations(prev => {
+                const newSet = new Set(prev);
+                newSet.add(conversationId);
+                return newSet;
+            });
+        }
         if (onNavigate) {
             onNavigate('collaboration');
         }
+    };
+
+    const handleMarkAllAsRead = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setReadConversations(new Set(conversations.map(c => c.id)));
+        setUnreadCount(0);
     };
 
     const formatTimestamp = (timestamp?: any) => {
@@ -81,6 +98,11 @@ const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onN
                 <div className="notification-dropdown" role="menu">
                     <div className="notification-header">
                         <div className="notification-title">Notifications</div>
+                        {unreadCount > 0 && (
+                            <button className="notification-mark-read" onClick={handleMarkAllAsRead}>
+                                Mark all as read
+                            </button>
+                        )}
                     </div>
                     
                     <div className="notification-list">
@@ -92,8 +114,8 @@ const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onN
                             conversations.slice(0, 5).map((conv) => (
                                 <button 
                                     key={conv.id} 
-                                    className="notification-item" 
-                                    onClick={handleNotificationClick}
+                                    className={`notification-item ${(!readConversations.has(conv.id) && conv.lastMessage?.senderUid !== currentUser?.uid) ? 'unread' : ''}`} 
+                                    onClick={() => handleNotificationClick(conv.id)}
                                     role="menuitem"
                                 >
                                     <div className="notification-item-avatar">
@@ -123,7 +145,7 @@ const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onN
                     </div>
                     
                     <div className="notification-footer">
-                        <button className="notification-view-all" onClick={handleNotificationClick}>
+                        <button className="notification-view-all" onClick={() => handleNotificationClick()}>
                             View all in Collaboration
                         </button>
                     </div>
