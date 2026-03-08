@@ -1,6 +1,7 @@
 import React from "react";
 import type { LessonStep, ImageOption } from "../types/ExerciseTypes";
 import ExercisesTTSButton from "./ExercisesTTSButton";
+import { useTranslation } from "react-i18next";
 
 interface ExercisesContentProps {
     step: LessonStep;
@@ -19,6 +20,7 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
     feedback,
     isCorrect
 }) => {
+    const { t } = useTranslation();
 
     const handleOptionSelect = (val: string) => {
         if (isCorrect === true) return; // Prevent changing after correct
@@ -69,7 +71,7 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
                         onClick={checkAnswer}
                         disabled={!answer || isCorrect === true}
                     >
-                        Check Answer
+                        {t('exercises.actions.checkAnswer')}
                     </button>
                 </div>
             </div>
@@ -106,7 +108,7 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
                         onClick={checkAnswer}
                         disabled={!answer || isCorrect === true}
                     >
-                        Check Answer
+                        {t('exercises.actions.checkAnswer')}
                     </button>
                 </div>
             </div>
@@ -124,8 +126,8 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
                         className="text-input"
                         value={answer}
                         onChange={(e) => setAnswer(e.target.value)}
-                        placeholder="Type your answer here..."
-                        aria-label="Your answer"
+                        placeholder={t('exercises.inputs.typeAnswer')}
+                        aria-label={t('exercises.inputs.yourAnswer')}
                         disabled={isCorrect === true}
                     />
                 </div>
@@ -135,7 +137,7 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
                         onClick={checkAnswer}
                         disabled={!answer || isCorrect === true}
                     >
-                        Check Answer
+                        {t('exercises.actions.checkAnswer')}
                     </button>
                 </div>
             </div>
@@ -153,14 +155,14 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
                 </div>
                 <div className="action-row">
                     <button className="check-btn primary" onClick={checkAnswer}>
-                        I'm Ready
+                        {t('exercises.actions.imReady')}
                     </button>
                 </div>
             </div>
         )
     }
 
-    return <div>Unknown step type</div>;
+    return <div>{t('exercises.errors.unknownStepType')}</div>;
 };
 
 export default ExercisesContent;
