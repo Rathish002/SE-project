@@ -152,3 +152,9 @@ KUSHAAL_CONTRIBUTIONS~.md
 kushaal_sprint1.md
 epic 3- user strories.txt
 kushaal_sprint1_backup.md
+SE-project-backup.git.bfg-report
+SE-project-backup.git
+nlp-service/__pycache__/
+**/__pycache__/
+*.pyc
+nlp-service/.venv/
