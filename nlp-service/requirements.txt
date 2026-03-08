@@ -3,4 +3,7 @@ uvicorn
 sentence-transformers
 scikit-learn
 numpy
+openai-whisper
+soundfile
+python-multipart
 indic-transliteration

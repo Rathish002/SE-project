@@ -1,29 +1,22 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,Form,UploadFile,File
 from pydantic import BaseModel
 from utils.transliterate import roman_to_hindi
+import whisper
+from fastapi import UploadFile, File
 import re
-from functools import lru_cache
-from typing import Any
+import os
+import ast
 
 app = FastAPI()
 
 
-@app.get("/")
-def root():
-    return {"status": "ok", "service": "nlp-service"}
-
-
-@app.get("/health")
-def health():
-    return {"status": "healthy"}
-
-@lru_cache(maxsize=1)
-def get_model() -> Any:
-    from sentence_transformers import SentenceTransformer
-
-    return SentenceTransformer(
-        "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
-    )
+whisper_model = whisper.load_model("base")
+# Original / baseline model
+model = SentenceTransformer(
+    "sentence-transformers/paraphrase-multilingual-mpnet-base-v2"
+)
+# Earlier model you tried:
+# "sentence-transformers/distiluse-base-multilingual-cased-v2"
 
 class SimilarityRequest(BaseModel):
     reference_answers: list[str] #already hindi
@@ -77,6 +70,69 @@ def semantic_similarity(req: SimilarityRequest):
     print("Keyword similarities:", keyword_similarities)
 
     return {
+        "semantic_similarity": max_similarity,
+        "keyword_similarity_score": keyword_score,
+        "matched_keywords": matched_keywords,
+        "normalized_user_answer": normalized_user
+    }
+
+@app.post("/speech-similarity")
+async def speech_similarity(
+    audio: UploadFile = File(...),
+    reference_answers: str = Form(...),
+    keywords: str = Form("[]")
+):
+
+    # Save temporary audio
+    audio_path = f"temp_{audio.filename}"
+
+    with open(audio_path, "wb") as f:
+        f.write(await audio.read())
+
+    # Speech → text
+    result = whisper_model.transcribe(audio_path, language="hi")
+    transcript = result["text"].strip()
+
+    os.remove(audio_path)
+
+    # Convert strings to lists
+    reference_answers = ast.literal_eval(reference_answers)
+    keywords = ast.literal_eval(keywords)
+
+    # 🔁 Same transliteration logic
+    if is_romanized(transcript):
+        normalized_user = roman_to_hindi(transcript)
+    else:
+        normalized_user = transcript
+
+    # 🔢 Generate embeddings
+    user_emb = model.encode(normalized_user, convert_to_tensor=True)
+    ref_embs = model.encode(reference_answers, convert_to_tensor=True)
+
+    similarities = util.cos_sim(user_emb, ref_embs)[0]
+    max_similarity = float(similarities.max())
+
+    # ===== SEMANTIC KEYWORD MATCHING =====
+    matched_keywords = []
+    keyword_score = 0
+
+    if keywords:
+        keyword_embs = model.encode(keywords, convert_to_tensor=True)
+        keyword_similarities = util.cos_sim(user_emb, keyword_embs)[0]
+
+        for idx, score in enumerate(keyword_similarities):
+            if float(score) > 0.6:
+                matched_keywords.append(keywords[idx])
+                keyword_score += 1
+
+        keyword_score = keyword_score / len(keywords)
+
+    print("Transcript:", transcript)
+    print("Normalized User:", normalized_user)
+    print("Keywords:", keywords)
+
+    return {
+        "transcript": transcript,
         "semantic_similarity": max_similarity,
         "keyword_similarity_score": keyword_score,
         "matched_keywords": matched_keywords,
