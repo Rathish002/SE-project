@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getEvaluationQuestions, evaluateAnswer, evaluateSpeechAnswer } from '../services/evaluationService';
 import type { EvaluationQuestion, EvaluationResult } from '../services/evaluationService';
+import { auth } from '../firebase';
 import './Evaluation.css';
 
 interface EvaluationPageProps {
@@ -72,7 +73,8 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
       const result = await evaluateAnswer(
         lessonId,
         currentQuestion.id,
-        userAnswer
+        userAnswer,
+        auth.currentUser?.uid
       );
 
       setEvaluationResult(result);
@@ -137,7 +139,8 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
       const result = await evaluateSpeechAnswer(
         lessonId,
         currentQuestion.id,
-        audioBlob
+        audioBlob,
+        auth.currentUser?.uid
       );
 
       if (result.transcript) {
@@ -254,11 +257,18 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
             <>
               {/* Score Display */}
               <div className={`score-display ${getScoreClass(evaluationResult!.finalScore)}`}>
-                <div className="score-circle">
-                  <span className="score-value">
-                    {(evaluationResult!.finalScore * 100).toFixed(1)}%
-                  </span>
+                <div className="score-badge">
+                  <span className="score-number">{(evaluationResult!.finalScore * 100).toFixed(0)}%</span>
+                  <span className="score-label">{'Score'}</span>
                 </div>
+                {evaluationResult!.difficultyLabel && (
+                  <div className="difficulty-tag">
+                    <span className="difficulty-label">Difficulty:</span>
+                    <span className={`difficulty-value ${evaluationResult!.difficultyLabel.toLowerCase()}`}>
+                      {evaluationResult!.difficultyLabel}
+                    </span>
+                  </div>
+                )}
                 <div className="score-details">
                   <p className="score-label">{'Score'}</p>
                   <p className="score-feedback">{evaluationResult!.feedback}</p>

@@ -21,6 +21,8 @@ export interface EvaluationResult {
   feedback: string;
   transcript?: string;
   normalizedAnswer?: string;
+  adaptiveThreshold?: number;
+  difficultyLabel?: string;
 }
 
 /**
@@ -46,7 +48,8 @@ export async function getEvaluationQuestions(
 export async function evaluateAnswer(
   lessonId: number,
   evaluationIntentId: number,
-  answer: string
+  answer: string,
+  userId?: string
 ): Promise<EvaluationResult> {
   try {
     const response = await axios.post(
@@ -55,6 +58,7 @@ export async function evaluateAnswer(
         lessonId,
         evaluationIntentId,
         answer,
+        userId
       }
     );
     return response.data;
@@ -70,13 +74,15 @@ export async function evaluateAnswer(
 export async function evaluateSpeechAnswer(
   lessonId: number,
   evaluationIntentId: number,
-  audioBlob: Blob
+  audioBlob: Blob,
+  userId?: string
 ): Promise<EvaluationResult> {
   try {
     const formData = new FormData();
     formData.append('lessonId', lessonId.toString());
     formData.append('evaluationIntentId', evaluationIntentId.toString());
     formData.append('audio', audioBlob, 'recording.webm');
+    if (userId) formData.append('userId', userId);
 
     const response = await axios.post(
       `${API_BASE_URL}/evaluation/evaluate-speech-intent`,

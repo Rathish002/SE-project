@@ -22,7 +22,8 @@ model = SentenceTransformer(
 class SimilarityRequest(BaseModel):
     reference_answers: list[str] #already hindi
     user_answer: str   #may be romanized
-    keywords: list[str] = []   
+    keywords: list[str] = []
+    threshold: float = 0.60  # adaptive evaluation threshold
 
 
 def is_romanized(text: str) -> bool:
@@ -82,8 +83,8 @@ def semantic_similarity(req: SimilarityRequest):
             # 2️⃣ Also check if keyword is a digit and its Hindi form is in the answer
             keyword_hindi = normalize_digits_to_hindi(keyword)
             digit_match = keyword_hindi.lower() in normalized_for_match.lower()
-            # 3️⃣ Semantic match only at a stricter threshold to avoid false positives
-            semantic_match = float(score) > 0.6
+            # 3️⃣ Semantic match using adaptive threshold
+            semantic_match = float(score) > req.threshold
             if exact_match or digit_match or semantic_match:
                 matched_keywords.append(keyword)
                 keyword_score += 1
@@ -105,7 +106,8 @@ def semantic_similarity(req: SimilarityRequest):
 async def speech_similarity(
     audio: UploadFile = File(...),
     reference_answers: str = Form(...),
-    keywords: str = Form("[]")
+    keywords: str = Form("[]"),
+    threshold: float = Form(0.60)
 ):
 
     # Save temporary audio
@@ -155,8 +157,8 @@ async def speech_similarity(
             # 2️⃣ Also check if keyword is a digit and its Hindi form is in the answer
             keyword_hindi = normalize_digits_to_hindi(keyword)
             digit_match = keyword_hindi.lower() in normalized_for_match.lower()
-            # 3️⃣ Semantic match only at a stricter threshold
-            semantic_match = float(score) > 0.82
+            # 3️⃣ Semantic match using adaptive threshold
+            semantic_match = float(score) > threshold
             if exact_match or digit_match or semantic_match:
                 matched_keywords.append(keyword)
                 keyword_score += 1
