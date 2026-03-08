@@ -158,16 +158,20 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
 
         let correct = false;
 
+        // Pull the translated correct answer or options if available from locale instead of raw data
+        const localizedCorrect = t(`lessonData.${lesson.id}.steps.${stepIndex}.correct`, { defaultValue: step.correct });
+        const localizedAnswer = t(`lessonData.${lesson.id}.steps.${stepIndex}.answer`, { returnObjects: true, defaultValue: step.answer });
+
         // 1. Check against `correct` ID/value if present
-        if (step.correct) {
-            correct = answer.toLowerCase() === step.correct.toLowerCase();
+        if (localizedCorrect) {
+            correct = answer.toLowerCase() === String(localizedCorrect).toLowerCase();
         }
         // 2. Fallback to `answer` array/string check
-        else if (step.answer) {
+        else if (localizedAnswer) {
             const userAns = answer.trim().toLowerCase();
-            correct = Array.isArray(step.answer)
-                ? step.answer.some(a => a.toLowerCase() === userAns)
-                : step.answer.toLowerCase() === userAns;
+            correct = Array.isArray(localizedAnswer)
+                ? (localizedAnswer as unknown as string[]).some((a: string) => String(a).toLowerCase() === userAns)
+                : typeof localizedAnswer === "string" && (localizedAnswer as string).toLowerCase() === userAns;
         }
 
         setIsCorrect(correct);
@@ -417,7 +421,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                                     className={`tab ${idx === lessonIndex ? "active" : ""}`}
                                     onClick={() => switchLesson(idx)}
                                 >
-                                    {idx + 1}. {l.title.split(" ")[0]}
+                                    {idx + 1}. {t(`lessonData.${l.id}.title`, { defaultValue: l.title }).split(" ")[0]}
                                 </button>
                             ))}
                         </div>
@@ -433,14 +437,14 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
 
                     <div className="step-header-row">
                         <h3 ref={stepHeaderRef} tabIndex={-1} className="step-title">
-                            {step.instruction}
+                            {t(`lessonData.${lesson.id}.steps.${stepIndex}.instruction`, { defaultValue: step.instruction })}
                         </h3>
-                        <ExercisesTTSButton text={step.instruction} />
+                        <ExercisesTTSButton text={t(`lessonData.${lesson.id}.steps.${stepIndex}.instruction`, { defaultValue: step.instruction })} />
                     </div>
 
                     {/* Micro Steps (Visual Schedule) */}
                     <div className="micro-steps">
-                        {lesson.microSteps.map((ms, idx) => (
+                        {((t(`lessonData.${lesson.id}.microSteps`, { returnObjects: true, defaultValue: lesson.microSteps }) as string[]) || []).map((ms, idx) => (
                             <div key={idx} className={`micro-step ${idx <= stepIndex ? "current" : ""} ${idx < stepIndex ? "completed" : ""}`}>
                                 <span className="check-icon" aria-hidden="true">
                                     {idx < stepIndex ? "✅" : idx === stepIndex ? "➡️" : "○"}
@@ -455,17 +459,19 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                     {/* Task Content Display */}
                     <div className="task-display">
                         <div className="task-content-text">
-                            <strong>{step.content}</strong>
+                            <strong>{t(`lessonData.${lesson.id}.steps.${stepIndex}.content`, { defaultValue: step.content })}</strong>
                         </div>
                         {step.task && (
                             <div className="task-question">
-                                {step.task}
+                                {t(`lessonData.${lesson.id}.steps.${stepIndex}.task`, { defaultValue: step.task })}
                             </div>
                         )}
                     </div>
 
                     {/* Modular Lesson Content */}
                     <ExercisesContent
+                        lessonId={lesson.id}
+                        stepIndex={stepIndex}
                         step={step}
                         answer={answer}
                         setAnswer={setAnswer}
@@ -502,7 +508,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
 
                                 {hintLevel > 0 && (
                                     <div className="active-hints" role="region" aria-label={t('exercises.hints.label')}>
-                                        {step.hints.slice(0, hintLevel).map((h, i) => (
+                                        {((t(`lessonData.${lesson.id}.steps.${stepIndex}.hints`, { returnObjects: true, defaultValue: step.hints }) as string[]) || []).slice(0, hintLevel).map((h, i) => (
                                             <div key={i} className="hint-bubble">
                                                 <strong>{t('exercises.hints.hintNumber', { number: i + 1 })}:</strong> {h}
                                                 <ExercisesTTSButton text={h} label={t('exercises.hints.listenToHint')} />
