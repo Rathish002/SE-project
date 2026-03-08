@@ -1,52 +1,109 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { auth } from '../firebase';
 import { subscribeToConversations, Conversation } from '../services/chatService';
 import { Page } from './Navigation';
 import './NotificationMenu.css';
 
+// ---- localStorage helpers ------------------------------------------------
+const LS_READ_KEY = 'notification_read_ids';
+const LS_CLEARED_KEY = 'notification_cleared_ids';
+
+function getStoredIds(key: string): Set<string> {
+    try {
+        const raw = localStorage.getItem(key);
+        return raw ? new Set(JSON.parse(raw) as string[]) : new Set();
+    } catch {
+        return new Set();
+    }
+}
+
+function storeIds(key: string, ids: Set<string>) {
+    localStorage.setItem(key, JSON.stringify(Array.from(ids)));
+}
+// -------------------------------------------------------------------------
+
 const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onNavigate }) => {
-    const { t } = useTranslation();
     const [open, setOpen] = useState(false);
     const [conversations, setConversations] = useState<Conversation[]>([]);
-    const [unreadCount, setUnreadCount] = useState(0);
+    /** IDs the user has explicitly read (persisted) */
+    const [readIds, setReadIds] = useState<Set<string>>(() => getStoredIds(LS_READ_KEY));
+    /** IDs the user has cleared — won't show in the list at all (persisted) */
+    const [clearedIds, setClearedIds] = useState<Set<string>>(() => getStoredIds(LS_CLEARED_KEY));
     const menuRef = useRef<HTMLDivElement | null>(null);
 
     const currentUser = auth.currentUser;
 
+    // Subscribe to conversations
     useEffect(() => {
         if (!currentUser?.uid) return;
-
         const unsubscribe = subscribeToConversations(currentUser.uid, (newConversations) => {
             setConversations(newConversations);
-            
-            // For now, let's just count conversations that have a lastMessage 
-            // from someone other than the current user as "unread" for the notification badge
-            // In a real app, this would use a proper read receipt system
-            const count = newConversations.filter(
-                (conv) => conv.lastMessage && conv.lastMessage.senderUid !== currentUser.uid
-            ).length;
-            setUnreadCount(count);
         });
-
         return () => unsubscribe();
     }, [currentUser?.uid]);
 
+    // Close dropdown when clicking outside
     useEffect(() => {
-        const handleClick = (e: MouseEvent) => {
+        const handleMouseDown = (e: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
                 setOpen(false);
             }
         };
-        document.addEventListener('click', handleClick);
-        return () => document.removeEventListener('click', handleClick);
+        document.addEventListener('mousedown', handleMouseDown);
+        return () => document.removeEventListener('mousedown', handleMouseDown);
     }, []);
 
-    const handleNotificationClick = () => {
+    // Visible conversations = not cleared
+    const visibleConversations = conversations.filter(c => !clearedIds.has(c.id));
+
+    // Unread = has a last message from someone else AND not in readIds
+    const isUnread = useCallback(
+        (conv: Conversation) =>
+            !!conv.lastMessage &&
+            conv.lastMessage.senderUid !== currentUser?.uid &&
+            !readIds.has(conv.id),
+        [readIds, currentUser?.uid]
+    );
+
+    const unreadCount = visibleConversations.filter(isUnread).length;
+
+    const markRead = (id: string) => {
+        setReadIds(prev => {
+            const next = new Set(prev).add(id);
+            storeIds(LS_READ_KEY, next);
+            return next;
+        });
+    };
+
+    const handleMarkAllAsRead = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const allIds = visibleConversations.map(c => c.id);
+        setReadIds(prev => {
+            const next = new Set(Array.from(prev).concat(allIds));
+            storeIds(LS_READ_KEY, next);
+            return next;
+        });
+    };
+
+    const handleClearAll = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const allIds = visibleConversations.map(c => c.id);
+        setClearedIds(prev => {
+            const next = new Set(Array.from(prev).concat(allIds));
+            storeIds(LS_CLEARED_KEY, next);
+            return next;
+        });
+        setReadIds(prev => {
+            const next = new Set(Array.from(prev).concat(allIds));
+            storeIds(LS_READ_KEY, next);
+            return next;
+        });
+    };
+
+    const handleNotificationClick = (convId?: string) => {
         setOpen(false);
-        if (onNavigate) {
-            onNavigate('collaboration');
-        }
+        if (convId) markRead(convId);
+        if (onNavigate) onNavigate('collaboration');
     };
 
     const formatTimestamp = (timestamp?: any) => {
@@ -64,11 +121,11 @@ const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onN
 
     return (
         <div className="notification-menu" ref={menuRef}>
-            <button 
-                className={`notification-btn ${open ? 'active' : ''}`} 
-                onClick={() => setOpen((s) => !s)} 
-                aria-haspopup="true" 
-                aria-expanded={open} 
+            <button
+                className={`notification-btn ${open ? 'active' : ''}`}
+                onClick={() => setOpen(s => !s)}
+                aria-haspopup="true"
+                aria-expanded={open}
                 aria-label="Open notifications"
             >
                 <IconBell />
@@ -79,21 +136,26 @@ const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onN
 
             {open && (
                 <div className="notification-dropdown" role="menu">
+                    {/* Header */}
                     <div className="notification-header">
-                        <div className="notification-title">Notifications</div>
+                        <span className="notification-title">Notifications</span>
+                        {unreadCount > 0 && (
+                            <button className="notification-mark-read" onClick={handleMarkAllAsRead}>
+                                Mark all as read
+                            </button>
+                        )}
                     </div>
-                    
+
+                    {/* List */}
                     <div className="notification-list">
-                        {conversations.length === 0 ? (
-                            <div className="notification-empty">
-                                No recent messages
-                            </div>
+                        {visibleConversations.length === 0 ? (
+                            <div className="notification-empty">No recent messages</div>
                         ) : (
-                            conversations.slice(0, 5).map((conv) => (
-                                <button 
-                                    key={conv.id} 
-                                    className="notification-item" 
-                                    onClick={handleNotificationClick}
+                            visibleConversations.slice(0, 5).map((conv) => (
+                                <button
+                                    key={conv.id}
+                                    className={`notification-item ${isUnread(conv) ? 'unread' : ''}`}
+                                    onClick={() => handleNotificationClick(conv.id)}
                                     role="menuitem"
                                 >
                                     <div className="notification-item-avatar">
@@ -102,8 +164,8 @@ const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onN
                                     <div className="notification-item-content">
                                         <div className="notification-item-header">
                                             <span className="notification-item-name">
-                                                {conv.type === 'group' 
-                                                    ? conv.groupName || 'Group Chat' 
+                                                {conv.type === 'group'
+                                                    ? conv.groupName || 'Group Chat'
                                                     : conv.participantNames.find(name => name !== auth.currentUser?.displayName) || 'User'}
                                             </span>
                                             <span className="notification-item-time">
@@ -121,11 +183,17 @@ const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onN
                             ))
                         )}
                     </div>
-                    
+
+                    {/* Footer */}
                     <div className="notification-footer">
-                        <button className="notification-view-all" onClick={handleNotificationClick}>
+                        <button className="notification-view-all" onClick={() => handleNotificationClick()}>
                             View all in Collaboration
                         </button>
+                        {visibleConversations.length > 0 && (
+                            <button className="notification-clear-all" onClick={handleClearAll}>
+                                Clear all
+                            </button>
+                        )}
                     </div>
                 </div>
             )}

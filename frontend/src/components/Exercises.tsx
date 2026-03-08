@@ -434,6 +434,25 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson }) => 
                     </div>
 
                 </div>
+
+                {/* Left Arrow Button -> Return to Lesson */}
+                <div className="exercise-nav-arrows">
+                    <button
+                        className="exercise-nav-arrow left"
+                        onClick={() => onBackToLesson ? onBackToLesson() : onNavigate?.('lessons')}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                onBackToLesson ? onBackToLesson() : onNavigate?.('lessons');
+                            }
+                        }}
+                        tabIndex={0}
+                        aria-label="Return to Lesson"
+                        title="Return to Lesson"
+                    >
+                        <span>◀</span>
+                    </button>
+                </div>
             </div>
         </div>
     );
