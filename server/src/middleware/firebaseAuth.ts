@@ -8,6 +8,25 @@ let initialized = false;
 function initAdmin() {
   if (initialized) return;
   try {
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_BASE64) {
+      const decoded = Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_BASE64, 'base64').toString('utf-8');
+      const serviceAccount = JSON.parse(decoded);
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+      initialized = true;
+      return;
+    }
+
+    if (process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount)
+      });
+      initialized = true;
+      return;
+    }
+
     // Prefer Application Default Credentials if provided via env var
     if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
       admin.initializeApp();
