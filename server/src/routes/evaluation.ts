@@ -3,7 +3,7 @@ import axios from "axios";
 import pool from "../db";
 
 const router = Router();
-const NLP_SERVICE_URL = "http://localhost:8000/semantic-similarity";
+const NLP_SERVICE_URL = process.env.NLP_SERVICE_URL || "http://localhost:8000/semantic-similarity";
 
 /**
  * ============================================================

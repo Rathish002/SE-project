@@ -1,0 +1,15 @@
+
+File                                           Link                                    
+----                                           ----                                    
+C:\projects\SE-project\API.md                  ../server/README.md                     
+C:\projects\SE-project\ARCHITECTURE.md         ./server/README.md                      
+C:\projects\SE-project\DEVELOPMENT.md          ./server/README.md                      
+C:\projects\SE-project\frontend\TEST_REPORT.md frontend/test-report.txt                
+C:\projects\SE-project\frontend\TEST_REPORT.md frontend/test-report.txt                
+C:\projects\SE-project\frontend\TEST_REPORT.md frontend/coverage/lcov-report/index.html
+C:\projects\SE-project\frontend\TEST_REPORT.md frontend/test-report.txt                
+C:\projects\SE-project\frontend\TEST_REPORT.md frontend/coverage/lcov-report/index.html
+C:\projects\SE-project\README.md               server/README.md                        
+
+
+

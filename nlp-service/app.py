@@ -1,6 +1,5 @@
 from fastapi import FastAPI,Form,UploadFile,File
 from pydantic import BaseModel
-from sentence_transformers import SentenceTransformer, util
 from utils.transliterate import roman_to_hindi
 import whisper
 from fastapi import UploadFile, File
@@ -30,6 +29,10 @@ def is_romanized(text: str) -> bool:
 
 @app.post("/semantic-similarity")
 def semantic_similarity(req: SimilarityRequest):
+    from sentence_transformers import util
+
+    model = get_model()
+
     # 🔁 Transliterate ONLY if user typed in Roman script
     if is_romanized(req.user_answer):
         normalized_user = roman_to_hindi(req.user_answer)
@@ -49,6 +52,7 @@ def semantic_similarity(req: SimilarityRequest):
      # ===== SEMANTIC KEYWORD MATCHING =====
     matched_keywords = []
     keyword_score = 0
+    keyword_similarities = []
 
     if req.keywords:
         keyword_embs = model.encode(req.keywords, convert_to_tensor=True)
