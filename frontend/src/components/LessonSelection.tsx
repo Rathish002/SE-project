@@ -5,6 +5,8 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { getLearningDirection } from '../utils/languageManager';
 import { getAvailableLessonIds, fetchLesson, LessonData } from '../services/lessonService';
+import { fetchCompletedLessons } from '../services/progressService';
+import { auth } from '../firebase';
 import './LessonSelection.css';
 
 interface LessonSelectionProps {
@@ -24,16 +26,19 @@ const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => 
   const [loading, setLoading] = React.useState(true);
   const [completedLessons, setCompletedLessons] = React.useState<Set<number>>(new Set());
 
-  // Load completed lessons from localStorage
+  // Load completed lessons from backend
   React.useEffect(() => {
-    try {
-      const saved = localStorage.getItem('completedLessons');
-      if (saved) {
-        setCompletedLessons(new Set(JSON.parse(saved)));
+    const loadProgress = async () => {
+      if (auth.currentUser?.uid) {
+        try {
+          const completedIds = await fetchCompletedLessons(auth.currentUser.uid);
+          setCompletedLessons(new Set(completedIds));
+        } catch (error) {
+          console.error('Error loading progress:', error);
+        }
       }
-    } catch (error) {
-      console.error('Error loading progress:', error);
-    }
+    };
+    loadProgress();
   }, []);
 
   // Load lesson titles and descriptions
@@ -42,7 +47,7 @@ const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => 
       try {
         const lessonIds = getAvailableLessonIds();
         console.log('Available lesson IDs:', lessonIds);
-        
+
         const lessonPromises = lessonIds.map(async (id) => {
           try {
             const data: LessonData = await fetchLesson(id, learningDir);
@@ -56,7 +61,7 @@ const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => 
             return null;
           }
         });
-        
+
         const loadedLessons = await Promise.all(lessonPromises);
         const filteredLessons = loadedLessons.filter((lesson) => lesson !== null);
         console.log('Loaded lessons:', filteredLessons);
@@ -113,7 +118,10 @@ const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => 
         ) : (
           <div className="lessons-list">
             {lessons.map((lesson, index) => (
-              <div key={lesson.id} className="lesson-card">
+              <div
+                key={lesson.id}
+                className={`lesson-card ${completedLessons.has(lesson.id) ? 'completed' : ''}`}
+              >
                 {/* Lesson Number Badge */}
                 <div className="lesson-number-badge">
                   {index + 1}
@@ -121,7 +129,12 @@ const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => 
 
                 {/* Lesson Content */}
                 <div className="lesson-content">
-                  <h2 className="lesson-title">{lesson.title}</h2>
+                  <h2 className="lesson-title">
+                    {lesson.title}
+                    {completedLessons.has(lesson.id) && (
+                      <span className="completed-check" title="Completed"> ✓</span>
+                    )}
+                  </h2>
                   {lesson.description && (
                     <p className="lesson-description">{lesson.description}</p>
                   )}
