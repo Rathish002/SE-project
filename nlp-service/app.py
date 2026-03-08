@@ -1,5 +1,6 @@
 from fastapi import FastAPI,Form,UploadFile,File
 from pydantic import BaseModel
+from sentence_transformers import SentenceTransformer, util
 from utils.transliterate import roman_to_hindi
 import whisper
 from fastapi import UploadFile, File
@@ -27,12 +28,25 @@ class SimilarityRequest(BaseModel):
 def is_romanized(text: str) -> bool:
     return bool(re.match(r"^[a-zA-Z\s]+$", text))
 
+# Map Arabic numerals to Hindi words for cross-representation matching
+DIGIT_TO_HINDI = {
+    "0": "शून्य", "1": "एक", "2": "दो", "3": "तीन",
+    "4": "चार", "5": "पाँच", "6": "छह", "7": "सात",
+    "8": "आठ", "9": "नौ", "10": "दस", "11": "ग्यारह",
+    "12": "बारह", "13": "तेरह", "14": "चौदह", "15": "पंद्रह",
+    "16": "सोलह", "17": "सत्रह", "18": "अट्ठारह", "19": "उन्नीस",
+    "20": "बीस"
+}
+
+def normalize_digits_to_hindi(text: str) -> str:
+    """Replace Arabic numerals with Hindi word equivalents."""
+    # Replace multi-digit first (10, 11, ...) before single digits
+    for num in sorted(DIGIT_TO_HINDI.keys(), key=len, reverse=True):
+        text = re.sub(r'\b' + num + r'\b', DIGIT_TO_HINDI[num], text)
+    return text
+
 @app.post("/semantic-similarity")
 def semantic_similarity(req: SimilarityRequest):
-    from sentence_transformers import util
-
-    model = get_model()
-
     # 🔁 Transliterate ONLY if user typed in Roman script
     if is_romanized(req.user_answer):
         normalized_user = roman_to_hindi(req.user_answer)
@@ -58,9 +72,20 @@ def semantic_similarity(req: SimilarityRequest):
         keyword_embs = model.encode(req.keywords, convert_to_tensor=True)
         keyword_similarities = util.cos_sim(user_emb, keyword_embs)[0]
 
+        # Normalize the answer for digit→Hindi matching
+        normalized_for_match = normalize_digits_to_hindi(normalized_user)
+
         for idx, score in enumerate(keyword_similarities):
-            if float(score) > 0.6:   # threshold (tunable)
-                matched_keywords.append(req.keywords[idx])
+            keyword = req.keywords[idx]
+            # 1️⃣ Exact / substring match after digit normalization
+            exact_match = keyword.lower() in normalized_for_match.lower()
+            # 2️⃣ Also check if keyword is a digit and its Hindi form is in the answer
+            keyword_hindi = normalize_digits_to_hindi(keyword)
+            digit_match = keyword_hindi.lower() in normalized_for_match.lower()
+            # 3️⃣ Semantic match only at a stricter threshold to avoid false positives
+            semantic_match = float(score) > 0.6
+            if exact_match or digit_match or semantic_match:
+                matched_keywords.append(keyword)
                 keyword_score += 1
 
         keyword_score = keyword_score / len(req.keywords)
@@ -120,9 +145,20 @@ async def speech_similarity(
         keyword_embs = model.encode(keywords, convert_to_tensor=True)
         keyword_similarities = util.cos_sim(user_emb, keyword_embs)[0]
 
+        # Normalize the answer for digit→Hindi matching
+        normalized_for_match = normalize_digits_to_hindi(normalized_user)
+
         for idx, score in enumerate(keyword_similarities):
-            if float(score) > 0.6:
-                matched_keywords.append(keywords[idx])
+            keyword = keywords[idx]
+            # 1️⃣ Exact / substring match after digit normalization
+            exact_match = keyword.lower() in normalized_for_match.lower()
+            # 2️⃣ Also check if keyword is a digit and its Hindi form is in the answer
+            keyword_hindi = normalize_digits_to_hindi(keyword)
+            digit_match = keyword_hindi.lower() in normalized_for_match.lower()
+            # 3️⃣ Semantic match only at a stricter threshold
+            semantic_match = float(score) > 0.82
+            if exact_match or digit_match or semantic_match:
+                matched_keywords.append(keyword)
                 keyword_score += 1
 
         keyword_score = keyword_score / len(keywords)

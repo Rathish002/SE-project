@@ -295,6 +295,28 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
                       </div>
                     </div>
                   )}
+
+                  {evaluationResult!.missedKeywords && evaluationResult!.missedKeywords.length > 0 && (
+                    <div className="missed-keywords" style={{ marginTop: '0.75rem' }}>
+                      <p className="keywords-label" style={{ color: '#b94a48' }}>
+                        ⚠️ {'Missed Concepts'}:
+                      </p>
+                      <div className="keywords-list">
+                        {evaluationResult!.missedKeywords.map((keyword, idx) => (
+                          <span
+                            key={idx}
+                            className="keyword-badge"
+                            style={{ backgroundColor: '#fff3cd', color: '#856404', borderColor: '#ffc107' }}
+                          >
+                            {keyword}
+                          </span>
+                        ))}
+                      </div>
+                      <p style={{ fontSize: '0.82rem', color: '#6c757d', marginTop: '0.4rem' }}>
+                        {'Review these concepts to improve your score.'}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
 
