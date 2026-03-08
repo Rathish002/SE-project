@@ -18,6 +18,8 @@ export interface EvaluationResult {
   keywordScore?: number;
   matchedKeywords?: string[];
   feedback: string;
+  transcript?: string;
+  normalizedAnswer?: string;
 }
 
 /**
@@ -57,6 +59,36 @@ export async function evaluateAnswer(
     return response.data;
   } catch (error) {
     console.error('Failed to evaluate answer:', error);
+    throw error;
+  }
+}
+
+/**
+ * Evaluate a spoken answer against a question using audio recording
+ */
+export async function evaluateSpeechAnswer(
+  lessonId: number,
+  evaluationIntentId: number,
+  audioBlob: Blob
+): Promise<EvaluationResult> {
+  try {
+    const formData = new FormData();
+    formData.append('lessonId', lessonId.toString());
+    formData.append('evaluationIntentId', evaluationIntentId.toString());
+    formData.append('audio', audioBlob, 'recording.webm');
+
+    const response = await axios.post(
+      `${API_BASE_URL}/evaluation/evaluate-speech-intent`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Failed to evaluate speech answer:', error);
     throw error;
   }
 }
