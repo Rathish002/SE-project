@@ -132,6 +132,11 @@
   transform: translateY(-2px);
 }
 
+.lesson-card.completed {
+  border-left: 4px solid var(--progress-complete, #10b981);
+  background-color: var(--lesson-accent-soft, #f0fdf4);
+}
+
 /* Lesson Number Badge */
 .lesson-number-badge {
   flex-shrink: 0;
@@ -161,6 +166,14 @@
   font-weight: 600;
   line-height: 1.4;
   transition: color 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.completed-check {
+  color: var(--progress-complete, #10b981);
+  font-size: 1.1em;
 }
 
 .lesson-description {

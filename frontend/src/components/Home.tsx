@@ -8,6 +8,7 @@ import { getInterfaceLanguage, getLearningDirection } from '../utils/languageMan
 import { loadActivity } from '../utils/activityTracker';
 import { setupPresenceSystem } from '../services/presenceService';
 import { setupAcceptanceListener } from '../services/friendService';
+import { fetchUserStats, UserStats } from '../services/progressService';
 import { LessonIcon, CompleteIcon, ActivityIcon, LanguageIcon, DirectionIcon, CollaborationIcon } from './HomeIcons';
 import './Home.css';
 
@@ -18,19 +19,27 @@ interface HomeProps {
 const Home: React.FC<HomeProps> = ({ currentUser }) => {
   const { t } = useTranslation();
   const [activity, setActivity] = useState(loadActivity());
+  const [stats, setStats] = useState<UserStats>({ lessonsStarted: 0, lessonsCompleted: 0 });
 
   // Get current settings
   const interfaceLang = getInterfaceLanguage();
   const learningDir = getLearningDirection();
 
-  // Static stats (placeholder data)
-  const lessonsStarted = 0;
-  const lessonsCompleted = 0;
-
   // Load activity on mount
   useEffect(() => {
     setActivity(loadActivity());
   }, []);
+
+  // Fetch real stats from backend
+  useEffect(() => {
+    if (currentUser?.uid) {
+      const getStats = async () => {
+        const data = await fetchUserStats(currentUser.uid);
+        setStats(data);
+      };
+      getStats();
+    }
+  }, [currentUser?.uid]);
 
   // Setup presence system and friend request listener
   useEffect(() => {
@@ -109,7 +118,7 @@ const Home: React.FC<HomeProps> = ({ currentUser }) => {
                 <LessonIcon size={32} />
               </div>
               <div className="stat-info">
-                <div className="stat-value">{lessonsStarted}</div>
+                <div className="stat-value">{stats.lessonsStarted}</div>
                 <div className="stat-label">{t('home.stats.lessonsStarted')}</div>
               </div>
             </div>
@@ -119,7 +128,7 @@ const Home: React.FC<HomeProps> = ({ currentUser }) => {
                 <CompleteIcon size={32} />
               </div>
               <div className="stat-info">
-                <div className="stat-value">{lessonsCompleted}</div>
+                <div className="stat-value">{stats.lessonsCompleted}</div>
                 <div className="stat-label">{t('home.stats.lessonsCompleted')}</div>
               </div>
             </div>

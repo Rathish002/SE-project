@@ -6,6 +6,7 @@ import evaluationRoutes from "./routes/evaluation";
 import exerciseRoutes from "./routes/exercises";
 import translationRoutes from "./routes/translations";
 import preferencesRoutes from "./routes/preferences";
+import userRoutes from "./routes/user";
 import { firebaseAuth } from "./middleware/firebaseAuth";
 
 dotenv.config();
@@ -45,6 +46,7 @@ app.use("/exercises", exerciseRoutes);
 app.use("/translations", translationRoutes);
 // Protect preferences with Firebase token verification middleware
 app.use("/preferences", firebaseAuth, preferencesRoutes);
+app.use("/user", userRoutes);
 
 // Global error handler
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
