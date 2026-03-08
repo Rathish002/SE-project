@@ -17,6 +17,7 @@ export interface EvaluationResult {
   semanticScore?: number;
   keywordScore?: number;
   matchedKeywords?: string[];
+  missedKeywords?: string[];
   feedback: string;
   transcript?: string;
   normalizedAnswer?: string;

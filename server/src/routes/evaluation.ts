@@ -179,7 +179,8 @@ router.post(
 
       const semanticScore = nlpResponse.data.semantic_similarity;
       const keywordScore = nlpResponse.data.keyword_similarity_score;
-      const matchedKeywords = nlpResponse.data.matched_keywords;
+      const matchedKeywords = nlpResponse.data.matched_keywords || [];
+      const missedKeywords = keywords.filter(k => !matchedKeywords.includes(k));
 
       // 4️⃣ Hybrid scoring formula
       const finalScore = 0.7 * semanticScore + 0.3 * keywordScore;
@@ -190,14 +191,13 @@ router.post(
       else if (finalScore >= 0.6) feedback = "Good understanding.";
       else if (finalScore >= 0.4) feedback = "Fair understanding.";
 
-      /*semanticScore,
-        keywordScore: normalizedKeywordScore,
-        matchedKeywords,*/
       res.json({
         semanticScore,
         keywordScore,
         finalScore,
-        feedback
+        feedback,
+        matchedKeywords,
+        missedKeywords
       });
 
     } catch (err) {
@@ -268,7 +268,8 @@ router.post(
 
       const semanticScore = nlpResponse.data.semantic_similarity;
       const keywordScore = nlpResponse.data.keyword_similarity_score;
-      const matchedKeywords = nlpResponse.data.matched_keywords;
+      const matchedKeywords = nlpResponse.data.matched_keywords || [];
+      const missedKeywords = keywords.filter(k => !matchedKeywords.includes(k));
       const transcript = nlpResponse.data.transcript;
       const normalizedAnswer = nlpResponse.data.normalized_user_answer;
 
@@ -287,6 +288,7 @@ router.post(
         finalScore,
         feedback,
         matchedKeywords,
+        missedKeywords,
         transcript,
         normalizedAnswer
       });
