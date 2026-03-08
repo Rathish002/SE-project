@@ -51,12 +51,30 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
     const mainCardRef = useRef<HTMLDivElement>(null);
     const stepHeaderRef = useRef<HTMLHeadingElement>(null);
 
-    // Filter lessons if lessonId is provided (optional restoration of logic)
+    // Filter lessons if lessonId is provided
     useEffect(() => {
         if (lessonId) {
-            // If we wanted to filter by lessonId from the local data:
-            // const specificLesson = initialLessons.find(l => l.id === lessonId.toString());
-            // if (specificLesson) setLessons([specificLesson]);
+            // If we want to filter by lessonId from the local data
+            // Note: lessonId might be passed as an integer from the DB mapping, or string
+            // We need to match it against our new string IDs (lesson-1, lesson-2, etc.)
+
+            // Map integer IDs to string IDs if lessonId from DB is a number
+            const MOCK_MAP: Record<string, string> = {
+                "1": "lesson-1", "2": "lesson-2", "3": "lesson-3", "4": "lesson-4", "5": "lesson-5"
+            };
+
+            let searchId = lessonId.toString();
+            if (MOCK_MAP[searchId]) {
+                searchId = MOCK_MAP[searchId];
+            } else if (typeof lessonId === "number") {
+                searchId = `lesson-${lessonId}`;
+            }
+
+            const specificLesson = initialLessons.find(l => l.id === searchId || l.id === lessonId.toString());
+            if (specificLesson) {
+                setLessons([specificLesson]);
+                setLessonIndex(0); // Ensure we are on the first (and only) lesson in the filtered array
+            }
         }
     }, [lessonId]);
 
@@ -412,19 +430,21 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                             </div>
                         </div>
 
-                        <div className="lesson-tabs" role="tablist">
-                            {lessons.length > 1 && lessons.map((l, idx) => (
-                                <button
-                                    key={idx}
-                                    role="tab"
-                                    aria-selected={idx === lessonIndex}
-                                    className={`tab ${idx === lessonIndex ? "active" : ""}`}
-                                    onClick={() => switchLesson(idx)}
-                                >
-                                    {idx + 1}. {t(`lessonData.${l.id}.title`, { defaultValue: l.title }).split(" ")[0]}
-                                </button>
-                            ))}
-                        </div>
+                        {lessons.length > 1 && (
+                            <div className="lesson-tabs" role="tablist">
+                                {lessons.map((l, idx) => (
+                                    <button
+                                        key={idx}
+                                        role="tab"
+                                        aria-selected={idx === lessonIndex}
+                                        className={`tab ${idx === lessonIndex ? "active" : ""}`}
+                                        onClick={() => switchLesson(idx)}
+                                    >
+                                        {idx + 1}. {t(`lessonData.${l.id}.title`, { defaultValue: l.title }).split(" ")[0]}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </>
                 )}
 
