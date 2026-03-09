@@ -29,9 +29,10 @@ interface CollaborationProps {
   currentUser: User | null;
   focusMode: boolean;
   onFocusModeChange: (enabled: boolean) => void;
+  initialConversationId?: string | null;
 }
 
-const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, onFocusModeChange }) => {
+const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, onFocusModeChange, initialConversationId }) => {
   const { t } = useTranslation();
   const [friends, setFriends] = useState<Friend[]>([]);
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
@@ -41,6 +42,13 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
   const [showGroupCreate, setShowGroupCreate] = useState(false);
   const [hiddenConversations, setHiddenConversations] = useState<Set<string>>(new Set());
   const [showHidden, setShowHidden] = useState(false);
+
+  // Sync activeConversationId with initialConversationId prop (from notifications)
+  useEffect(() => {
+    if (initialConversationId) {
+      setActiveConversationId(initialConversationId);
+    }
+  }, [initialConversationId]);
 
   // Load hidden conversations from localStorage
   useEffect(() => {

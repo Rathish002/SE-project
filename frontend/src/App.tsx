@@ -33,6 +33,7 @@ function App() {
   const [showSignup, setShowSignup] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<Page>('home');
   const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
+  const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [previousLessonId, setPreviousLessonId] = useState<number | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -101,9 +102,17 @@ function App() {
   const handleNavigate = (page: Page) => {
     setCurrentPage(page);
     setSelectedLessonId(null);
+    if (page !== 'collaboration') {
+      setActiveConversationId(null);
+    }
     if (page !== 'lessons' && page !== 'collaboration') {
       setFocusMode(false);
     }
+  };
+
+  const handleNavigateToChat = (conversationId: string) => {
+    setActiveConversationId(conversationId);
+    setCurrentPage('collaboration');
   };
 
   const handleSelectLesson = (lessonId: number) => {
@@ -202,6 +211,7 @@ function App() {
                 onToggleSidebar={toggleSidebar}
                 onLogout={handleLogout}
                 onNavigate={handleNavigate}
+                onNavigateToChat={handleNavigateToChat}
                 currentPage={currentPage}
               />
             )}
@@ -218,6 +228,7 @@ function App() {
                 currentUser={user}
                 focusMode={focusMode}
                 onFocusModeChange={setFocusMode}
+                initialConversationId={activeConversationId}
               />
             )}
             {currentPage === 'settings' && (

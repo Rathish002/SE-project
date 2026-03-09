@@ -11,10 +11,11 @@ interface TopBarProps {
     isSidebarOpen: boolean;
     onLogout: () => void;
     onNavigate: (page: Page) => void;
+    onNavigateToChat?: (conversationId: string) => void;
     currentPage: Page;
 }
 
-const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar, isSidebarOpen, onLogout, onNavigate, currentPage }) => {
+const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar, isSidebarOpen, onLogout, onNavigate, onNavigateToChat, currentPage }) => {
     return (
         <header className="top-bar">
             <div className="top-bar-left">
@@ -23,7 +24,7 @@ const TopBar: React.FC<TopBarProps> = ({ onToggleSidebar, isSidebarOpen, onLogou
             <div className="top-bar-right">
                 <PageNavArrows currentPage={currentPage} onNavigate={onNavigate} />
                 <LanguageSwitcher />
-                <NotificationMenu onNavigate={onNavigate} />
+                <NotificationMenu onNavigate={onNavigate} onNavigateToChat={onNavigateToChat} />
                 <ProfileMenu
                     onSignOut={onLogout}
                     onSettings={() => onNavigate('settings')}
