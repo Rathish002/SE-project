@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS exercise_steps (
 -- ✅ 5) exercise_progress
 CREATE TABLE IF NOT EXISTS exercise_progress (
   id SERIAL PRIMARY KEY,
-  user_id INT NOT NULL,
+  user_id TEXT NOT NULL,
   exercise_id INT REFERENCES exercises(id) ON DELETE CASCADE,
 
   current_step INT DEFAULT 1,
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS exercise_step_options (
 -- 7) exercise_answers
 CREATE TABLE IF NOT EXISTS exercise_answers (
   id SERIAL PRIMARY KEY,
-  user_id INT NOT NULL,
+  user_id TEXT NOT NULL,
   step_id INT REFERENCES exercise_steps(id) ON DELETE CASCADE,
   selected_option_id INT REFERENCES exercise_step_options(id),
   is_correct BOOLEAN,
@@ -104,6 +104,24 @@ CREATE TABLE IF NOT EXISTS evaluation_rules (
   keyword TEXT NOT NULL,
   weight DOUBLE PRECISION NOT NULL,
   evaluation_intent_id INT NOT NULL REFERENCES evaluation_intents(id) ON DELETE CASCADE
+);
+
+-- ✅ 8) accessibility_preferences
+-- User accessibility and display preferences
+CREATE TABLE IF NOT EXISTS accessibility_preferences (
+  id SERIAL PRIMARY KEY,
+  user_id TEXT NOT NULL UNIQUE,
+  theme VARCHAR(50) DEFAULT 'light',
+  font_size VARCHAR(50) DEFAULT 'medium',
+  audio_speed VARCHAR(50) DEFAULT 'normal',
+  contrast_mode BOOLEAN DEFAULT FALSE,
+  distraction_free_mode BOOLEAN DEFAULT FALSE,
+  reduced_motion BOOLEAN DEFAULT FALSE,
+  dyslexia_font BOOLEAN DEFAULT FALSE,
+  blue_light_filter BOOLEAN DEFAULT FALSE,
+  reading_mask BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 /* 

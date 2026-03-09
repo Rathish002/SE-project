@@ -211,7 +211,11 @@ function App() {
               <LessonSelection onSelectLesson={handleSelectLesson} />
             )}
             {currentPage === 'exercises' && (
-              <Exercises onNavigate={handleNavigate} onBackToLesson={handleBackToLesson} />
+              <Exercises
+                onNavigate={handleNavigate}
+                onBackToLesson={handleBackToLesson}
+                lessonId={previousLessonId ?? undefined} // Pass the lesson ID
+              />
             )}
             {currentPage === 'collaboration' && (
               <Collaboration
