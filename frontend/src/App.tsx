@@ -214,6 +214,7 @@ function App() {
                 onNavigate={handleNavigate}
                 onBackToLesson={handleBackToLesson}
                 lessonId={previousLessonId ?? undefined} // Pass the lesson ID
+                onNextLesson={(nextId) => setPreviousLessonId(nextId)}
               />
             )}
             {currentPage === 'collaboration' && (

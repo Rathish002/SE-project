@@ -42,7 +42,7 @@ const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => 
       try {
         const lessonIds = getAvailableLessonIds();
         console.log('Available lesson IDs:', lessonIds);
-        
+
         const lessonPromises = lessonIds.map(async (id) => {
           try {
             const data: LessonData = await fetchLesson(id, learningDir);
@@ -56,7 +56,7 @@ const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => 
             return null;
           }
         });
-        
+
         const loadedLessons = await Promise.all(lessonPromises);
         const filteredLessons = loadedLessons.filter((lesson) => lesson !== null);
         console.log('Loaded lessons:', filteredLessons);
@@ -121,9 +121,9 @@ const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => 
 
                 {/* Lesson Content */}
                 <div className="lesson-content">
-                  <h2 className="lesson-title">{lesson.title}</h2>
+                  <h2 className="lesson-title">{t(`lessonData.lesson-${lesson.id}.title`, { defaultValue: lesson.title })}</h2>
                   {lesson.description && (
-                    <p className="lesson-description">{lesson.description}</p>
+                    <p className="lesson-description">{t(`lessonData.lesson-${lesson.id}.description`, { defaultValue: lesson.description })}</p>
                   )}
                 </div>
 

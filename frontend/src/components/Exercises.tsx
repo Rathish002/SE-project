@@ -19,11 +19,12 @@ interface Stats {
 interface ExercisesProps {
     onNavigate?: (page: Page) => void;
     onBackToLesson?: () => void;
+    onNextLesson?: (nextId: number) => void;
     lessonId?: number;
     userId?: string;
 }
 
-const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lessonId, userId }) => {
+const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, onNextLesson, lessonId, userId }) => {
     const { t } = useTranslation();
     // Revert to using local data directly
     const [lessons, setLessons] = useState<Lesson[]>(initialLessons);
@@ -326,6 +327,28 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
 
     // Completion Screen
     if (showCompletion) {
+        const hasNextLesson = !!lessonId && typeof lessonId === "number" && lessonId < 5;
+        const handleNextLesson = () => {
+            if (onNextLesson && lessonId && typeof lessonId === "number") {
+                // We need to locally clear the state so the next lesson starts fresh
+                setAnswer("");
+                setFeedback("");
+                setIsCorrect(null);
+                setHintLevel(0);
+                setAttempts(0);
+                setShowCompletion(false);
+                setStepIndex(0);
+
+                // Clear the stats tracked in localStorage so it doesn't bleed over
+                const freshStats: Stats = { completed: 0, hints: 0, retries: 0 };
+                setStats(freshStats);
+                localStorage.setItem('stats', JSON.stringify(freshStats));
+                localStorage.setItem('currentStep', '0');
+
+                onNextLesson(lessonId + 1);
+            }
+        };
+
         return (
             <div className="lesson-container">
                 <div className="main-card completion-celebration">
@@ -354,6 +377,11 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                         <button onClick={resetProgress} className="success-btn">
                             {t('exercises.completion.startOver')}
                         </button>
+                        {hasNextLesson && onNextLesson && (
+                            <button onClick={handleNextLesson} className="success-btn">
+                                {t('exercises.completion.nextLesson', { defaultValue: 'Next Lesson' })}
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
