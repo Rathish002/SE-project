@@ -15,6 +15,10 @@
 }
 
 .chat-back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   padding: 8px 16px;
   font-size: var(--base-font-size, 16px);
   color: var(--text-primary);
@@ -22,7 +26,21 @@
   border: 1px solid var(--border);
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
+  line-height: 1; /* Explicitly set to 1 to help with vertical centering */
+}
+
+.chat-back-button svg {
+  display: block;
+  flex-shrink: 0;
+  /* Sometimes SVGs are slightly off-center optically; 1px typically fixes it */
+  position: relative;
+  top: 0.5px;
+}
+
+.back-button-text {
+  display: inline-block;
+  line-height: normal;
 }
 
 .chat-back-button:hover {
