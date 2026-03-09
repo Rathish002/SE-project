@@ -42,25 +42,49 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
   const [showGroupCreate, setShowGroupCreate] = useState(false);
   const [hiddenConversations, setHiddenConversations] = useState<Set<string>>(new Set());
   const [showHidden, setShowHidden] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState<'chats' | 'groups' | 'archived' | 'unread' | 'favorites' | 'friends'>('chats');
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const [readIds, setReadIds] = useState<Set<string>>(new Set());
 
   // Sync activeConversationId with initialConversationId prop (from notifications)
   useEffect(() => {
     if (initialConversationId) {
       setActiveConversationId(initialConversationId);
+      setSidebarTab('chats');
     }
   }, [initialConversationId]);
 
-  // Load hidden conversations from localStorage
+  // Load hidden and favorite conversations from localStorage
   useEffect(() => {
     if (!currentUser?.uid) return;
-    const storageKey = `hiddenConversations_${currentUser.uid}`;
-    const stored = localStorage.getItem(storageKey);
-    if (stored) {
+    const hiddenKey = `hiddenConversations_${currentUser.uid}`;
+    const favoriteKey = `favoriteConversations_${currentUser.uid}`;
+    
+    const storedHidden = localStorage.getItem(hiddenKey);
+    if (storedHidden) {
       try {
-        const hiddenIds = JSON.parse(stored);
-        setHiddenConversations(new Set(hiddenIds));
+        setHiddenConversations(new Set(JSON.parse(storedHidden)));
       } catch (e) {
         console.error('Failed to parse hidden conversations:', e);
+      }
+    }
+
+    const storedFavorites = localStorage.getItem(favoriteKey);
+    if (storedFavorites) {
+      try {
+        setFavorites(new Set(JSON.parse(storedFavorites)));
+      } catch (e) {
+        console.error('Failed to parse favorite conversations:', e);
+      }
+    }
+
+    // Shared with NotificationMenu.tsx
+    const storedRead = localStorage.getItem('notification_read_ids');
+    if (storedRead) {
+      try {
+        setReadIds(new Set(JSON.parse(storedRead)));
+      } catch (e) {
+        console.error('Failed to parse read IDs:', e);
       }
     }
   }, [currentUser?.uid]);
@@ -128,6 +152,7 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
       if (!currentUser?.uid) return;
       const conversationId = await getOrCreateDirectConversation(currentUser.uid, friendUid);
       setActiveConversationId(conversationId);
+      setSidebarTab('chats');
 
       const friend = friends.find(f => f.uid === friendUid);
       saveActivity({
@@ -151,6 +176,15 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
 
   const handleOpenConversation = (conversationId: string) => {
     setActiveConversationId(conversationId);
+    
+    // Mark as read when opened (consistency with Notifications)
+    const newReadIds = new Set(readIds);
+    if (!newReadIds.has(conversationId)) {
+      newReadIds.add(conversationId);
+      setReadIds(newReadIds);
+      localStorage.setItem('notification_read_ids', JSON.stringify(Array.from(newReadIds)));
+    }
+
     const conversation = conversations.find(c => c.id === conversationId);
     saveActivity({
       lastConversationId: conversationId,
@@ -188,6 +222,22 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
     localStorage.setItem(storageKey, JSON.stringify(Array.from(newHidden)));
   };
 
+  const handleToggleFavorite = (conversationId: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    if (!currentUser?.uid) return;
+
+    const newFavorites = new Set(favorites);
+    if (newFavorites.has(conversationId)) {
+      newFavorites.delete(conversationId);
+    } else {
+      newFavorites.add(conversationId);
+    }
+    setFavorites(newFavorites);
+
+    const storageKey = `favoriteConversations_${currentUser.uid}`;
+    localStorage.setItem(storageKey, JSON.stringify(Array.from(newFavorites)));
+  };
+
   // If auth not ready or no user, show loading
   if (!currentUser) {
     return (
@@ -197,161 +247,254 @@ const Collaboration: React.FC<CollaborationProps> = ({ currentUser, focusMode, o
     );
   }
 
-  // Show chat UI if conversation is active
-  if (activeConversationId) {
-    return (
-      <ChatUI
-        conversationId={activeConversationId}
-        currentUser={currentUser}
-        onBack={handleBackToLanding}
-      />
-    );
-  }
-
-  // Show group create modal if needed
-  if (showGroupCreate && currentUser?.uid) {
-    return (
-      <GroupChatCreate
-        currentUid={currentUser.uid}
-        onGroupCreated={(conversationId) => {
-          setShowGroupCreate(false);
-          setActiveConversationId(conversationId);
-        }}
-        onCancel={() => setShowGroupCreate(false)}
-      />
-    );
-  }
-
   // Show landing page
   return (
-    <div className="collaboration-landing">
-      <div className="collaboration-header">
-        <h1>{t('collaboration.title')}</h1>
-        <div className="header-controls">
-          {!focusMode && (
-            <label className="collaboration-focus-toggle">
-              <input
-                type="checkbox"
-                checked={focusMode}
-                onChange={(e) => onFocusModeChange(e.target.checked)}
-                aria-label={t('learning.accessibility.distractionFree')}
-              />
-              {t('learning.accessibility.distractionFree')}
-            </label>
-          )}
-          {friends.length > 0 && !focusMode && (
+    <div className={`collaboration-app ${focusMode ? 'focus-mode' : ''}`}>
+      {/* Sidebar - Persistent left navigation */}
+      <aside className="collaboration-sidebar-v2">
+        <div className="sidebar-header-v2">
+          <h2>{t('collaboration.title')}</h2>
+          <div className="sidebar-tabs scrollable-tabs">
             <button
-              className="create-group-btn"
-              onClick={() => setShowGroupCreate(true)}
-              title="Create a new group chat"
+              className={`sidebar-tab ${sidebarTab === 'chats' ? 'active' : ''}`}
+              onClick={() => setSidebarTab('chats')}
             >
-              ➕ Create Group
+              💬 {t('collaboration.tabs.chats', 'Chats')}
             </button>
-          )}
-        </div>
-      </div>
-
-      {loading ? (
-        <div className="collaboration-loading">
-          <p>{t('collaboration.loading')}</p>
-        </div>
-      ) : (
-        <div className="collaboration-content-grid">
-          <div className="collaboration-main">
-            <FriendSearch
-              currentUid={currentUser.uid}
-              onRequestSent={() => { }}
-            />
-
-            {friendRequests.length > 0 && (
-              <FriendRequests
-                requests={friendRequests}
-                onRequestHandled={() => { }}
-              />
-            )}
-
-            <FriendList
-              friends={friends}
-              currentUid={currentUser.uid}
-              onStartChat={handleStartChat}
-            />
+            <button
+              className={`sidebar-tab ${sidebarTab === 'groups' ? 'active' : ''}`}
+              onClick={() => setSidebarTab('groups')}
+            >
+              👥 {t('collaboration.tabs.groups', 'Groups')}
+            </button>
+            <button
+              className={`sidebar-tab ${sidebarTab === 'archived' ? 'active' : ''}`}
+              onClick={() => setSidebarTab('archived')}
+            >
+              📂 {t('collaboration.conversations.archived', 'Archived')}
+            </button>
+            <button
+              className={`sidebar-tab ${sidebarTab === 'unread' ? 'active' : ''}`}
+              onClick={() => setSidebarTab('unread')}
+            >
+              🔔 {t('collaboration.tabs.unread', 'Unread')}
+            </button>
+            <button
+              className={`sidebar-tab ${sidebarTab === 'favorites' ? 'active' : ''}`}
+              onClick={() => setSidebarTab('favorites')}
+            >
+              ⭐ {t('collaboration.tabs.favorites', 'Favorites')}
+            </button>
+            <button
+              className={`sidebar-tab ${sidebarTab === 'friends' ? 'active' : ''}`}
+              onClick={() => setSidebarTab('friends')}
+            >
+              👤 {t('collaboration.tabs.friends', 'Friends')}
+            </button>
           </div>
+        </div>
 
-          <div className="collaboration-sidebar">
-            <div className="collaboration-sidebar-header">
-              <h3 className="collaboration-sidebar-title">{t('collaboration.conversations.title')}</h3>
-              {hiddenConversations.size > 0 && (
-                <button
-                  className="toggle-hidden-btn"
-                  onClick={() => setShowHidden(!showHidden)}
-                  title={showHidden ? 'Hide archived chats' : 'Show archived chats'}
-                >
-                  {showHidden ? '📂 Hide Archived' : `📁 Show Archived (${hiddenConversations.size})`}
-                </button>
+        <div className="sidebar-content-v2">
+          {sidebarTab !== 'friends' && sidebarTab !== 'archived' ? (
+            <div className="chats-tab-content">
+              {(sidebarTab === 'chats' || sidebarTab === 'groups') && (
+                <div className="tab-actions">
+                  <button className="create-group-btn-v2" onClick={() => setShowGroupCreate(true)}>
+                    ➕ {t('collaboration.chat.createGroup', 'Create Group')}
+                  </button>
+                </div>
               )}
-            </div>
-            {conversations.length === 0 ? (
-              <div className="collaboration-empty">
-                <p>{t('collaboration.conversations.empty')}</p>
-              </div>
-            ) : (
-              <div className="collaboration-conversations">
-                {conversations
-                  .filter(conv => showHidden ? hiddenConversations.has(conv.id) : !hiddenConversations.has(conv.id))
-                  .map((conversation) => (
-                    <div
-                      key={conversation.id}
-                      className="collaboration-conversation-item"
-                      onClick={() => handleOpenConversation(conversation.id)}
-                    >
-                      <div className="conversation-item-header">
-                        <span className="conversation-item-name">
-                          {conversation.type === 'group'
-                            ? conversation.groupName || 'Group Chat'
-                            : conversation.participantNames.find(name => name !== currentUser.displayName) || 'User'
-                          }
-                        </span>
-                        {showHidden ? (
+
+              {loading ? (
+                <div className="tab-loading">{t('collaboration.loading')}</div>
+              ) : conversations.length === 0 ? (
+                <div className="tab-empty">{t('collaboration.conversations.empty')}</div>
+              ) : (
+                <div className="conversations-list-v2">
+                  {conversations
+                    .filter(conv => {
+                      if (sidebarTab === 'chats') return !hiddenConversations.has(conv.id);
+                      if (sidebarTab === 'groups') return conv.type === 'group' && !hiddenConversations.has(conv.id);
+                      if (sidebarTab === 'unread') {
+                        return (
+                          !!conv.lastMessage && 
+                          conv.lastMessage.senderUid !== currentUser.uid && 
+                          !readIds.has(conv.id) && 
+                          !hiddenConversations.has(conv.id)
+                        );
+                      }
+                      if (sidebarTab === 'favorites') return favorites.has(conv.id);
+                      return !hiddenConversations.has(conv.id);
+                    })
+                    .map((conversation) => (
+                      <div
+                        key={conversation.id}
+                        className={`conversation-card ${activeConversationId === conversation.id ? 'active' : ''}`}
+                        onClick={() => handleOpenConversation(conversation.id)}
+                      >
+                        <div className="card-avatar">
+                          {conversation.type === 'group' ? '👥' : '👤'}
+                          {favorites.has(conversation.id) && <span className="favorite-indicator">⭐</span>}
+                          {/* Unread indicator dot */}
+                          {(!readIds.has(conversation.id) && 
+                            conversation.lastMessage && 
+                            conversation.lastMessage.senderUid !== currentUser.uid) && (
+                            <span className="unread-dot"></span>
+                          )}
+                        </div>
+                        <div className="card-info">
+                          <div className="card-name">
+                            {conversation.type === 'group'
+                              ? conversation.groupName || 'Group Chat'
+                              : conversation.participantNames[conversation.participants.findIndex(uid => uid !== currentUser!.uid)] || 'User'
+                            }
+                          </div>
+                          {conversation.lastMessage && (
+                            <div className="card-preview">
+                              {conversation.lastMessage.text}
+                            </div>
+                          )}
+                        </div>
+                        <div className="card-actions">
                           <button
-                            className="unhide-conversation-btn"
-                            onClick={(e) => handleUnhideConversation(conversation.id, e)}
-                            title="Unarchive chat"
+                            className={`favorite-btn ${favorites.has(conversation.id) ? 'active' : ''}`}
+                            onClick={(e) => handleToggleFavorite(conversation.id, e)}
+                            title={favorites.has(conversation.id) ? 'Remove from favorites' : 'Mark as favorite'}
                           >
-                            ↩️
+                            {favorites.has(conversation.id) ? '⭐' : '☆'}
                           </button>
-                        ) : (
                           <button
-                            className="hide-conversation-btn"
+                            className="archive-btn"
                             onClick={(e) => handleHideConversation(conversation.id, e)}
-                            title="Archive chat"
+                            title="Archive"
                           >
                             🗂️
                           </button>
-                        )}
-                      </div>
-                      {conversation.lastMessage && (
-                        <div className="conversation-item-preview">
-                          <span className="conversation-item-sender">
-                            {conversation.lastMessage.senderName}:
-                          </span>
-                          <span className="conversation-item-text">
-                            {conversation.lastMessage.text}
-                          </span>
                         </div>
-                      )}
-                    </div>
-                  ))}
-              </div>
-            )}
-          </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          ) : sidebarTab === 'archived' ? (
+            <div className="chats-tab-content">
+              {hiddenConversations.size === 0 ? (
+                <div className="tab-empty">{t('collaboration.conversations.archivedEmpty', 'No archived conversations')}</div>
+              ) : (
+                <div className="conversations-list-v2">
+                  {conversations
+                    .filter(conv => hiddenConversations.has(conv.id))
+                    .map((conversation) => (
+                      <div
+                        key={conversation.id}
+                        className={`conversation-card ${activeConversationId === conversation.id ? 'active' : ''}`}
+                        onClick={() => handleOpenConversation(conversation.id)}
+                      >
+                        <div className="card-avatar">
+                          {conversation.type === 'group' ? '👥' : '👤'}
+                        </div>
+                        <div className="card-info">
+                          <div className="card-name">
+                            {conversation.type === 'group'
+                              ? conversation.groupName || 'Group Chat'
+                              : conversation.participantNames[conversation.participants.findIndex(uid => uid !== currentUser!.uid)] || 'User'
+                            }
+                          </div>
+                          {conversation.lastMessage && (
+                            <div className="card-preview">
+                              {conversation.lastMessage.text}
+                            </div>
+                          )}
+                        </div>
+                        <div className="card-actions">
+                          <button
+                            className="archive-btn"
+                            onClick={(e) => handleUnhideConversation(conversation.id, e)}
+                            title="Unarchive"
+                          >
+                            ↩️
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="friends-tab-content">
+              <FriendSearch
+                currentUid={currentUser.uid}
+                onRequestSent={() => { }}
+              />
+
+              {friendRequests.length > 0 && (
+                <FriendRequests
+                  requests={friendRequests}
+                  onRequestHandled={() => { }}
+                />
+              )}
+
+              <FriendList
+                friends={friends}
+                currentUid={currentUser.uid}
+                onStartChat={handleStartChat}
+              />
+            </div>
+          )}
         </div>
+
+        <div className="sidebar-footer-v2">
+          {!focusMode && (
+            <button className="focus-toggle-btn" onClick={() => onFocusModeChange(true)}>
+              🧘 {t('learning.accessibility.distractionFree')}
+            </button>
+          )}
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="collaboration-main-v2">
+        {activeConversationId ? (
+          <ChatUI
+            conversationId={activeConversationId}
+            currentUser={currentUser}
+            onBack={handleBackToLanding}
+          />
+        ) : (
+          <div className="collaboration-welcome">
+            <div className="welcome-content">
+              <div className="welcome-icon">💬</div>
+              <h1>{t('collaboration.welcome.title', 'Collaboration Hub')}</h1>
+              <p>{t('collaboration.welcome.subtitle', 'Select a conversation or find a friend to start chatting.')}</p>
+              <button 
+                className="welcome-action-btn"
+                onClick={() => setSidebarTab('friends')}
+              >
+                Find Friends
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* Modals */}
+      {showGroupCreate && currentUser?.uid && (
+        <GroupChatCreate
+          currentUid={currentUser.uid}
+          onGroupCreated={(conversationId) => {
+            setShowGroupCreate(false);
+            setActiveConversationId(conversationId);
+            setSidebarTab('chats');
+          }}
+          onCancel={() => setShowGroupCreate(false)}
+        />
       )}
 
+      {/* Focus Mode Overlay */}
       {focusMode && (
         <button
           className="collaboration-exit-focus"
           onClick={() => onFocusModeChange(false)}
-          aria-label={t('learning.accessibility.exitDistraction')}
         >
           {t('learning.accessibility.exitDistraction')}
         </button>

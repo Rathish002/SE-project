@@ -70,7 +70,6 @@ const FriendSearch: React.FC<FriendSearchProps> = ({ currentUid, onRequestSent }
 
   return (
     <div className="friend-search">
-      <h3 className="friend-search-title">{t('collaboration.search.title')}</h3>
       <div className="friend-search-form">
         <input
           type="email"
