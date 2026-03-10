@@ -58,6 +58,7 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
                             onClick={() => handleOptionSelect(opt)}
                             onKeyDown={(e) => handleKeyDown(e, opt)}
                             disabled={isCorrect === true}
+                            data-testid="exercise-option"
                         >
                             {opt}
                         </button>
@@ -91,6 +92,7 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
                                 }`}
                             onClick={() => handleOptionSelect(opt.id)}
                             disabled={isCorrect === true}
+                            data-testid="exercise-image-option"
                         >
                             <div className="image-placeholder" role="img" aria-label={opt.alt}>
                                 {opt.src}
@@ -127,6 +129,7 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
                         placeholder="Type your answer here..."
                         aria-label="Your answer"
                         disabled={isCorrect === true}
+                        data-testid="exercise-input"
                     />
                 </div>
                 <div className="action-row">
