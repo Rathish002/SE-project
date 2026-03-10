@@ -353,145 +353,132 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   };
 
   return (
-    <div className="chat-ui">
-      <div className="chat-header">
-        <button className="chat-back-button" onClick={onBack}>
-          ??? {t('app.back')}
-        </button>
-        <div className="chat-header-info">
-          <h2 className="chat-title">
-            {conversation?.type === 'group'
-              ? (conversation.groupName || conversation.participantNames.join(', '))
-              : conversation?.participantNames.find((name, idx) =>
-                conversation.participants[idx] !== currentUser!.uid
-              ) || t('collaboration.chat.unknownUser')
-            }
-          </h2>
-          <div className="chat-status">
-            <span className={`chat-status-indicator ${connectionStatus === 'connected' ? 'connected' : 'reconnecting'}`}></span>
-            {connectionStatus === 'connected'
-              ? t('collaboration.chat.connected')
-              : t('collaboration.chat.reconnecting')
-            }
+    <div className="chat-ui-v2">
+      <div className="chat-header-v2">
+        <div className="header-left">
+          <button className="chat-close-btn" onClick={onBack} title="Close chat">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+          <div className="chat-header-info-v2">
+            <h2 className="chat-title-v2">
+              {conversation?.type === 'group'
+                ? (conversation.groupName || conversation.participantNames.join(', '))
+                : conversation?.participantNames.find((name, idx) =>
+                  conversation.participants[idx] !== currentUser!.uid
+                ) || t('collaboration.chat.unknownUser')
+              }
+            </h2>
+            <div className="chat-header-status">
+              <span className={`status-dot ${connectionStatus}`}></span>
+              {connectionStatus === 'connected' ? t('collaboration.chat.connected') : t('collaboration.chat.reconnecting')}
+            </div>
           </div>
         </div>
-        {/* Show block/unblock button for direct chats only */}
-        {conversation?.type === 'direct' && (
-          <button
-            className="chat-block-button"
-            onClick={handleBlockToggle}
-            title={isBlocked ? 'Unblock user' : 'Block user'}
-          >
-            {isBlocked ? '🔓' : '🚫'}
-          </button>
-        )}
+
+        <div className="header-actions">
+          {conversation?.type === 'direct' && (
+            <button
+              className="action-icon-btn"
+              onClick={handleBlockToggle}
+              title={isBlocked ? 'Unblock user' : 'Block user'}
+            >
+              {isBlocked ? '🔓' : '🚫'}
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className="chat-content">
-        <div className="chat-messages">
-          {messages.length === 0 ? (
-            <div className="chat-empty">
-              <p>{t('collaboration.chat.noMessages')}</p>
-            </div>
-          ) : (
-            messages.map((message) => {
-              // System messages (joins, leaves) have distinct styling
-              if (message.type === 'system') {
-                // Render system message with i18n key and interpolation
-                let systemText = message.text;
-                if (message.i18nKey) {
-                  const interpolation: Record<string, string> = {};
-                  if (message.actorUsername) {
-                    interpolation.actor = message.actorUsername;
+      <div className="chat-body-v2">
+        <div className="chat-messages-container">
+          <div className="messages-scroll-area">
+            {messages.length === 0 ? (
+              <div className="chat-empty-v2">
+                <div className="empty-icon">✉️</div>
+                <p>{t('collaboration.chat.noMessages')}</p>
+              </div>
+            ) : (
+              messages.map((message) => {
+                if (message.type === 'system') {
+                  let systemText = message.text;
+                  if (message.i18nKey) {
+                    const interpolation: Record<string, string> = {};
+                    if (message.actorUsername) interpolation.actor = message.actorUsername;
+                    if (message.targetUsername) interpolation.target = message.targetUsername;
+                    systemText = t(message.i18nKey, interpolation);
                   }
-                  if (message.targetUsername) {
-                    interpolation.target = message.targetUsername;
-                  }
-                  systemText = t(message.i18nKey, interpolation);
+                  return (
+                    <div key={message.id} className="system-msg-v2">
+                      <span>{systemText}</span>
+                    </div>
+                  );
                 }
-                return (
-                  <div key={message.id} className="chat-message system-message">
-                    <div className="system-message-content">{systemText}</div>
-                  </div>
-                );
-              }
 
-              // Regular user messages (text or image)
-              return (
-                <div
-                  key={message.id}
-                  className={`chat-message ${message.senderUid === currentUser!.uid ? 'own' : 'other'}`}
-                  role="article"
-                  aria-label={`Message from ${message.senderName} at ${formatTimestamp(message.timestamp)}`}
-                >
-                  <div className="chat-message-header">
-                    <span className="chat-message-sender">{message.senderName}</span>
-                    <span className="chat-message-time">{formatTimestamp(message.timestamp)}</span>
-                  </div>
-                  {message.type === 'image' && message.mediaUrl ? (
-                    <div className="chat-message-image">
-                      <img src={message.mediaUrl} alt={`Shared by ${message.senderName}`} />
-                    </div>
-                  ) : message.type === 'video' && message.mediaUrl ? (
-                    <div className="chat-message-video">
-                      <video controls src={message.mediaUrl} aria-label={`Video shared by ${message.senderName}`}>
-                        Your browser does not support video playback.
-                      </video>
-                    </div>
-                  ) : message.type === 'voice' && message.mediaUrl ? (
-                    <div className="chat-message-voice">
-                      <audio controls src={message.mediaUrl} aria-label={`Voice message from ${message.senderName}`}>
-                        Your browser does not support audio playback.
-                      </audio>
-                      {message.mediaDuration && (
-                        <span className="voice-duration">{Math.floor(message.mediaDuration)}s</span>
-                      )}
-                    </div>
-                  ) : message.type === 'file' && message.mediaUrl ? (
-                    <div className="chat-message-file">
-                      <a href={message.mediaUrl} download={message.mediaFilename} target="_blank" rel="noopener noreferrer">
-                        <div className="file-icon">📄</div>
-                        <div className="file-info">
-                          <div className="file-name">{message.mediaFilename}</div>
-                          <div className="file-size">{(message.mediaSize! / 1024).toFixed(1)} KB</div>
+                const isOwn = message.senderUid === currentUser!.uid;
+                return (
+                  <div
+                    key={message.id}
+                    className={`message-bubble-row ${isOwn ? 'own' : 'other'}`}
+                  >
+                    {!isOwn && <div className="message-avatar-small">{message.senderName[0]}</div>}
+                    <div className="message-bubble-content">
+                      {!isOwn && <div className="message-sender-name">{message.senderName}</div>}
+                      <div className="message-bubble">
+                        {message.type === 'image' && message.mediaUrl ? (
+                          <div className="bubble-image">
+                            <img src={message.mediaUrl} alt="Shared" />
+                          </div>
+                        ) : message.type === 'video' && message.mediaUrl ? (
+                          <div className="bubble-video">
+                            <video controls src={message.mediaUrl} />
+                          </div>
+                        ) : message.type === 'voice' && message.mediaUrl ? (
+                          <div className="bubble-voice">
+                            <audio controls src={message.mediaUrl} />
+                          </div>
+                        ) : message.type === 'file' && message.mediaUrl ? (
+                          <div className="bubble-file">
+                            <a href={message.mediaUrl} download={message.mediaFilename} target="_blank" rel="noopener noreferrer">
+                              <span className="file-icon">📄</span>
+                              <div className="file-meta">
+                                <div className="file-name">{message.mediaFilename}</div>
+                                <div className="file-size">{(message.mediaSize! / 1024).toFixed(1)} KB</div>
+                              </div>
+                            </a>
+                          </div>
+                        ) : (
+                          <div className="bubble-text">
+                            {translatedMessages[message.id] || message.text}
+                          </div>
+                        )}
+
+                        <div className="bubble-footer">
+                          <span className="bubble-time">{formatTimestamp(message.timestamp)}</span>
+                          {isOwn && messageStates[message.id] && (
+                            <span className={`msg-status ${messageStates[message.id]}`}>
+                              {messageStates[message.id] === 'sent' ? '✓' : '⏳'}
+                            </span>
+                          )}
                         </div>
-                      </a>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="chat-message-text">
-                        {translatedMessages[message.id] || message.text}
                       </div>
+
                       {message.text && message.originalLang && message.originalLang !== i18n.language && (
                         <button
-                          className="translate-button"
+                          className="msg-translate-btn"
                           onClick={() => handleTranslateMessage(message.id, message.text!, message.originalLang!)}
-                          title={translatedMessages[message.id] ? 'Show original' : 'Translate'}
                         >
-                          {translatedMessages[message.id] ? '🔄 Original' : '🌐 Translate'}
+                          {translatedMessages[message.id] ? 'Original' : 'Translate'}
                         </button>
                       )}
-                    </>
-                  )}
-                  {/* Show message state for own messages */}
-                  {message.senderUid === currentUser!.uid && messageStates[message.id] && (
-                    <div className={`message-state ${messageStates[message.id]}`}>
-                      {messageStates[message.id] === 'sending' && '⏳'}
-                      {messageStates[message.id] === 'sent' && '✓'}
-                      {messageStates[message.id] === 'failed' && (
-                        <span className="retry-message" title="Click to retry">❌</span>
-                      )}
                     </div>
-                  )}
-                </div>
-              );
-            })
-          )}
-          <div ref={messagesEndRef} />
+                  </div>
+                );
+              })
+            )}
+            <div ref={messagesEndRef} />
+          </div>
         </div>
 
-        <div className="chat-sidebar">
-          {/* For group chats, show GroupChatSettings component */}
+        <aside className="chat-info-sidebar">
           {conversation?.type === 'group' ? (
             <GroupChatSettings
               conversationId={conversationId}
@@ -500,107 +487,46 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
               groupName={conversation.groupName || 'Group'}
               currentUid={currentUser!.uid}
               onLeaveGroup={onBack}
-              onMemberAdded={() => {
-                // Refresh conversation to get updated participants
-                if (conversationId) {
-                  const ref = doc(db, 'conversations', conversationId);
-                  onSnapshot(ref, (snap: any) => {
-                    if (snap.exists()) {
-                      setConversation({
-                        id: snap.id,
-                        ...snap.data() as Omit<typeof conversation, 'id'>,
-                      });
-                    }
-                  });
-                }
-              }}
+              onMemberAdded={() => { }}
             />
           ) : (
-            <>
-              <h3 className="chat-sidebar-title">{t('collaboration.chat.participants')}</h3>
-              <div className="chat-participants">
-                {participants.map((participant) => (
-                  <div key={participant.uid} className="chat-participant">
-                    <span className={`chat-participant-status ${participant.online ? 'online' : 'offline'}`}></span>
-                    <div className="chat-participant-info">
-                      <span className="chat-participant-name">{participant.name}</span>
-                      {!participant.online && participant.lastActive && (
-                        <span className="chat-participant-lastactive">
-                          {formatLastActive(participant.lastActive)}
-                        </span>
-                      )}
-                      {participant.uid === currentUser!.uid && (
-                        <span className="chat-participant-you">({t('collaboration.chat.you')})</span>
-                      )}
+            <div className="participants-v2">
+              <h3>{t('collaboration.chat.participants')}</h3>
+              <div className="participants-list-v2">
+                {participants.map((p) => (
+                  <div key={p.uid} className="participant-item-v2">
+                    <div className={`participant-avatar ${p.online ? 'online' : ''}`}>
+                      {p.name[0]}
+                    </div>
+                    <div className="participant-info-v2">
+                      <div className="participant-name-v2">{p.name} {p.uid === currentUser?.uid && `(${t('collaboration.chat.you')})`}</div>
+                      <div className="participant-status-v2">
+                        {p.online ? 'Online' : formatLastActive(p.lastActive)}
+                      </div>
                     </div>
                   </div>
                 ))}
               </div>
-            </>
+            </div>
           )}
-        </div>
+        </aside>
       </div>
 
-      <div className="chat-input-container">
-        <input
-          type="file"
-          ref={imageInputRef}
-          accept="image/*"
-          style={{ display: 'none' }}
-          onChange={handleImageUpload}
-        />
-        <input
-          type="file"
-          ref={videoInputRef}
-          accept="video/*"
-          style={{ display: 'none' }}
-          onChange={handleVideoUpload}
-        />
-        <input
-          type="file"
-          ref={fileInputRef}
-          style={{ display: 'none' }}
-          onChange={handleFileUpload}
-        />
-        <button
-          className="chat-attach-button"
-          onClick={() => imageInputRef.current?.click()}
-          disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
-          title="Upload image"
-          aria-label="Upload image"
-        >
-          🖼️
-        </button>
-        <button
-          className="chat-attach-button"
-          onClick={() => videoInputRef.current?.click()}
-          disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
-          title="Upload video"
-          aria-label="Upload video"
-        >
-          🎥
-        </button>
-        <button
-          className={`chat-attach-button ${isRecording ? 'recording' : ''}`}
-          onClick={handleVoiceRecord}
-          disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending}
-          title={isRecording ? 'Stop recording' : 'Record voice message'}
-          aria-label={isRecording ? 'Stop recording' : 'Record voice message'}
-        >
-          {isRecording ? '⏹️' : '🎤'}
-        </button>
-        <button
-          className="chat-attach-button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || sending || isRecording}
-          title="Upload document"
-          aria-label="Upload document"
-        >
-          📎
-        </button>
-        <div className="input-wrapper">
+      <div className="chat-footer-v2">
+        <div className="input-toolbar">
+          <input type="file" ref={imageInputRef} accept="image/*" className="hidden-input" onChange={handleImageUpload} />
+          <input type="file" ref={videoInputRef} accept="video/*" className="hidden-input" onChange={handleVideoUpload} />
+          <input type="file" ref={fileInputRef} className="hidden-input" onChange={handleFileUpload} />
+
+          <button className="toolbar-btn" onClick={() => imageInputRef.current?.click()} title="Image">🖼️</button>
+          <button className="toolbar-btn" onClick={() => videoInputRef.current?.click()} title="Video">🎥</button>
+          <button className={`toolbar-btn ${isRecording ? 'recording' : ''}`} onClick={handleVoiceRecord} title="Voice">🎤</button>
+          <button className="toolbar-btn" onClick={() => fileInputRef.current?.click()} title="File">📎</button>
+        </div>
+
+        <div className="input-area-v2">
           <textarea
-            className="chat-input"
+            className="chat-textarea-v2"
             placeholder={t('collaboration.chat.inputPlaceholder')}
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
@@ -610,22 +536,18 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                 handleSendMessage();
               }
             }}
-            disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || isRecording}
             rows={1}
-            aria-label="Type a message"
+            data-testid="message-input"
           />
-          <div className="keyboard-hint" role="note" aria-label="Keyboard shortcuts">
-            Enter to send • Shift+Enter for new line
-          </div>
+          <button
+            className="send-btn-v2"
+            onClick={handleSendMessage}
+            disabled={!messageText.trim() || sending}
+            data-testid="message-send-button"
+          >
+            {sending ? '...' : '▶'}
+          </button>
         </div>
-        <button
-          className="chat-send-button"
-          onClick={handleSendMessage}
-          disabled={sending || uploadingImage || uploadingVideo || uploadingVoice || uploadingFile || isRecording || !messageText.trim()}
-          aria-label="Send message"
-        >
-          {uploadingImage || uploadingVideo || uploadingVoice || uploadingFile ? '⏳' : isRecording ? '🔴' : sending ? '⏳' : '📤'}
-        </button>
       </div>
     </div>
   );
