@@ -822,3 +822,55 @@ body {
   color: var(--primary-color);
   border-color: var(--primary-color);
 }
+
+/* Exercise Nav Arrows (Left pointing to Lesson) */
+.exercise-nav-arrows {
+  position: absolute;
+  top: 80px; /* Positioned below the TopBar but before the main content flows */
+  left: 24px;
+  z-index: 100;
+}
+
+.exercise-nav-arrow {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: none;
+  background-color: var(--secondary-color, #64748b);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s;
+  font-size: 20px;
+  opacity: 0.6;
+}
+
+.exercise-nav-arrow:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  opacity: 1;
+  background-color: var(--text-secondary, #475569);
+}
+
+.exercise-nav-arrow:focus-visible {
+  outline: 2px solid var(--secondary-color);
+  outline-offset: 2px;
+  opacity: 1;
+}
+
+@media screen and (max-width: 768px) {
+  .exercise-nav-arrows {
+    position: fixed;
+    top: auto;
+    bottom: 24px;
+    left: 8px;
+    transform: none;
+  }
+}
+
+.focus-mode .exercise-nav-arrows {
+  display: none;
+}

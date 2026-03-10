@@ -202,6 +202,7 @@ function App() {
                 onToggleSidebar={toggleSidebar}
                 onLogout={handleLogout}
                 onNavigate={handleNavigate}
+                currentPage={currentPage}
               />
             )}
 
