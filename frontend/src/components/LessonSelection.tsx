@@ -121,7 +121,6 @@ const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => 
               <div
                 key={lesson.id}
                 className={`lesson-card ${completedLessons.has(lesson.id) ? 'completed' : ''}`}
-                data-testid="lesson-card"
               >
                 {/* Lesson Number Badge */}
                 <div className="lesson-number-badge">
@@ -147,7 +146,6 @@ const LessonSelection: React.FC<LessonSelectionProps> = ({ onSelectLesson }) => 
                     className="lesson-start-button"
                     onClick={() => onSelectLesson(lesson.id)}
                     aria-label={`${t('lessons.startLesson')}: ${lesson.title}`}
-                    data-testid="lesson-start-button"
                   >
                     {t('lessons.startLesson')}
                   </button>

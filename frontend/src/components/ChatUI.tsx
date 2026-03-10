@@ -450,7 +450,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                             {translatedMessages[message.id] || message.text}
                           </div>
                         )}
-
+                        
                         <div className="bubble-footer">
                           <span className="bubble-time">{formatTimestamp(message.timestamp)}</span>
                           {isOwn && messageStates[message.id] && (
@@ -460,7 +460,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                           )}
                         </div>
                       </div>
-
+                      
                       {message.text && message.originalLang && message.originalLang !== i18n.language && (
                         <button
                           className="msg-translate-btn"
@@ -487,7 +487,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
               groupName={conversation.groupName || 'Group'}
               currentUid={currentUser!.uid}
               onLeaveGroup={onBack}
-              onMemberAdded={() => { }}
+              onMemberAdded={() => {}}
             />
           ) : (
             <div className="participants-v2">
@@ -517,7 +517,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           <input type="file" ref={imageInputRef} accept="image/*" className="hidden-input" onChange={handleImageUpload} />
           <input type="file" ref={videoInputRef} accept="video/*" className="hidden-input" onChange={handleVideoUpload} />
           <input type="file" ref={fileInputRef} className="hidden-input" onChange={handleFileUpload} />
-
+          
           <button className="toolbar-btn" onClick={() => imageInputRef.current?.click()} title="Image">🖼️</button>
           <button className="toolbar-btn" onClick={() => videoInputRef.current?.click()} title="Video">🎥</button>
           <button className={`toolbar-btn ${isRecording ? 'recording' : ''}`} onClick={handleVoiceRecord} title="Voice">🎤</button>
@@ -537,13 +537,11 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
               }
             }}
             rows={1}
-            data-testid="message-input"
           />
           <button
             className="send-btn-v2"
             onClick={handleSendMessage}
             disabled={!messageText.trim() || sending}
-            data-testid="message-send-button"
           >
             {sending ? '...' : '▶'}
           </button>

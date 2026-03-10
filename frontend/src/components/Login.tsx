@@ -13,11 +13,11 @@ interface LoginProps {
 
 const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
   const { t } = useTranslation();
-
+  
   // State for form inputs
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-
+  
   // State for UI feedback
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
@@ -36,7 +36,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
     } catch (err: any) {
       // Handle different Firebase error codes
       let errorMessage = t('auth.errors.loginFailed');
-
+      
       if (err.code === 'auth/user-not-found') {
         errorMessage = t('auth.errors.userNotFound');
       } else if (err.code === 'auth/wrong-password') {
@@ -48,7 +48,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
       } else if (err.code === 'auth/too-many-requests') {
         errorMessage = t('auth.errors.tooManyRequests');
       }
-
+      
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -67,7 +67,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
     } catch (err: any) {
       // Handle different Firebase error codes
       let errorMessage = t('auth.errors.googleSignInFailed');
-
+      
       if (err.code === 'auth/popup-closed-by-user') {
         errorMessage = t('auth.errors.popupClosed');
       } else if (err.code === 'auth/popup-blocked') {
@@ -75,7 +75,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
       } else if (err.code === 'auth/cancelled-popup-request') {
         errorMessage = t('auth.errors.popupCancelled');
       }
-
+      
       setError(errorMessage);
     } finally {
       setGoogleLoading(false);
@@ -101,7 +101,6 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
               required
               disabled={loading || googleLoading}
               aria-label={t('auth.login.email')}
-              data-testid="email-input"
             />
           </div>
 
@@ -117,7 +116,6 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
               required
               disabled={loading || googleLoading}
               aria-label={t('auth.login.password')}
-              data-testid="password-input"
             />
           </div>
 
@@ -125,12 +123,11 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
           {error && <div className="error-message" role="alert">{error}</div>}
 
           {/* Submit button */}
-          <button
-            type="submit"
+          <button 
+            type="submit" 
             className="auth-button"
             disabled={loading || googleLoading}
             aria-label={t('auth.login.submit')}
-            data-testid="login-button"
           >
             {loading ? t('auth.login.submitting') : t('auth.login.submit')}
           </button>
@@ -155,7 +152,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
         {/* Switch to signup */}
         <div className="auth-switch">
           <p>{t('auth.login.switchToSignup')}</p>
-          <button
+          <button 
             type="button"
             onClick={onSwitchToSignup}
             className="switch-button"
