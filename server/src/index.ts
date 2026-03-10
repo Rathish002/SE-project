@@ -6,6 +6,7 @@ import evaluationRoutes from "./routes/evaluation";
 import exerciseRoutes from "./routes/exercises";
 import translationRoutes from "./routes/translations";
 import preferencesRoutes from "./routes/preferences";
+import userRoutes from "./routes/user";
 import { firebaseAuth } from "./middleware/firebaseAuth";
 
 dotenv.config();
@@ -41,10 +42,11 @@ app.get("/", (_req: Request, res: Response) => {
 
 app.use("/lesson", lessonRoutes);
 app.use("/evaluation", evaluationRoutes);
-app.use("/exercise", exerciseRoutes);
+app.use("/exercises", exerciseRoutes);
 app.use("/translations", translationRoutes);
 // Protect preferences with Firebase token verification middleware
 app.use("/preferences", firebaseAuth, preferencesRoutes);
+app.use("/user", userRoutes);
 
 // Global error handler
 app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
@@ -52,6 +54,8 @@ app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
   res.status(err.status || 500).json({ error: err.message || "Internal server error" });
 });
 
-app.listen(3001, () => {
-  console.log("Server running on port 3001");
+const port = Number(process.env.PORT) || 3001;
+
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 });

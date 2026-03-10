@@ -464,21 +464,22 @@ const Learning: React.FC<LearningProps> = ({
           </aside>
         )}
 
-        {/* Exercise Buttons */}
-        <div className="exercises-section">
+        {/* Floating Navigation Button (Right Arrow -> Exercises) */}
+        <div className="learning-nav-arrows">
           <button
-            className="exercises-button"
+            className="learning-nav-arrow right"
             onClick={onNavigateToExercises}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onNavigateToExercises?.();
+              }
+            }}
+            tabIndex={0}
             aria-label={t('lessons.goToExercises')}
+            title={t('lessons.goToExercises')}
           >
-            {t('lessons.goToExercises')}
-          </button>
-          <button
-            className="evaluation-button"
-            onClick={() => setShowEvaluation(true)}
-            aria-label={'Evaluate yourself'}
-          >
-            {'Evaluate Yourself'}
+            <span>▶</span>
           </button>
         </div>
       </main>

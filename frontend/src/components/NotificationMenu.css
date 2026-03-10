@@ -67,9 +67,10 @@
     background: none;
     border: none;
     color: var(--primary-color, #2196f3);
-    font-size: 13px;
+    font-size: 12px;
     cursor: pointer;
     padding: 0;
+    white-space: nowrap;
 }
 
 .notification-mark-read:hover {
@@ -114,7 +115,7 @@
 }
 
 .notification-item.unread {
-    background-color: var(--bg-hover, rgba(33, 150, 243, 0.08));
+    background-color: rgba(33, 150, 243, 0.07);
 }
 
 .notification-item.unread .notification-item-name {
@@ -178,7 +179,9 @@
     padding: 8px;
     border-top: 1px solid var(--border-color, #e0e0e0);
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
+    gap: 4px;
 }
 
 .notification-view-all {
@@ -187,11 +190,27 @@
     color: var(--primary-color, #2196f3);
     font-size: 14px;
     font-weight: 500;
-    padding: 8px 16px;
+    padding: 8px 12px;
     cursor: pointer;
     border-radius: 4px;
 }
 
 .notification-view-all:hover {
     background-color: var(--bg-hover, rgba(33, 150, 243, 0.08));
+}
+
+.notification-clear-all {
+    background: none;
+    border: none;
+    color: var(--text-secondary, #888);
+    font-size: 13px;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: color 0.2s, background-color 0.2s;
+}
+
+.notification-clear-all:hover {
+    background-color: var(--bg-hover, rgba(0, 0, 0, 0.05));
+    color: var(--text-primary);
 }

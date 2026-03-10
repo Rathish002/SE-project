@@ -461,26 +461,26 @@ VALUES
 -- ==========================================
 
 -- Exercise 4: Number Recognition
-INSERT INTO exercise_steps (exercise_id, step_number, prompt, hint_1, correct_option_id)
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
 VALUES
-  (4, 1, 'What is the Hindi word for number 1?', 'First number in sequence', 51),
-  (4, 2, 'How do you say 5 in Hindi?', 'Midpoint of 1-10', 55),
-  (4, 3, 'What is 10 called in Hindi?', 'The complete first sequence', 59),
-  (4, 4, 'How do you say 20 in Hindi?', 'Double the number 10', 63);
+  (49, 4, 1, 'What is the Hindi word for number 1?', 'First number in sequence', 51),
+  (50, 4, 2, 'How do you say 5 in Hindi?', 'Midpoint of 1-10', 55),
+  (51, 4, 3, 'What is 10 called in Hindi?', 'The complete first sequence', 59),
+  (52, 4, 4, 'How do you say 20 in Hindi?', 'Double the number 10', 63);
 
 -- Exercise 5: Counting Sequence
-INSERT INTO exercise_steps (exercise_id, step_number, prompt, hint_1, correct_option_id)
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
 VALUES
-  (5, 1, 'Complete the sequence: 1, 2, 3, ___, 5', 'The fourth number', 67),
-  (5, 2, 'What comes after 7?', 'Hint: 7 + 1 = ?', 71),
-  (5, 3, 'Fill in: ___, 6, 7, 8, ___', 'Consecutive numbers', 75);
+  (53, 5, 1, 'Complete the sequence: 1, 2, 3, ___, 5', 'The fourth number', 67),
+  (54, 5, 2, 'What comes after 7?', 'Hint: 7 + 1 = ?', 71),
+  (55, 5, 3, 'Fill in: ___, 6, 7, 8, ___', 'Consecutive numbers', 75);
 
 -- Exercise 6: Number Writing Challenge
-INSERT INTO exercise_steps (exercise_id, step_number, prompt, hint_1, correct_option_id)
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
 VALUES
-  (6, 1, 'What is 15 in Hindi?', 'Hint: 10 + 5 = पंद्रह', 79),
-  (6, 2, 'How do you write 25 in Hindi?', 'Hint: 20 + 5 = पच्चीस', 83),
-  (6, 3, 'What is 100 in Hindi?', 'The biggest number in this lesson', 87);
+  (56, 6, 1, 'What is 15 in Hindi?', 'Hint: 10 + 5 = पंद्रह', 79),
+  (57, 6, 2, 'How do you write 25 in Hindi?', 'Hint: 20 + 5 = पच्चीस', 83),
+  (58, 6, 3, 'What is 100 in Hindi?', 'The biggest number in this lesson', 87);
 
 -- ==========================================
 -- EXERCISE STEP OPTIONS (Lesson 2)
@@ -571,26 +571,26 @@ VALUES
 -- ==========================================
 
 -- Exercise 7: Family Member Identification
-INSERT INTO exercise_steps (exercise_id, step_number, prompt, hint_1, correct_option_id)
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
 VALUES
-  (7, 1, 'Who is your mother''s mother?', 'Hint: Grand + Mother', 91),
-  (7, 2, 'What do you call your father''s male sibling?', 'Hint: Uncle in English', 95),
-  (7, 3, 'Who is your father''s wife?', 'Hint: Female parent', 99),
-  (7, 4, 'What is a word for brother in Hindi?', 'Hint: Common family term', 103);
+  (89, 7, 1, 'Who is your mother''s mother?', 'Hint: Grand + Mother', 91),
+  (90, 7, 2, 'What do you call your father''s male sibling?', 'Hint: Uncle in English', 95),
+  (91, 7, 3, 'Who is your father''s wife?', 'Hint: Female parent', 99),
+  (92, 7, 4, 'What is a word for brother in Hindi?', 'Hint: Common family term', 103);
 
 -- Exercise 8: Relationship Mapping
-INSERT INTO exercise_steps (exercise_id, step_number, prompt, hint_1, correct_option_id)
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
 VALUES
-  (8, 1, 'Match: माता', 'Hint: Mother related', 107),
-  (8, 2, 'Match: भैया', 'Hint: Brother related', 111),
-  (8, 3, 'Match: नानी', 'Hint: Grandmother (maternal)', 115);
+  (93, 8, 1, 'Match: माता', 'Hint: Mother related', 107),
+  (94, 8, 2, 'Match: भैया', 'Hint: Brother related', 111),
+  (95, 8, 3, 'Match: नानी', 'Hint: Grandmother (maternal)', 115);
 
 -- Exercise 9: Family Vocabulary Quiz
-INSERT INTO exercise_steps (exercise_id, step_number, prompt, hint_1, correct_option_id)
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
 VALUES
-  (9, 1, 'What does परिवार mean?', 'All relatives together', 119),
-  (9, 2, 'How do you say "my sister" in Hindi?', 'Possessive form of बहन', 123),
-  (9, 3, 'Who are your पिता''s parents?', 'Paternal grandparents', 127);
+  (96, 9, 1, 'What does परिवार mean?', 'All relatives together', 119),
+  (97, 9, 2, 'How do you say "my sister" in Hindi?', 'Possessive form of बहन', 123),
+  (98, 9, 3, 'Who are your पिता''s parents?', 'Paternal grandparents', 127);
 
 -- ==========================================
 -- EXERCISE STEP OPTIONS (Lesson 3)
@@ -681,26 +681,26 @@ VALUES
 -- ==========================================
 
 -- Exercise 10: Food Item Recognition
-INSERT INTO exercise_steps (exercise_id, step_number, prompt, hint_1, correct_option_id)
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
 VALUES
-  (10, 1, 'What is रोटी?', 'Hint: Flatbread made from wheat', 131),
-  (10, 2, 'What is दाल?', 'Hint: Protein source, made from lentils', 135),
-  (10, 3, 'What is a famous Indian rice dish?', 'Hint: Biryani', 139),
-  (10, 4, 'What is essential to drink with meals?', 'Hint: Water', 143);
+  (129, 10, 1, 'What is रोटी?', 'Hint: Flatbread made from wheat', 131),
+  (130, 10, 2, 'What is दाल?', 'Hint: Protein source, made from lentils', 135),
+  (131, 10, 3, 'What is a famous Indian rice dish?', 'Hint: Biryani', 139),
+  (132, 10, 4, 'What is essential to drink with meals?', 'Hint: Water', 143);
 
 -- Exercise 11: Restaurant Ordering
-INSERT INTO exercise_steps (exercise_id, step_number, prompt, hint_1, correct_option_id)
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
 VALUES
-  (11, 1, 'How do you ask for food at a restaurant?', 'Hint: Use माँगना (to ask for)', 147),
-  (11, 2, 'What do you say to order water?', 'Hint: Polite request', 151),
-  (11, 3, 'How to ask for rice in Hindi?', 'Hint: चावल please', 155);
+  (133, 11, 1, 'How do you ask for food at a restaurant?', 'Hint: Use माँगना (to ask for)', 147),
+  (134, 11, 2, 'What do you say to order water?', 'Hint: Polite request', 151),
+  (135, 11, 3, 'How to ask for rice in Hindi?', 'Hint: चावल please', 155);
 
 -- Exercise 12: Food Preferences Quiz
-INSERT INTO exercise_steps (exercise_id, step_number, prompt, hint_1, correct_option_id)
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
 VALUES
-  (12, 1, 'What does खाना mean?', 'Hint: Basic necessity', 159),
-  (12, 2, 'Where do you go to eat?', 'Hint: Restaurant', 163),
-  (12, 3, 'What is सब्जी?', 'Hint: Plant-based food component', 167);
+  (136, 12, 1, 'What does खाना mean?', 'Hint: Basic necessity', 159),
+  (137, 12, 2, 'Where do you go to eat?', 'Hint: Restaurant', 163),
+  (138, 12, 3, 'What is सब्जी?', 'Hint: Plant-based food component', 167);
 
 -- ==========================================
 -- EXERCISE STEP OPTIONS (Lesson 4)
@@ -791,26 +791,26 @@ VALUES
 -- ==========================================
 
 -- Exercise 13: Daily Routine Sequencing
-INSERT INTO exercise_steps (exercise_id, step_number, prompt, hint_1, correct_option_id)
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
 VALUES
-  (13, 1, 'What do you do first in the morning?', 'Hint: Opening your eyes', 171),
-  (13, 2, 'What comes after waking up?', 'Hint: Personal hygiene', 175),
-  (13, 3, 'What do you do after bathing?', 'Hint: First meal of the day', 179),
-  (13, 4, 'What is the last activity of the day?', 'Hint: Rest at night', 183);
+  (169, 13, 1, 'What do you do first in the morning?', 'Hint: Opening your eyes', 171),
+  (170, 13, 2, 'What comes after waking up?', 'Hint: Personal hygiene', 175),
+  (171, 13, 3, 'What do you do after bathing?', 'Hint: First meal of the day', 179),
+  (172, 13, 4, 'What is the last activity of the day?', 'Hint: Rest at night', 183);
 
 -- Exercise 14: Activity Identification
-INSERT INTO exercise_steps (exercise_id, step_number, prompt, hint_1, correct_option_id)
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
 VALUES
-  (14, 1, 'What does पढ़ाई करना mean?', 'Hint: Educational activity', 187),
-  (14, 2, 'What is काम?', 'Hint: Professional responsibility', 191),
-  (14, 3, 'What does दिनचर्या mean?', 'Hint: Daily schedule', 195);
+  (173, 14, 1, 'What does पढ़ाई करना mean?', 'Hint: Educational activity', 187),
+  (174, 14, 2, 'What is काम?', 'Hint: Professional responsibility', 191),
+  (175, 14, 3, 'What does दिनचर्या mean?', 'Hint: Daily schedule', 195);
 
 -- Exercise 15: Morning Routine Building
-INSERT INTO exercise_steps (exercise_id, step_number, prompt, hint_1, correct_option_id)
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
 VALUES
-  (15, 1, 'How do you describe waking up early?', 'Hint: जल्दी उठना', 199),
-  (15, 2, 'What is important for cleanliness?', 'Hint: Bathing', 203),
-  (15, 3, 'Why is breakfast important?', 'Hint: Starts the day with energy', 207);
+  (176, 15, 1, 'How do you describe waking up early?', 'Hint: जल्दी उठना', 199),
+  (177, 15, 2, 'What is important for cleanliness?', 'Hint: Bathing', 203),
+  (178, 15, 3, 'Why is breakfast important?', 'Hint: Starts the day with energy', 207);
 
 -- ==========================================
 -- EXERCISE STEP OPTIONS (Lesson 5)
@@ -895,6 +895,116 @@ VALUES
   (178, '"नाश्ते की कोई आवश्यकता नहीं है"', 2),
   (178, '"रात को नाश्ता करना अच्छा है"', 3),
   (178, '"नाश्ता केवल विशेष दिनों के लिए है"', 4);
+
+-- ==========================================
+-- LESSON 6: Scaffold Learning (Added per user request)
+-- ==========================================
+
+INSERT INTO lessons (id, title, language_code, text_content, english_text_content)
+VALUES (
+  6, 
+  'Scaffold Learning', 
+  'en', 
+  'Scaffolding is a way to learn new things step by step. Just like a building needs support while it is being built, learners need support too. We start with a lot of help, and then slowly take it away as you get better. This helps you learn difficult things easily. You are never alone; there is always support when you need it.', 
+  'Scaffolding is a way to learn new things step by step. Just like a building needs support while it is being built, learners need support too. We start with a lot of help, and then slowly take it away as you get better. This helps you learn difficult things easily. You are never alone; there is always support when you need it.'
+);
+
+INSERT INTO lesson_keywords (lesson_id, keyword, expanation)
+VALUES
+  (6, 'Scaffolding', 'Support given during the learning process'),
+  (6, 'Support', 'Help provided to make tasks easier'),
+  (6, 'Step-by-step', 'Doing things one small part at a time');
+
+INSERT INTO exercises (id, lesson_id, title, instructions_text)
+VALUES
+  (16, 6, 'Scaffolding Basics', 'Understand the core concept of scaffolding'),
+  (17, 6, 'Support Types', 'Identify different ways to support learning'),
+  (18, 6, 'Growth Mindset', 'Learn how challenges help you grow');
+
+-- Exercise 16: Scaffolding Basics
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
+VALUES
+  (179, 16, 1, 'What is scaffolding like?', 'Hint: Think of a building', 20208),
+  (180, 16, 2, 'What happens to support over time?', 'Hint: It changes', 20213),
+  (181, 16, 3, 'Why do we use scaffolding?', 'Hint: To help learning', 20217);
+
+-- Exercise 17: Support Types
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
+VALUES
+  (182, 17, 1, 'Which is a visual support?', 'Hint: Something you see', 20220),
+  (183, 17, 2, 'Which is a verbal support?', 'Hint: Something you hear', 20224),
+  (184, 17, 3, 'Which is a social support?', 'Hint: Involving people', 20228);
+
+-- Exercise 18: Growth Mindset
+INSERT INTO exercise_steps (id, exercise_id, step_number, prompt, hint_1, correct_option_id)
+VALUES
+  (185, 18, 1, 'Mistakes are...', 'Hint: Positive view', 20232),
+  (186, 18, 2, 'If I find it hard, I should...', 'Hint: Don''t stop', 20236),
+  (187, 18, 3, 'My brain grows when I...', 'Hint: Challenge', 20240);
+
+
+-- Step 16.1 (Correct: 20208)
+INSERT INTO exercise_step_options (id, step_id, option_text, option_order) VALUES
+  (20208, 179, 'A Support Structure', 1),
+  (20209, 179, 'A Race Car', 2),
+  (20210, 179, 'A Wall', 3),
+  (20211, 179, 'A Trap', 4);
+
+-- Step 16.2 (Correct: 20213)
+INSERT INTO exercise_step_options (id, step_id, option_text, option_order) VALUES
+  (20212, 180, 'It increases', 1),
+  (20213, 180, 'It decreases (fades)', 2),
+  (20214, 180, 'It stays the same', 3),
+  (20215, 180, 'It stops', 4);
+
+-- Step 16.3 (Correct: 20217)
+INSERT INTO exercise_step_options (id, step_id, option_text, option_order) VALUES
+  (20216, 181, 'To make it harder', 1),
+  (20217, 181, 'To make it easier', 2),
+  (20218, 181, 'To confuse you', 3),
+  (20219, 181, 'To waste time', 4);
+
+-- Step 17.1 (Correct: 20220)
+INSERT INTO exercise_step_options (id, step_id, option_text, option_order) VALUES
+  (20220, 182, 'Pictures/Diagrams', 1),
+  (20221, 182, 'Talking', 2),
+  (20222, 182, 'Running', 3),
+  (20223, 182, 'Sleeping', 4);
+
+-- Step 17.2 (Correct: 20224)
+INSERT INTO exercise_step_options (id, step_id, option_text, option_order) VALUES
+  (20224, 183, 'Explanations', 1),
+  (20225, 183, 'Images', 2),
+  (20226, 183, 'Gestures', 3),
+  (20227, 183, 'Silence', 4);
+
+-- Step 17.3 (Correct: 20228)
+INSERT INTO exercise_step_options (id, step_id, option_text, option_order) VALUES
+  (20228, 184, 'Working with a friend', 1),
+  (20229, 184, 'Working alone', 2),
+  (20230, 184, 'Sleeping', 3),
+  (20231, 184, 'Ignoring others', 4);
+
+-- Step 18.1 (Correct: 20232)
+INSERT INTO exercise_step_options (id, step_id, option_text, option_order) VALUES
+  (20232, 185, 'Opportunities to learn', 1),
+  (20233, 185, 'Bad things', 2),
+  (20234, 185, 'Failures', 3),
+  (20235, 185, 'Scary', 4);
+
+-- Step 18.2 (Correct: 20236)
+INSERT INTO exercise_step_options (id, step_id, option_text, option_order) VALUES
+  (20236, 186, 'Keep trying', 1),
+  (20237, 186, 'Give up', 2),
+  (20238, 186, 'Cry', 3),
+  (20239, 186, 'Get angry', 4);
+
+-- Step 18.3 (Correct: 20240)
+INSERT INTO exercise_step_options (id, step_id, option_text, option_order) VALUES
+  (20240, 187, 'Face challenges', 1),
+  (20241, 187, 'Do nothing', 2),
+  (20242, 187, 'Watch TV', 3),
+  (20243, 187, 'Sleep', 4);
 
 -- ==========================================
 -- Verification Queries

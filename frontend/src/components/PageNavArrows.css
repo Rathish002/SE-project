@@ -1,0 +1,41 @@
+.page-nav-arrows-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Remove fixed positioning and pointer-events rules */
+}
+
+.page-nav-arrow {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background-color: transparent;
+  color: var(--text-primary, #333333);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  font-size: 16px;
+  opacity: 1; /* Match other top bar icons */
+}
+
+.page-nav-arrow:hover {
+  background-color: var(--bg-hover, #f3f4f6);
+  color: var(--primary-color, #2196f3);
+}
+
+.page-nav-arrow:focus-visible {
+  outline: 2px solid var(--primary-color, #2196f3);
+  outline-offset: 2px;
+}
+
+.page-nav-arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.page-nav-arrow:disabled:hover {
+  background-color: transparent;
+  color: var(--text-primary, #333333);
+}
