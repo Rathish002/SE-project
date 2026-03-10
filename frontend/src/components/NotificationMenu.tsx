@@ -22,7 +22,10 @@ function storeIds(key: string, ids: Set<string>) {
 }
 // -------------------------------------------------------------------------
 
-const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onNavigate }) => {
+const NotificationMenu: React.FC<{
+    onNavigate?: (page: Page) => void;
+    onNavigateToChat?: (conversationId: string) => void;
+}> = ({ onNavigate, onNavigateToChat }) => {
     const [open, setOpen] = useState(false);
     const [conversations, setConversations] = useState<Conversation[]>([]);
     /** IDs the user has explicitly read (persisted) */
@@ -102,7 +105,19 @@ const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onN
 
     const handleNotificationClick = (convId?: string) => {
         setOpen(false);
-        if (convId) markRead(convId);
+        if (convId) {
+            markRead(convId);
+            // Clear it so it doesn't show in notification bar once entered
+            setClearedIds(prev => {
+                const next = new Set(prev).add(convId);
+                storeIds(LS_CLEARED_KEY, next);
+                return next;
+            });
+            if (onNavigateToChat) {
+                onNavigateToChat(convId);
+                return;
+            }
+        }
         if (onNavigate) onNavigate('collaboration');
     };
 

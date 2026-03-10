@@ -1,115 +1,121 @@
 .friend-search {
-  margin-bottom: 30px;
-}
-
-.friend-search-title {
-  font-size: var(--heading-3, 20px);
-  color: var(--text-primary);
-  margin-bottom: 15px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
 }
 
 .friend-search-form {
   display: flex;
-  gap: 12px;
-  margin-bottom: 15px;
+  gap: 8px;
+  margin-bottom: 16px;
 }
 
 .friend-search-input {
   flex: 1;
-  padding: 12px;
-  font-size: var(--base-font-size, 16px);
-  border: 2px solid var(--border);
-  border-radius: 6px;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
   background-color: var(--bg-primary);
   color: var(--text-primary);
-  transition: border-color 0.2s;
+  transition: all 0.2s;
 }
 
 .friend-search-input:focus {
   outline: none;
   border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb), 0.1);
 }
 
 .friend-search-button {
-  padding: 12px 24px;
-  font-size: var(--base-font-size, 16px);
+  padding: 8px 16px;
+  font-size: 14px;
   font-weight: 600;
   color: white;
   background-color: var(--accent);
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
 
 .friend-search-button:hover:not(:disabled) {
-  background-color: var(--accent-hover);
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 .friend-search-button:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 .friend-search-error {
-  padding: 12px;
-  background-color: rgba(220, 53, 69, 0.1);
-  color: #dc3545;
-  border-radius: 6px;
-  margin-bottom: 15px;
-  font-size: var(--base-font-size, 16px);
+  padding: 10px;
+  background-color: rgba(255, 59, 48, 0.1);
+  color: #ff3b30;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  border: 1px solid rgba(255, 59, 48, 0.2);
 }
 
 .friend-search-results {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .friend-search-result-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
+  padding: 12px;
   background-color: var(--bg-secondary);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 10px;
+  transition: all 0.2s;
+}
+
+.friend-search-result-item:hover {
+  border-color: var(--accent);
 }
 
 .friend-search-result-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  min-width: 0;
 }
 
 .friend-search-result-name {
-  font-size: var(--base-font-size, 16px);
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .friend-search-result-email {
-  font-size: 14px;
+  font-size: 11px;
   color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .friend-search-send-button {
-  padding: 8px 16px;
-  font-size: var(--base-font-size, 16px);
-  font-weight: 500;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
   color: white;
   background-color: var(--accent);
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
 }
 
 .friend-search-send-button:hover:not(:disabled) {
-  background-color: var(--accent-hover);
-}
-
-.friend-search-send-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  opacity: 0.9;
 }
