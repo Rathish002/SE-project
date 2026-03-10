@@ -40,7 +40,7 @@ const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onN
             setConversations(newConversations);
         });
         return () => unsubscribe();
-    }, [currentUser?.uid]);
+    }, [currentUser?.uid, readConversations]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -104,6 +104,12 @@ const NotificationMenu: React.FC<{ onNavigate?: (page: Page) => void }> = ({ onN
         setOpen(false);
         if (convId) markRead(convId);
         if (onNavigate) onNavigate('collaboration');
+    };
+
+    const handleMarkAllAsRead = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setReadConversations(new Set(conversations.map(c => c.id)));
+        setUnreadCount(0);
     };
 
     const formatTimestamp = (timestamp?: any) => {
