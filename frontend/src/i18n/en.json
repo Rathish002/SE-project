@@ -308,5 +308,634 @@
       "fair": "Fair. Review the concepts and try again.",
       "needsWork": "Needs improvement. Please review the lesson content."
     }
+  },
+  "exercises": {
+    "header": {
+      "title": "Scaffold Learning System",
+      "backToLesson": "Back to Lesson"
+    },
+    "controls": {
+      "guided": "Guided",
+      "independent": "Independent",
+      "focusMode": "Focus Mode",
+      "enterFocusMode": "Enter Focus Mode",
+      "exitFocus": "Exit Focus",
+      "exitFocusMode": "Exit Focus Mode"
+    },
+    "progress": {
+      "label": "Progress",
+      "stepXofY": "Step {{step}} of {{total}}"
+    },
+    "actions": {
+      "checkAnswer": "Check Answer",
+      "imReady": "I'm Ready",
+      "nextStep": "Next Step"
+    },
+    "inputs": {
+      "typeAnswer": "Type your answer here...",
+      "yourAnswer": "Your answer"
+    },
+    "hints": {
+      "getHint": "Get a hint",
+      "needAHint": "Need a Hint?",
+      "allUsed": "All hints used",
+      "usedCount": "{{current}} / {{total}} hints used",
+      "label": "Hints",
+      "hintNumber": "Hint {{number}}",
+      "listenToHint": "Listen to hint"
+    },
+    "feedback": {
+      "greatSentence": "🌟 Great sentence!",
+      "needsMoreWords": "Try writing a bit more - at least 3 words!",
+      "readyToMoveOn": "Ready to move on!",
+      "correctAnswer": "Excellent work! That's correct!"
+    },
+    "completion": {
+      "title": "Congratulations!",
+      "message": "You've completed the Scaffold Learning System!",
+      "stats": {
+        "lessons": "Lessons Completed",
+        "hints": "Hints Used",
+        "attempts": "Attempts Made"
+      },
+      "startOver": "Start Over"
+    },
+    "errors": {
+      "unknownStepType": "Unknown step type"
+    },
+    "noExercisesFound": "No exercises found for this lesson.",
+    "difficulty": {
+      "basic": "Basic",
+      "guided": "Guided",
+      "independent": "Independent",
+      "advanced": "Advanced"
+    }
+  },
+  "lessonData": {
+    "lesson-1": {
+      "title": "Greetings and Basic Phrases",
+      "description": "Learn to greet people and use basic phrases in everyday conversation.",
+      "microSteps": [
+        "Read",
+        "Practice",
+        "Learn"
+      ],
+      "steps": [
+        {
+          "content": "What is said when you meet someone?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "It is the most common greeting",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Namaste",
+            "Sorry",
+            "Goodbye",
+            "Thank you"
+          ],
+          "correct": "Namaste"
+        },
+        {
+          "content": "What is the proper greeting for the morning?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "It includes the word for morning",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Good morning",
+            "Afternoon",
+            "Good night",
+            "Good evening"
+          ],
+          "correct": "Good morning"
+        },
+        {
+          "content": "What do you say when meeting someone in the evening?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Time of evening",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Good evening",
+            "Good night",
+            "Good morning",
+            "Namaste"
+          ],
+          "correct": "Good evening"
+        },
+        {
+          "content": "Which word can be used besides 'Namaste'?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "It is slightly more formal",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Namaskar",
+            "Goodbye",
+            "Thank you",
+            "Good morning"
+          ],
+          "correct": "Namaskar"
+        },
+        {
+          "content": "Why are greetings important in communication?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "It helps to connect people",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "To fight",
+            "To connect",
+            "To sleep",
+            "To run away"
+          ],
+          "correct": "To connect"
+        },
+        {
+          "content": "Is it important to practice speaking out loud?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Advice at the end of the lesson",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Maybe",
+            "Never",
+            "No",
+            "Yes"
+          ],
+          "correct": "Yes"
+        }
+      ]
+    },
+    "lesson-2": {
+      "title": "Numbers and Counting",
+      "description": "Numbers are everywhere in our daily lives. We use them for counting, measuring, and describing quantities.",
+      "microSteps": [
+        "Read",
+        "Practice",
+        "Learn"
+      ],
+      "steps": [
+        {
+          "content": "Where does counting start (in this lesson)?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "The first number",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "One",
+            "Hundred",
+            "Ten",
+            "Zero"
+          ],
+          "correct": "One"
+        },
+        {
+          "content": "Which number comes after 'four'?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Four and one",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Five",
+            "Three",
+            "Six",
+            "Two"
+          ],
+          "correct": "Five"
+        },
+        {
+          "content": "With which number does the tens place begin (according to the lesson)?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Multiple of ten",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "One",
+            "Hundred",
+            "Ten",
+            "Twenty"
+          ],
+          "correct": "Ten"
+        },
+        {
+          "content": "Which number comes in the tens place after 'twenty'?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Adding ten",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Thirty",
+            "Ten",
+            "Fifty",
+            "Forty"
+          ],
+          "correct": "Thirty"
+        },
+        {
+          "content": "What should be done to remember numbers better?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Use things around you",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Watch TV",
+            "Go to sleep",
+            "Read books",
+            "Count objects"
+          ],
+          "correct": "Count objects"
+        },
+        {
+          "content": "What do we use numbers for (according to the lesson)?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "To show quantity",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "For running",
+            "For playing",
+            "For eating",
+            "For counting and measuring"
+          ],
+          "correct": "For counting and measuring"
+        }
+      ]
+    },
+    "lesson-3": {
+      "title": "Family and Relationships",
+      "description": "Family is important in every culture. In this lesson, you will learn vocabulary related to family members and relationships.",
+      "microSteps": [
+        "Read",
+        "Practice",
+        "Learn"
+      ],
+      "steps": [
+        {
+          "content": "Who is part of the immediate family in the given text?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Parents",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Uncle",
+            "Mother",
+            "Grandmother",
+            "Grandfather"
+          ],
+          "correct": "Mother"
+        },
+        {
+          "content": "Who is part of the extended family in the given text?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Parents of parents",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Brother",
+            "Sister",
+            "Grandmother",
+            "Father"
+          ],
+          "correct": "Grandmother"
+        },
+        {
+          "content": "Where is family important?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Everywhere",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Nowhere",
+            "Only in cities",
+            "Only in India",
+            "In every culture"
+          ],
+          "correct": "In every culture"
+        },
+        {
+          "content": "Who else comes in the extended family (according to text)?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Siblings of parents",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Neighbors",
+            "Teachers",
+            "Friends",
+            "Aunt and Uncle"
+          ],
+          "correct": "Aunt and Uncle"
+        },
+        {
+          "content": "Who is in the immediate family besides the mother?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Male parent",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Uncle",
+            "Friend",
+            "Father",
+            "Grandfather"
+          ],
+          "correct": "Father"
+        },
+        {
+          "content": "What does understanding family relationships help with?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "In conversation",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Communicate about personal life",
+            "In getting a job",
+            "In earning money",
+            "In playing"
+          ],
+          "correct": "Communicate about personal life"
+        }
+      ]
+    },
+    "lesson-4": {
+      "title": "Sentence Structure",
+      "description": "A sentence has three main parts: Subject, Verb, and Object.",
+      "microSteps": [
+        "Read",
+        "Practice",
+        "Learn"
+      ],
+      "steps": [
+        {
+          "content": "How many main parts does a sentence have?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Subject, Verb, Object",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Five",
+            "Four",
+            "Two",
+            "Three"
+          ],
+          "correct": "Three"
+        },
+        {
+          "content": "What is the one who does the action called?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "The doer",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Object",
+            "Adjective",
+            "Subject",
+            "Verb"
+          ],
+          "correct": "Subject"
+        },
+        {
+          "content": "What is the action word called?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Action word",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Verb",
+            "Noun",
+            "Object",
+            "Subject"
+          ],
+          "correct": "Verb"
+        },
+        {
+          "content": "Who is the subject in 'I eat rice'?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Who is eating?",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "eat",
+            "rice",
+            "am",
+            "I"
+          ],
+          "correct": "I"
+        },
+        {
+          "content": "What is the object in 'She reads a book'?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "What is being read?",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "a",
+            "book",
+            "reads",
+            "She"
+          ],
+          "correct": "book"
+        },
+        {
+          "content": "What is the verb in 'They play football'?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "What action is happening?",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "are",
+            "football",
+            "They",
+            "play"
+          ],
+          "correct": "play"
+        }
+      ]
+    },
+    "lesson-5": {
+      "title": "Everyday Vocabulary",
+      "description": "Let's learn some common words we use daily.",
+      "microSteps": [
+        "Read",
+        "Practice",
+        "Learn"
+      ],
+      "steps": [
+        {
+          "content": "What is an apple like (according to the text)?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Taste and health",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Bitter",
+            "Salty",
+            "Unhealthy",
+            "Sweet and healthy"
+          ],
+          "correct": "Sweet and healthy"
+        },
+        {
+          "content": "What do we use to learn new things?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "For reading",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Water",
+            "Apple",
+            "Books",
+            "Friend"
+          ],
+          "correct": "Books"
+        },
+        {
+          "content": "What do we need daily to stay healthy?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Something to drink",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Teacher",
+            "Books",
+            "Apple",
+            "Water"
+          ],
+          "correct": "Water"
+        },
+        {
+          "content": "Who helps us learn?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Those who work in schools",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Teacher",
+            "Friend",
+            "Book",
+            "Apple"
+          ],
+          "correct": "Teacher"
+        },
+        {
+          "content": "Who do we play and talk with?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "Someone we like",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Water",
+            "Friend",
+            "Teacher",
+            "Book"
+          ],
+          "correct": "Friend"
+        },
+        {
+          "content": "What is the benefit of learning these words?",
+          "task": "Answer the question",
+          "instruction": "Select the correct option",
+          "hints": [
+            "In daily life",
+            "Think carefully",
+            "Choose the best option"
+          ],
+          "options": [
+            "Better communication",
+            "Satisfying hunger",
+            "Feeling sleepy",
+            "Quenching thirst"
+          ],
+          "correct": "Better communication"
+        }
+      ]
+    }
   }
 }

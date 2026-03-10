@@ -6,6 +6,7 @@ import type { Page } from "./Navigation";
 import ExercisesContent from "./ExercisesContent";
 import ExercisesFeedback from "./ExercisesFeedback";
 import ExercisesTTSButton from "./ExercisesTTSButton";
+import { useTranslation } from "react-i18next";
 import { lessons as initialLessons } from "../data/exercisesData"; // Import local data
 
 interface Stats {
@@ -23,6 +24,7 @@ interface ExercisesProps {
 }
 
 const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lessonId, userId }) => {
+    const { t } = useTranslation();
     // Revert to using local data directly
     const [lessons, setLessons] = useState<Lesson[]>(initialLessons);
     // const [loading, setLoading] = useState(true); // Removed loading state
@@ -49,12 +51,30 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
     const mainCardRef = useRef<HTMLDivElement>(null);
     const stepHeaderRef = useRef<HTMLHeadingElement>(null);
 
-    // Filter lessons if lessonId is provided (optional restoration of logic)
+    // Filter lessons if lessonId is provided
     useEffect(() => {
         if (lessonId) {
-            // If we wanted to filter by lessonId from the local data:
-            // const specificLesson = initialLessons.find(l => l.id === lessonId.toString());
-            // if (specificLesson) setLessons([specificLesson]);
+            // If we want to filter by lessonId from the local data
+            // Note: lessonId might be passed as an integer from the DB mapping, or string
+            // We need to match it against our new string IDs (lesson-1, lesson-2, etc.)
+
+            // Map integer IDs to string IDs if lessonId from DB is a number
+            const MOCK_MAP: Record<string, string> = {
+                "1": "lesson-1", "2": "lesson-2", "3": "lesson-3", "4": "lesson-4", "5": "lesson-5"
+            };
+
+            let searchId = lessonId.toString();
+            if (MOCK_MAP[searchId]) {
+                searchId = MOCK_MAP[searchId];
+            } else if (typeof lessonId === "number") {
+                searchId = `lesson-${lessonId}`;
+            }
+
+            const specificLesson = initialLessons.find(l => l.id === searchId || l.id === lessonId.toString());
+            if (specificLesson) {
+                setLessons([specificLesson]);
+                setLessonIndex(0); // Ensure we are on the first (and only) lesson in the filtered array
+            }
         }
     }, [lessonId]);
 
@@ -144,28 +164,32 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
             const userAns = answer.trim();
             const isValid = userAns.split(' ').length >= 3;
             setIsCorrect(isValid);
-            setFeedback(isValid ? "🌟 Great sentence!" : "Try writing a bit more - at least 3 words!");
+            setFeedback(isValid ? t('exercises.feedback.greatSentence') : t('exercises.feedback.needsMoreWords'));
             return;
         }
 
         if (step.type === "read") {
             setIsCorrect(true);
-            setFeedback("Ready to move on!");
+            setFeedback(t('exercises.feedback.readyToMoveOn'));
             return;
         }
 
         let correct = false;
 
+        // Pull the translated correct answer or options if available from locale instead of raw data
+        const localizedCorrect = t(`lessonData.${lesson.id}.steps.${stepIndex}.correct`, { defaultValue: step.correct });
+        const localizedAnswer = t(`lessonData.${lesson.id}.steps.${stepIndex}.answer`, { returnObjects: true, defaultValue: step.answer });
+
         // 1. Check against `correct` ID/value if present
-        if (step.correct) {
-            correct = answer.toLowerCase() === step.correct.toLowerCase();
+        if (localizedCorrect) {
+            correct = answer.toLowerCase() === String(localizedCorrect).toLowerCase();
         }
         // 2. Fallback to `answer` array/string check
-        else if (step.answer) {
+        else if (localizedAnswer) {
             const userAns = answer.trim().toLowerCase();
-            correct = Array.isArray(step.answer)
-                ? step.answer.some(a => a.toLowerCase() === userAns)
-                : step.answer.toLowerCase() === userAns;
+            correct = Array.isArray(localizedAnswer)
+                ? (localizedAnswer as unknown as string[]).some((a: string) => String(a).toLowerCase() === userAns)
+                : typeof localizedAnswer === "string" && (localizedAnswer as string).toLowerCase() === userAns;
         }
 
         setIsCorrect(correct);
@@ -187,7 +211,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
         }
 
         if (correct) {
-            setFeedback("🎉 Excellent work! That's correct!");
+            setFeedback(`🎉 ${t('exercises.feedback.correctAnswer')}`);
 
             // Save progress to backend silently
             if (userId && lessonId) {
@@ -306,29 +330,29 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
             <div className="lesson-container">
                 <div className="main-card completion-celebration">
                     <div className="emoji">🎉</div>
-                    <h2 className="completion-title">Congratulations!</h2>
+                    <h2 className="completion-title">{t('exercises.completion.title')}</h2>
                     <p className="completion-message">
-                        You've completed the Scaffold Learning System!
+                        {t('exercises.completion.message')}
                     </p>
 
                     <div className="stats-grid">
                         <div className="stat-card">
                             <div className="stat-value">{lessons.length}</div>
-                            <div className="stat-label">Lessons Completed</div>
+                            <div className="stat-label">{t('exercises.completion.stats.lessons')}</div>
                         </div>
                         <div className="stat-card">
                             <div className="stat-value">{stats.hints}</div>
-                            <div className="stat-label">Hints Used</div>
+                            <div className="stat-label">{t('exercises.completion.stats.hints')}</div>
                         </div>
                         <div className="stat-card">
                             <div className="stat-value">{stats.retries}</div>
-                            <div className="stat-label">Attempts Made</div>
+                            <div className="stat-label">{t('exercises.completion.stats.attempts')}</div>
                         </div>
                     </div>
 
                     <div className="completion-actions">
                         <button onClick={resetProgress} className="success-btn">
-                            Start Over
+                            {t('exercises.completion.startOver')}
                         </button>
                     </div>
                 </div>
@@ -339,7 +363,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
     // if (loading) { return <div>Loading...</div> } // Removed loading check
 
     if (!lesson || !step) {
-        return <div>No exercises found for this lesson.</div>;
+        return <div>{t('exercises.noExercisesFound')}</div>;
     }
 
     return (
@@ -350,11 +374,11 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                     <button
                         className="back-btn"
                         onClick={() => onBackToLesson ? onBackToLesson() : onNavigate?.('lessons')}
-                        aria-label="Back to Lessons"
+                        aria-label={t('exercises.header.backToLesson')}
                     >
-                        ← Back to Lesson
+                        ← {t('exercises.header.backToLesson')}
                     </button>
-                    <h2>🎓 Scaffold Learning System</h2>
+                    <h2>🎓 {t('exercises.header.title')}</h2>
                 </header>
             )}
 
@@ -369,14 +393,14 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                                 onClick={() => setMode("guided")}
                                 aria-pressed={mode === "guided"}
                             >
-                                🧭 Guided
+                                🧭 {t('exercises.controls.guided')}
                             </button>
                             <button
                                 className={`mode-pill ${mode === "independent" ? "active" : ""}`}
                                 onClick={() => setMode("independent")}
                                 aria-pressed={mode === "independent"}
                             >
-                                🚀 Independent
+                                🚀 {t('exercises.controls.independent')}
                             </button>
                         </div>
                     )}
@@ -384,9 +408,9 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                     <button
                         className={`focus-btn ${distractionFree ? "active" : ""}`}
                         onClick={() => setDistractionFree(!distractionFree)}
-                        aria-label={distractionFree ? "Exit Focus Mode" : "Enter Focus Mode"}
+                        aria-label={distractionFree ? t('exercises.controls.exitFocusMode') : t('exercises.controls.enterFocusMode')}
                     >
-                        {distractionFree ? "Exit Focus" : "👁️ Focus Mode"}
+                        {distractionFree ? t('exercises.controls.exitFocus') : `👁️ ${t('exercises.controls.focusMode')}`}
                     </button>
                 </div>
 
@@ -395,7 +419,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                     <>
                         <div className="progress-section">
                             <div className="progress-labels">
-                                <span aria-hidden="true">Progress</span>
+                                <span aria-hidden="true">{t('exercises.progress.label')}</span>
                                 <span>{Math.round(progressPercentage)}%</span>
                             </div>
                             <div className="progress-bar-track" role="progressbar" aria-valuenow={progressPercentage} aria-valuemin={0} aria-valuemax={100}>
@@ -406,39 +430,41 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                             </div>
                         </div>
 
-                        <div className="lesson-tabs" role="tablist">
-                            {lessons.length > 1 && lessons.map((l, idx) => (
-                                <button
-                                    key={idx}
-                                    role="tab"
-                                    aria-selected={idx === lessonIndex}
-                                    className={`tab ${idx === lessonIndex ? "active" : ""}`}
-                                    onClick={() => switchLesson(idx)}
-                                >
-                                    {idx + 1}. {l.title.split(" ")[0]}
-                                </button>
-                            ))}
-                        </div>
+                        {lessons.length > 1 && (
+                            <div className="lesson-tabs" role="tablist">
+                                {lessons.map((l, idx) => (
+                                    <button
+                                        key={idx}
+                                        role="tab"
+                                        aria-selected={idx === lessonIndex}
+                                        className={`tab ${idx === lessonIndex ? "active" : ""}`}
+                                        onClick={() => switchLesson(idx)}
+                                    >
+                                        {idx + 1}. {t(`lessonData.${l.id}.title`, { defaultValue: l.title }).split(" ")[0]}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </>
                 )}
 
                 {/* Content Area */}
                 <div className="content-area">
                     <div className="step-metadata">
-                        <span className="visual-schedule">Step {stepIndex + 1} of {totalSteps}</span>
-                        <span className={`difficulty-badge ${lesson.difficulty}`}>{lesson.difficulty}</span>
+                        <span className="visual-schedule">{t('exercises.progress.stepXofY', { step: stepIndex + 1, total: totalSteps })}</span>
+                        <span className={`difficulty-badge ${lesson.difficulty}`}>{t(`exercises.difficulty.${lesson.difficulty}`, { defaultValue: lesson.difficulty })}</span>
                     </div>
 
                     <div className="step-header-row">
                         <h3 ref={stepHeaderRef} tabIndex={-1} className="step-title">
-                            {step.instruction}
+                            {t(`lessonData.${lesson.id}.steps.${stepIndex}.instruction`, { defaultValue: step.instruction })}
                         </h3>
-                        <ExercisesTTSButton text={step.instruction} />
+                        <ExercisesTTSButton text={t(`lessonData.${lesson.id}.steps.${stepIndex}.instruction`, { defaultValue: step.instruction })} />
                     </div>
 
                     {/* Micro Steps (Visual Schedule) */}
                     <div className="micro-steps">
-                        {lesson.microSteps.map((ms, idx) => (
+                        {((t(`lessonData.${lesson.id}.microSteps`, { returnObjects: true, defaultValue: lesson.microSteps }) as string[]) || []).map((ms, idx) => (
                             <div key={idx} className={`micro-step ${idx <= stepIndex ? "current" : ""} ${idx < stepIndex ? "completed" : ""}`}>
                                 <span className="check-icon" aria-hidden="true">
                                     {idx < stepIndex ? "✅" : idx === stepIndex ? "➡️" : "○"}
@@ -453,17 +479,19 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                     {/* Task Content Display */}
                     <div className="task-display">
                         <div className="task-content-text">
-                            <strong>{step.content}</strong>
+                            <strong>{t(`lessonData.${lesson.id}.steps.${stepIndex}.content`, { defaultValue: step.content })}</strong>
                         </div>
                         {step.task && (
                             <div className="task-question">
-                                {step.task}
+                                {t(`lessonData.${lesson.id}.steps.${stepIndex}.task`, { defaultValue: step.task })}
                             </div>
                         )}
                     </div>
 
                     {/* Modular Lesson Content */}
                     <ExercisesContent
+                        lessonId={lesson.id}
+                        stepIndex={stepIndex}
                         step={step}
                         answer={answer}
                         setAnswer={setAnswer}
@@ -489,21 +517,21 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                                         className="hint-btn"
                                         onClick={handleHint}
                                         disabled={hintLevel >= step.hints.length}
-                                        aria-label="Get a hint"
+                                        aria-label={t('exercises.hints.getHint')}
                                     >
-                                        💡 {hintLevel >= step.hints.length ? 'All hints used' : 'Need a Hint?'}
+                                        💡 {hintLevel >= step.hints.length ? t('exercises.hints.allUsed') : t('exercises.hints.needAHint')}
                                     </button>
                                     <span className="hint-count" aria-live="polite">
-                                        {hintLevel > 0 ? `${hintLevel} / ${step.hints.length} hints used` : ""}
+                                        {hintLevel > 0 ? t('exercises.hints.usedCount', { current: hintLevel, total: step.hints.length }) : ""}
                                     </span>
                                 </div>
 
                                 {hintLevel > 0 && (
-                                    <div className="active-hints" role="region" aria-label="Hints">
-                                        {step.hints.slice(0, hintLevel).map((h, i) => (
+                                    <div className="active-hints" role="region" aria-label={t('exercises.hints.label')}>
+                                        {((t(`lessonData.${lesson.id}.steps.${stepIndex}.hints`, { returnObjects: true, defaultValue: step.hints }) as string[]) || []).slice(0, hintLevel).map((h, i) => (
                                             <div key={i} className="hint-bubble">
-                                                <strong>Hint {i + 1}:</strong> {h}
-                                                <ExercisesTTSButton text={h} label="Listen to hint" />
+                                                <strong>{t('exercises.hints.hintNumber', { number: i + 1 })}:</strong> {h}
+                                                <ExercisesTTSButton text={h} label={t('exercises.hints.listenToHint')} />
                                             </div>
                                         ))}
                                     </div>
@@ -518,7 +546,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                                 onClick={nextStep}
                                 autoFocus
                             >
-                                Next Step ➔
+                                {t('exercises.actions.nextStep')} ➔
                             </button>
                         )}
                     </div>
