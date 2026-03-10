@@ -6,6 +6,7 @@ import type { Page } from "./Navigation";
 import ExercisesContent from "./ExercisesContent";
 import ExercisesFeedback from "./ExercisesFeedback";
 import ExercisesTTSButton from "./ExercisesTTSButton";
+import { useTranslation } from "react-i18next";
 import { lessons as initialLessons } from "../data/exercisesData"; // Import local data
 
 interface Stats {
@@ -23,6 +24,7 @@ interface ExercisesProps {
 }
 
 const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lessonId, userId }) => {
+    const { t } = useTranslation();
     // Revert to using local data directly
     const [lessons, setLessons] = useState<Lesson[]>(initialLessons);
     // const [loading, setLoading] = useState(true); // Removed loading state
@@ -144,13 +146,13 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
             const userAns = answer.trim();
             const isValid = userAns.split(' ').length >= 3;
             setIsCorrect(isValid);
-            setFeedback(isValid ? "🌟 Great sentence!" : "Try writing a bit more - at least 3 words!");
+            setFeedback(isValid ? t('exercises.feedback.greatSentence') : t('exercises.feedback.needsMoreWords'));
             return;
         }
 
         if (step.type === "read") {
             setIsCorrect(true);
-            setFeedback("Ready to move on!");
+            setFeedback(t('exercises.feedback.readyToMoveOn'));
             return;
         }
 
@@ -187,7 +189,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
         }
 
         if (correct) {
-            setFeedback("🎉 Excellent work! That's correct!");
+            setFeedback(`🎉 ${t('exercises.feedback.correctAnswer')}`);
 
             // Save progress to backend silently
             if (userId && lessonId) {
@@ -306,29 +308,29 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
             <div className="lesson-container">
                 <div className="main-card completion-celebration">
                     <div className="emoji">🎉</div>
-                    <h2 className="completion-title">Congratulations!</h2>
+                    <h2 className="completion-title">{t('exercises.completion.title')}</h2>
                     <p className="completion-message">
-                        You've completed the Scaffold Learning System!
+                        {t('exercises.completion.message')}
                     </p>
 
                     <div className="stats-grid">
                         <div className="stat-card">
                             <div className="stat-value">{lessons.length}</div>
-                            <div className="stat-label">Lessons Completed</div>
+                            <div className="stat-label">{t('exercises.completion.stats.lessons')}</div>
                         </div>
                         <div className="stat-card">
                             <div className="stat-value">{stats.hints}</div>
-                            <div className="stat-label">Hints Used</div>
+                            <div className="stat-label">{t('exercises.completion.stats.hints')}</div>
                         </div>
                         <div className="stat-card">
                             <div className="stat-value">{stats.retries}</div>
-                            <div className="stat-label">Attempts Made</div>
+                            <div className="stat-label">{t('exercises.completion.stats.attempts')}</div>
                         </div>
                     </div>
 
                     <div className="completion-actions">
                         <button onClick={resetProgress} className="success-btn">
-                            Start Over
+                            {t('exercises.completion.startOver')}
                         </button>
                     </div>
                 </div>
@@ -339,7 +341,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
     // if (loading) { return <div>Loading...</div> } // Removed loading check
 
     if (!lesson || !step) {
-        return <div>No exercises found for this lesson.</div>;
+        return <div>{t('exercises.noExercisesFound')}</div>;
     }
 
     return (
@@ -350,11 +352,11 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                     <button
                         className="back-btn"
                         onClick={() => onBackToLesson ? onBackToLesson() : onNavigate?.('lessons')}
-                        aria-label="Back to Lessons"
+                        aria-label={t('exercises.header.backToLesson')}
                     >
-                        ← Back to Lesson
+                        ← {t('exercises.header.backToLesson')}
                     </button>
-                    <h2>🎓 Scaffold Learning System</h2>
+                    <h2>🎓 {t('exercises.header.title')}</h2>
                 </header>
             )}
 
@@ -369,14 +371,14 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                                 onClick={() => setMode("guided")}
                                 aria-pressed={mode === "guided"}
                             >
-                                🧭 Guided
+                                🧭 {t('exercises.controls.guided')}
                             </button>
                             <button
                                 className={`mode-pill ${mode === "independent" ? "active" : ""}`}
                                 onClick={() => setMode("independent")}
                                 aria-pressed={mode === "independent"}
                             >
-                                🚀 Independent
+                                🚀 {t('exercises.controls.independent')}
                             </button>
                         </div>
                     )}
@@ -384,9 +386,9 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                     <button
                         className={`focus-btn ${distractionFree ? "active" : ""}`}
                         onClick={() => setDistractionFree(!distractionFree)}
-                        aria-label={distractionFree ? "Exit Focus Mode" : "Enter Focus Mode"}
+                        aria-label={distractionFree ? t('exercises.controls.exitFocusMode') : t('exercises.controls.enterFocusMode')}
                     >
-                        {distractionFree ? "Exit Focus" : "👁️ Focus Mode"}
+                        {distractionFree ? t('exercises.controls.exitFocus') : `👁️ ${t('exercises.controls.focusMode')}`}
                     </button>
                 </div>
 
@@ -395,7 +397,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                     <>
                         <div className="progress-section">
                             <div className="progress-labels">
-                                <span aria-hidden="true">Progress</span>
+                                <span aria-hidden="true">{t('exercises.progress.label')}</span>
                                 <span>{Math.round(progressPercentage)}%</span>
                             </div>
                             <div className="progress-bar-track" role="progressbar" aria-valuenow={progressPercentage} aria-valuemin={0} aria-valuemax={100}>
@@ -425,8 +427,8 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                 {/* Content Area */}
                 <div className="content-area">
                     <div className="step-metadata">
-                        <span className="visual-schedule">Step {stepIndex + 1} of {totalSteps}</span>
-                        <span className={`difficulty-badge ${lesson.difficulty}`}>{lesson.difficulty}</span>
+                        <span className="visual-schedule">{t('exercises.progress.stepXofY', { step: stepIndex + 1, total: totalSteps })}</span>
+                        <span className={`difficulty-badge ${lesson.difficulty}`}>{t(`exercises.difficulty.${lesson.difficulty}`, { defaultValue: lesson.difficulty })}</span>
                     </div>
 
                     <div className="step-header-row">
@@ -489,21 +491,21 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                                         className="hint-btn"
                                         onClick={handleHint}
                                         disabled={hintLevel >= step.hints.length}
-                                        aria-label="Get a hint"
+                                        aria-label={t('exercises.hints.getHint')}
                                     >
-                                        💡 {hintLevel >= step.hints.length ? 'All hints used' : 'Need a Hint?'}
+                                        💡 {hintLevel >= step.hints.length ? t('exercises.hints.allUsed') : t('exercises.hints.needAHint')}
                                     </button>
                                     <span className="hint-count" aria-live="polite">
-                                        {hintLevel > 0 ? `${hintLevel} / ${step.hints.length} hints used` : ""}
+                                        {hintLevel > 0 ? t('exercises.hints.usedCount', { current: hintLevel, total: step.hints.length }) : ""}
                                     </span>
                                 </div>
 
                                 {hintLevel > 0 && (
-                                    <div className="active-hints" role="region" aria-label="Hints">
+                                    <div className="active-hints" role="region" aria-label={t('exercises.hints.label')}>
                                         {step.hints.slice(0, hintLevel).map((h, i) => (
                                             <div key={i} className="hint-bubble">
-                                                <strong>Hint {i + 1}:</strong> {h}
-                                                <ExercisesTTSButton text={h} label="Listen to hint" />
+                                                <strong>{t('exercises.hints.hintNumber', { number: i + 1 })}:</strong> {h}
+                                                <ExercisesTTSButton text={h} label={t('exercises.hints.listenToHint')} />
                                             </div>
                                         ))}
                                     </div>
@@ -518,7 +520,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                                 onClick={nextStep}
                                 autoFocus
                             >
-                                Next Step ➔
+                                {t('exercises.actions.nextStep')} ➔
                             </button>
                         )}
                     </div>

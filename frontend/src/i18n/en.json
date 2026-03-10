@@ -308,5 +308,67 @@
       "fair": "Fair. Review the concepts and try again.",
       "needsWork": "Needs improvement. Please review the lesson content."
     }
+  },
+  "exercises": {
+    "header": {
+      "title": "Scaffold Learning System",
+      "backToLesson": "Back to Lesson"
+    },
+    "controls": {
+      "guided": "Guided",
+      "independent": "Independent",
+      "focusMode": "Focus Mode",
+      "enterFocusMode": "Enter Focus Mode",
+      "exitFocus": "Exit Focus",
+      "exitFocusMode": "Exit Focus Mode"
+    },
+    "progress": {
+      "label": "Progress",
+      "stepXofY": "Step {{step}} of {{total}}"
+    },
+    "actions": {
+      "checkAnswer": "Check Answer",
+      "imReady": "I'm Ready",
+      "nextStep": "Next Step"
+    },
+    "inputs": {
+      "typeAnswer": "Type your answer here...",
+      "yourAnswer": "Your answer"
+    },
+    "hints": {
+      "getHint": "Get a hint",
+      "needAHint": "Need a Hint?",
+      "allUsed": "All hints used",
+      "usedCount": "{{current}} / {{total}} hints used",
+      "label": "Hints",
+      "hintNumber": "Hint {{number}}",
+      "listenToHint": "Listen to hint"
+    },
+    "feedback": {
+      "greatSentence": "🌟 Great sentence!",
+      "needsMoreWords": "Try writing a bit more - at least 3 words!",
+      "readyToMoveOn": "Ready to move on!",
+      "correctAnswer": "Excellent work! That's correct!"
+    },
+    "completion": {
+      "title": "Congratulations!",
+      "message": "You've completed the Scaffold Learning System!",
+      "stats": {
+        "lessons": "Lessons Completed",
+        "hints": "Hints Used",
+        "attempts": "Attempts Made"
+      },
+      "startOver": "Start Over"
+    },
+    "errors": {
+      "unknownStepType": "Unknown step type"
+    },
+    "noExercisesFound": "No exercises found for this lesson.",
+    "difficulty": {
+      "basic": "Basic",
+      "guided": "Guided",
+      "independent": "Independent",
+      "advanced": "Advanced"
+    }
   }
 }

@@ -308,5 +308,67 @@
       "fair": "ठीक है। अवधारणाओं की समीक्षा करें और पुनः प्रयास करें।",
       "needsWork": "सुधार की आवश्यकता है। कृपया पाठ सामग्री की समीक्षा करें।"
     }
+  },
+  "exercises": {
+    "header": {
+      "title": "मचान शिक्षण प्रणाली (Scaffold Learning)",
+      "backToLesson": "पाठ पर वापस जाएं"
+    },
+    "controls": {
+      "guided": "निर्देशित",
+      "independent": "स्वतंत्र",
+      "focusMode": "फोकस मोड",
+      "enterFocusMode": "फोकस मोड में प्रवेश करें",
+      "exitFocus": "फोकस से बाहर निकलें",
+      "exitFocusMode": "फोकस मोड से बाहर निकलें"
+    },
+    "progress": {
+      "label": "प्रगति",
+      "stepXofY": "चरण {{step}} / {{total}}"
+    },
+    "actions": {
+      "checkAnswer": "उत्तर जांचें",
+      "imReady": "मैं तैयार हूँ",
+      "nextStep": "अगला चरण"
+    },
+    "inputs": {
+      "typeAnswer": "अपना उत्तर यहाँ टाइप करें...",
+      "yourAnswer": "आपका उत्तर"
+    },
+    "hints": {
+      "getHint": "संकेत प्राप्त करें",
+      "needAHint": "संकेत चाहिए?",
+      "allUsed": "सभी संकेतों का उपयोग किया गया",
+      "usedCount": "{{current}} / {{total}} संकेत उपयोग किए गए",
+      "label": "संकेत",
+      "hintNumber": "संकेत {{number}}",
+      "listenToHint": "संकेत सुनें"
+    },
+    "feedback": {
+      "greatSentence": "🌟 बहुत बढ़िया वाक्य!",
+      "needsMoreWords": "थोड़ा और लिखने का प्रयास करें - कम से कम 3 शब्द!",
+      "readyToMoveOn": "आगे बढ़ने के लिए तैयार!",
+      "correctAnswer": "उत्कृष्ट कार्य! यह सही है!"
+    },
+    "completion": {
+      "title": "बधाई हो!",
+      "message": "आपने मचान शिक्षण प्रणाली पूरी कर ली है!",
+      "stats": {
+        "lessons": "पूर्ण किए गए पाठ",
+        "hints": "उपयोग किए गए संकेत",
+        "attempts": "किए गए प्रयास"
+      },
+      "startOver": "फिर से शुरू करें"
+    },
+    "errors": {
+      "unknownStepType": "अज्ञात चरण प्रकार"
+    },
+    "noExercisesFound": "इस पाठ के लिए कोई अभ्यास नहीं मिला।",
+    "difficulty": {
+      "basic": "बुनियादी",
+      "guided": "निर्देशित",
+      "independent": "स्वतंत्र",
+      "advanced": "उन्नत"
+    }
   }
 }
