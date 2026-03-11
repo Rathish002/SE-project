@@ -43,7 +43,7 @@ const NotificationMenu: React.FC<{
             setConversations(newConversations);
         });
         return () => unsubscribe();
-    }, [currentUser?.uid, readConversations]);
+    }, [currentUser?.uid]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -119,12 +119,6 @@ const NotificationMenu: React.FC<{
             }
         }
         if (onNavigate) onNavigate('collaboration');
-    };
-
-    const handleMarkAllAsRead = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        setReadConversations(new Set(conversations.map(c => c.id)));
-        setUnreadCount(0);
     };
 
     const formatTimestamp = (timestamp?: any) => {

@@ -55,6 +55,13 @@ function App() {
 
   // Auth state listener
   useEffect(() => {
+    // Suppress auth for Cypress testing if mockUser is provided
+    if ((window as any).mockUser) {
+      setUser((window as any).mockUser);
+      setLoading(false);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser: User | null) => {
       if (currentUser) {
         try {

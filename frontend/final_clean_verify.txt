@@ -1,0 +1,199 @@
+
+> frontend@0.1.0 test
+> react-scripts test --watchAll=false
+
+PASS src/components/Learning.test.tsx
+PASS src/components/Exercises.test.tsx
+PASS src/App.test.tsx
+PASS src/components/LessonSelection.test.tsx
+  ● Console
+
+    console.log
+      Available lesson IDs: [ 1 ]
+
+      at loadLessons (src/components/LessonSelection.tsx:49:17)
+
+    console.log
+      Loaded lessons: [
+        {
+          id: 1,
+          title: 'Test Lesson',
+          description: 'This is a test lesson content....'
+        }
+      ]
+
+      at loadLessons (src/components/LessonSelection.tsx:67:17)
+
+    console.error
+      An update to LessonSelection inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+    [0m [90m 72 |[39m     [36mreturn[39m[33m;[39m
+     [90m 73 |[39m   }
+    [31m[1m>[22m[39m[90m 74 |[39m   originalError[33m.[39mcall(console[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 75 |[39m }[33m;[39m
+     [90m 76 |[39m[0m
+
+      at console.Object.<anonymous>.console.error (src/setupTests.ts:74:17)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at setLessons (node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at loadLessons (src/components/LessonSelection.tsx:68:9)
+
+    console.error
+      An update to LessonSelection inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+    [0m [90m 72 |[39m     [36mreturn[39m[33m;[39m
+     [90m 73 |[39m   }
+    [31m[1m>[22m[39m[90m 74 |[39m   originalError[33m.[39mcall(console[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 75 |[39m }[33m;[39m
+     [90m 76 |[39m[0m
+
+      at console.Object.<anonymous>.console.error (src/setupTests.ts:74:17)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at setLoading (node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at loadLessons (src/components/LessonSelection.tsx:72:9)
+
+    console.log
+      Available lesson IDs: [ 1 ]
+
+      at loadLessons (src/components/LessonSelection.tsx:49:17)
+
+    console.log
+      Loaded lessons: [
+        {
+          id: 1,
+          title: 'Test Lesson',
+          description: 'This is a test lesson content....'
+        }
+      ]
+
+      at loadLessons (src/components/LessonSelection.tsx:67:17)
+
+    console.log
+      Available lesson IDs: [ 1 ]
+
+      at loadLessons (src/components/LessonSelection.tsx:49:17)
+
+    console.log
+      Loaded lessons: [
+        {
+          id: 1,
+          title: 'Test Lesson',
+          description: 'This is a test lesson content....'
+        }
+      ]
+
+      at loadLessons (src/components/LessonSelection.tsx:67:17)
+
+    console.log
+      Available lesson IDs: []
+
+      at loadLessons (src/components/LessonSelection.tsx:49:17)
+
+    console.log
+      Loaded lessons: []
+
+      at loadLessons (src/components/LessonSelection.tsx:67:17)
+
+PASS src/components/Navigation.test.tsx
+PASS src/components/FriendList.test.tsx
+PASS src/components/Signup.test.tsx
+PASS src/components/Login.test.tsx
+  ● Console
+
+    console.error
+      An update to Login inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+    [0m [90m 72 |[39m     [36mreturn[39m[33m;[39m
+     [90m 73 |[39m   }
+    [31m[1m>[22m[39m[90m 74 |[39m   originalError[33m.[39mcall(console[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 75 |[39m }[33m;[39m
+     [90m 76 |[39m[0m
+
+      at console.Object.<anonymous>.console.error (src/setupTests.ts:74:17)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at setLoading (node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at handleSubmit (src/components/Login.tsx:54:7)
+
+PASS src/components/Collaboration.test.tsx
+PASS src/components/Home.test.tsx
+  ● Console
+
+    console.error
+      An update to Home inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+    [0m [90m 72 |[39m     [36mreturn[39m[33m;[39m
+     [90m 73 |[39m   }
+    [31m[1m>[22m[39m[90m 74 |[39m   originalError[33m.[39mcall(console[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 75 |[39m }[33m;[39m
+     [90m 76 |[39m[0m
+
+      at console.Object.<anonymous>.console.error (src/setupTests.ts:74:17)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at setStats (node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at getStats (src/components/Home.tsx:38:9)
+
+PASS src/contexts/AccessibilityContext.test.tsx
+PASS src/components/ChatUI.test.tsx
+PASS src/components/AccessibilitySettings.test.tsx (5.468 s)
+
+Test Suites: 13 passed, 13 total
+Tests:       121 passed, 121 total
+Snapshots:   0 total
+Time:        7.195 s
+Ran all test suites.

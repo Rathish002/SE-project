@@ -101,6 +101,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
               required
               disabled={loading || googleLoading}
               aria-label={t('auth.login.email')}
+              data-testid="email-input"
             />
           </div>
 
@@ -116,6 +117,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
               required
               disabled={loading || googleLoading}
               aria-label={t('auth.login.password')}
+              data-testid="password-input"
             />
           </div>
 
@@ -128,6 +130,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToSignup }) => {
             className="auth-button"
             disabled={loading || googleLoading}
             aria-label={t('auth.login.submit')}
+            data-testid="login-button"
           >
             {loading ? t('auth.login.submitting') : t('auth.login.submit')}
           </button>

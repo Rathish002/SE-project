@@ -48,6 +48,11 @@ const Learning: React.FC<LearningProps> = ({
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
+  // Scroll to top on lesson change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [lessonId]);
+
   // Load lesson and total count
   useEffect(() => {
     const loadLesson = async () => {
@@ -327,171 +332,141 @@ const Learning: React.FC<LearningProps> = ({
   const progressPercentage = totalLessons > 0 ? (lessonId / totalLessons) * 100 : 0;
 
   return (
-    <div className="learning-container">
-      <a className="skip-link" href="#content">
-        {t('learning.skipToContent')}
-      </a>
+    <div className="learning-container learning-container-v2">
 
-      {/* Minimal Header */}
-      <header className="lesson-header">
-        <nav className="nav" aria-label="Lesson navigation">
-          <button
-            onClick={() => {
-              if (lessonId > 1 && onNavigateLesson) {
-                onNavigateLesson(lessonId - 1);
-              } else {
-                onBack();
-              }
-            }}
-            aria-label={lessonId > 1 ? t('learning.navigation.previous') : 'Back to lessons'}
-          >
-            ← {lessonId > 1 ? t('learning.navigation.previous') : 'Lessons'}
-          </button>
+      {/* Modern Top Header */}
+      <header className="lesson-nav-header">
+        <div className="nav-group-left">
+           <button className="nav-text-btn" onClick={onBack}>
+              &larr; {t('learning.navigation.lessons')}
+           </button>
+        </div>
 
-          {/* Progress Indicator */}
-          <div className="progress-indicator">
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{ width: `${progressPercentage}%` }}
-              />
+        <div className="nav-group-center">
+            <div className="progress-group">
+                <div className="progress-bar-v2">
+                   <div className="progress-fill-v2" style={{ width: `${progressPercentage}%` }}></div>
+                </div>
+                <span className="progress-count">{lessonId} / {totalLessons}</span>
             </div>
-            <span>{lessonId} / {totalLessons}</span>
-          </div>
+        </div>
 
-          <button
-            onClick={() => {
-              if (onNavigateLesson && lessonId < totalLessons) {
-                onNavigateLesson(lessonId + 1);
-              }
-            }}
-            disabled={lessonId >= totalLessons}
-            aria-label={t('learning.navigation.next')}
-          >
-            {t('learning.navigation.next')} →
-          </button>
-        </nav>
-
-        {/* Focus Mode Toggle Only */}
-        <div className="controls">
-          <label>
-            <input
-              type="checkbox"
-              checked={focusMode}
-              onChange={(e) => onFocusModeChange(e.target.checked)}
-            />
-            {t('learning.accessibility.distractionFree')}
-          </label>
+        <div className="nav-group-right">
+            <button 
+              className="nav-text-btn" 
+              onClick={() => onNavigateLesson && lessonId < totalLessons && onNavigateLesson(lessonId + 1)}
+              disabled={lessonId >= totalLessons}
+            >
+               {t('learning.navigation.next')} &rarr;
+            </button>
+            <div className="distraction-mode-toggle">
+                <label className="checkbox-container">
+                    <input
+                      type="checkbox"
+                      checked={focusMode}
+                      onChange={(e) => onFocusModeChange(e.target.checked)}
+                    />
+                    <span className="checkmark"></span>
+                    <span className="toggle-label">{t('learning.accessibility.distractionFree')}</span>
+                </label>
+            </div>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="lesson-main" role="main">
-        {/* Lesson Title Section */}
-        <section className="lesson-header-section">
-          <h1 id="lessonTitle">{lessonData.lesson.title}</h1>
-          {lessonData.lesson.instructions && (
-            <p className="definition">{lessonData.lesson.instructions}</p>
-          )}
-          {lessonData.lesson.image_url && (
-            <img
-              src={lessonData.lesson.image_url}
-              alt={lessonData.lesson.title}
-              className="lesson-image"
-            />
-          )}
-        </section>
-
-        {/* Audio Controls */}
-        <section className="lesson-controls" aria-label="Audio controls">
-          <div className="tts-controls">
-            <button
-              id="playBtn"
-              onClick={isPaused ? handleResume : handlePlay}
-              disabled={isPlaying && !isPaused}
-            >
-              {isPaused ? 'Resume' : isPlaying ? 'Playing...' : t('learning.controls.play')}
-            </button>
-            {(isPlaying || isPaused) && (
-              <button id="stopBtn" onClick={handleStop}>
-                {t('learning.controls.stop')}
-              </button>
+      {/* Single Column Main Content */}
+      <main className="lesson-scroll-area">
+        <div className="lesson-document">
+            {/* Title Block */}
+            <h1 className="main-title">{lessonData.lesson.title}</h1>
+            {lessonData.lesson.instructions && (
+              <p className="subtitle-instructions">{lessonData.lesson.instructions}</p>
             )}
-            <label>
-              {t('learning.controls.speed')}
-              <input
-                type="range"
-                min="0.75"
-                max="1.5"
-                step="0.25"
-                value={preferences.audioSpeed}
-                onChange={(e) => {
-                  const newSpeed = parseFloat(e.target.value) as AudioSpeed;
-                  updateAudioSpeed(newSpeed);
-                }}
-              />
-            </label>
-          </div>
-        </section>
 
-        {/* Main Content Card */}
-        <article
-          id="content"
-          ref={contentRef}
-          tabIndex={0}
-          aria-live="polite"
-          dangerouslySetInnerHTML={{ __html: highlightedContent }}
-        />
+            {/* Premium Audio Control Card */}
+            <div className="audio-card-modern">
+                <div className="audio-primary-controls">
+                    <button 
+                      className={`btn-play-rounded ${isPlaying && !isPaused ? 'playing' : ''}`}
+                      onClick={isPlaying ? (isPaused ? handleResume : handlePause) : handlePlay}
+                    >
+                      <span className="icon">
+                        {isPaused || !isPlaying ? (
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                        ) : (
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                          </svg>
+                        )}
+                      </span>
+                      {isPaused ? 'Resume' : isPlaying ? 'Playing' : t('learning.controls.play')}
+                    </button>
+                    
+                    <div className="speed-slider-group">
+                        <span className="speed-label">{t('learning.controls.speed')}</span>
+                        <input
+                          type="range"
+                          min="0.5"
+                          max="2.0"
+                          step="0.25"
+                          value={preferences.audioSpeed}
+                          onChange={(e) => updateAudioSpeed(parseFloat(e.target.value) as AudioSpeed)}
+                          className="premium-range"
+                        />
+                    </div>
+                </div>
+            </div>
 
-        {/* Keywords Section (Inline) */}
-        {lessonData.keywords && lessonData.keywords.length > 0 && (
-          <aside className="keywords-sidebar" aria-label={t('learning.keywords')}>
-            <h3>{t('learning.keywords')}</h3>
-            <ul className="keyword-list">
-              {lessonData.keywords.map((kw, index) => (
-                <li key={index}>
-                  <button
-                    className="keyword"
-                    onClick={() => handleKeywordClick(kw.keyword)}
-                    aria-label={`${t('learning.keywords')}: ${kw.keyword}`}
-                  >
-                    {kw.keyword}
-                  </button>
-                  <div className="keyword-explanation">{kw.explanation}</div>
-                </li>
-              ))}
-            </ul>
-          </aside>
-        )}
+            {/* Main Content Box */}
+            <article className="content-box-v2" id="content" tabIndex={0}>
+               <div dangerouslySetInnerHTML={{ __html: highlightedContent }} />
+            </article>
 
-        {/* Floating Navigation Button (Right Arrow -> Exercises) */}
-        <div className="learning-nav-arrows">
-          <button
-            className="learning-nav-arrow right"
-            onClick={onNavigateToExercises}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onNavigateToExercises?.();
-              }
-            }}
-            tabIndex={0}
-            aria-label={t('lessons.goToExercises')}
-            title={t('lessons.goToExercises')}
-          >
-            <span>▶</span>
-          </button>
+            {/* Key Vocabulary / Keywords Section */}
+            {lessonData.keywords && lessonData.keywords.length > 0 && (
+              <section className="key-vocabulary">
+                 <h2 className="section-heading">
+                    <svg className="heading-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                       <circle cx="12" cy="10" r="3" />
+                    </svg>
+                    {t('learning.keywords').toUpperCase()}
+                 </h2>
+                 <div className="keyword-cards-v2">
+                    {lessonData.keywords.map((kw, i) => (
+                      <div key={i} className="kw-card">
+                         <div className="kw-name" onClick={() => handleKeywordClick(kw.keyword)}>
+                            {kw.keyword}
+                         </div>
+                         <div className="kw-def">
+                            {kw.explanation}
+                         </div>
+                      </div>
+                    ))}
+                 </div>
+              </section>
+            )}
+
+            {/* Bottom Actions */}
+            <div className="completion-actions">
+               <button className="btn-action exercises-gradient" onClick={onNavigateToExercises}>
+                  {t('lessons.goToExercises')}
+               </button>
+               <button className="btn-action evaluate-gradient" onClick={() => setShowEvaluation(true)}>
+                  {t('learning.navigation.evaluateYourself')}
+               </button>
+            </div>
         </div>
       </main>
 
-      {/* Focus Mode Exit Button */}
+      {/* Focus Mode Overlay UI */}
       {focusMode && (
         <button
-          className="exit-distraction"
+          className="exit-focus-overlay"
           onClick={() => onFocusModeChange(false)}
-          aria-label={t('learning.accessibility.exitDistraction')}
         >
-          {t('learning.accessibility.exitDistraction')}
+           &times; {t('learning.accessibility.exitDistraction')}
         </button>
       )}
     </div>

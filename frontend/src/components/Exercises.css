@@ -66,6 +66,115 @@
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
+/* ========== DARK MODE OVERRIDES ========== */
+[data-theme="dark"] {
+  --bg-body: #0f172a; /* Deep Slate/Navy */
+  --bg-card: #1e293b; /* Slate 800 */
+  --bg-card-alt: #334155; /* Slate 700 */
+  
+  --text-main: #f1f5f9; /* Slate 100 */
+  --text-secondary: #cbd5e1; /* Slate 300 */
+  --text-muted: #64748b; /* Slate 500 */
+  
+  --border-color: #475569; /* Slate 600 */
+  --primary-light: rgba(59, 130, 246, 0.15); /* Translucent Blue */
+  
+  --success-bg: rgba(22, 101, 52, 0.2);
+  --success-text: #4ade80; /* Brighter Green */
+  --success-border: #166534;
+
+  --error-bg: rgba(153, 27, 27, 0.2);
+  --error-text: #f87171; /* Brighter Red */
+  --error-border: #991b1b;
+
+  --warning-bg: rgba(154, 52, 18, 0.2);
+  --warning-text: #fbbf24; /* Brighter Amber */
+  --warning-border: #9a3412;
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+/* Specific Component Fixes for Dark Mode */
+[data-theme="dark"] .main-card {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  box-shadow: var(--shadow-lg);
+}
+
+[data-theme="dark"] .step-header-row {
+  background: var(--bg-card-alt);
+  border-left-color: var(--primary-color);
+}
+
+[data-theme="dark"] .option-btn,
+[data-theme="dark"] .image-option-btn,
+[data-theme="dark"] .text-input {
+  background: var(--bg-card);
+  border-color: var(--border-color);
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .option-btn:hover:not(:disabled),
+[data-theme="dark"] .image-option-btn:hover {
+  background: var(--bg-card-alt);
+  border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .option-btn.selected,
+[data-theme="dark"] .image-option-btn.selected {
+  background: var(--primary-light);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] .micro-step {
+  background: var(--bg-card-alt);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .micro-step.current {
+  background: var(--primary-light);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+[data-theme="dark"] .mode-toggle.compact {
+  background: var(--bg-card-alt);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .mode-pill:hover:not(.active) {
+  background: var(--border-color);
+}
+
+[data-theme="dark"] .divider {
+  background: var(--border-color);
+}
+
+[data-theme="dark"] .progress-bar-track {
+  background: var(--bg-card-alt);
+}
+
+[data-theme="dark"] .tab {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .tab.active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
+}
+
+[data-theme="dark"] .completion-title {
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .stat-label {
+  color: var(--text-secondary);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -385,6 +494,67 @@ body {
   border-color: var(--error-border);
   background: var(--error-bg);
   color: var(--error-text);
+}
+
+/* Interactions & Content Areas */
+.visual-prompt {
+  font-size: 4em;
+  margin: 30px 0;
+  text-align: center;
+  display: block;
+}
+
+.word-bank {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 30px;
+  padding: 24px;
+  background: var(--bg-card-alt);
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--border-color);
+}
+
+.word-btn {
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-size: 1.1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-main);
+}
+
+.word-btn:hover:not(:disabled) {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+  background: var(--primary-light);
+}
+
+.word-btn.used {
+  opacity: 0.3;
+  background: var(--bg-card-alt);
+  border-color: var(--border-color);
+  cursor: not-allowed;
+}
+
+.read-content {
+  font-size: 1.4em;
+  line-height: 1.6;
+  margin: 30px 0;
+  padding: 40px;
+  background: var(--primary-light);
+  border-left: 6px solid var(--primary-color);
+  border-radius: var(--radius-md);
+  color: var(--text-main);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  text-align: center;
 }
 
 /* Action Row */
@@ -762,6 +932,7 @@ body {
   font-weight: 700;
   color: var(--primary-color);
   background: none;
+  background-clip: unset;
   -webkit-background-clip: unset;
   -webkit-text-fill-color: unset;
 }

@@ -71,13 +71,12 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       setMessages(newMessages);
       setConnectionStatus('connected');
     });
-
     return () => {
       if (unsubscribeMessagesRef.current) {
         unsubscribeMessagesRef.current();
       }
     };
-  }, [conversationId]);
+  }, [conversationId, currentUser?.uid]);
 
   // Subscribe to conversation
   useEffect(() => {
@@ -520,7 +519,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
           
           <button className="toolbar-btn" onClick={() => imageInputRef.current?.click()} title="Image">🖼️</button>
           <button className="toolbar-btn" onClick={() => videoInputRef.current?.click()} title="Video">🎥</button>
-          <button className={`toolbar-btn ${isRecording ? 'recording' : ''}`} onClick={handleVoiceRecord} title="Voice">🎤</button>
+          <button className={`toolbar-btn ${isRecording ? 'recording' : ''}`} onClick={handleVoiceRecord} title="Voice" disabled={uploadingVoice}>🎤</button>
           <button className="toolbar-btn" onClick={() => fileInputRef.current?.click()} title="File">📎</button>
         </div>
 

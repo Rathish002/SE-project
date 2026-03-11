@@ -214,3 +214,37 @@
     background-color: var(--bg-hover, rgba(0, 0, 0, 0.05));
     color: var(--text-primary);
 }
+
+/* Dark Mode Overrides */
+[data-theme="dark"] .notification-btn {
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .notification-btn:hover, 
+[data-theme="dark"] .notification-btn.active {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .notification-dropdown {
+    background-color: var(--bg-secondary);
+    border-color: var(--border);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .notification-header,
+[data-theme="dark"] .notification-item,
+[data-theme="dark"] .notification-footer {
+    border-color: var(--border);
+}
+
+[data-theme="dark"] .notification-item:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .notification-item.unread {
+    background-color: rgba(90, 169, 255, 0.15);
+}
+
+[data-theme="dark"] .notification-item-avatar .avatar-placeholder {
+    background-color: var(--border);
+}

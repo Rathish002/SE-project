@@ -124,7 +124,9 @@
     },
     "navigation": {
       "previous": "वापस",
-      "next": "अगला"
+      "next": "अगला",
+      "lessons": "पाठ",
+      "evaluateYourself": "स्वयं का मूल्यांकन करें"
     }
   },
   "accessibility": {

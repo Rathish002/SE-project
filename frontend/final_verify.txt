@@ -1,0 +1,291 @@
+
+> frontend@0.1.0 test
+> react-scripts test --watchAll=false
+
+PASS src/components/Learning.test.tsx
+PASS src/App.test.tsx
+PASS src/components/Exercises.test.tsx
+PASS src/components/LessonSelection.test.tsx
+  ● Console
+
+    console.log
+      Available lesson IDs: [ 1 ]
+
+      at loadLessons (src/components/LessonSelection.tsx:49:17)
+
+    console.log
+      Loaded lessons: [
+        {
+          id: 1,
+          title: 'Test Lesson',
+          description: 'This is a test lesson content....'
+        }
+      ]
+
+      at loadLessons (src/components/LessonSelection.tsx:67:17)
+
+    console.error
+      An update to LessonSelection inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+    [0m [90m 72 |[39m     [36mreturn[39m[33m;[39m
+     [90m 73 |[39m   }
+    [31m[1m>[22m[39m[90m 74 |[39m   originalError[33m.[39mcall(console[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 75 |[39m }[33m;[39m
+     [90m 76 |[39m[0m
+
+      at console.Object.<anonymous>.console.error (src/setupTests.ts:74:17)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at setLessons (node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at loadLessons (src/components/LessonSelection.tsx:68:9)
+
+    console.error
+      An update to LessonSelection inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+    [0m [90m 72 |[39m     [36mreturn[39m[33m;[39m
+     [90m 73 |[39m   }
+    [31m[1m>[22m[39m[90m 74 |[39m   originalError[33m.[39mcall(console[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 75 |[39m }[33m;[39m
+     [90m 76 |[39m[0m
+
+      at console.Object.<anonymous>.console.error (src/setupTests.ts:74:17)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at setLoading (node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at loadLessons (src/components/LessonSelection.tsx:72:9)
+
+    console.log
+      Available lesson IDs: [ 1 ]
+
+      at loadLessons (src/components/LessonSelection.tsx:49:17)
+
+    console.log
+      Loaded lessons: [
+        {
+          id: 1,
+          title: 'Test Lesson',
+          description: 'This is a test lesson content....'
+        }
+      ]
+
+      at loadLessons (src/components/LessonSelection.tsx:67:17)
+
+    console.log
+      Available lesson IDs: [ 1 ]
+
+      at loadLessons (src/components/LessonSelection.tsx:49:17)
+
+    console.log
+      Loaded lessons: [
+        {
+          id: 1,
+          title: 'Test Lesson',
+          description: 'This is a test lesson content....'
+        }
+      ]
+
+      at loadLessons (src/components/LessonSelection.tsx:67:17)
+
+    console.log
+      Available lesson IDs: []
+
+      at loadLessons (src/components/LessonSelection.tsx:49:17)
+
+    console.log
+      Loaded lessons: []
+
+      at loadLessons (src/components/LessonSelection.tsx:67:17)
+
+PASS src/components/FriendList.test.tsx
+PASS src/components/Signup.test.tsx
+PASS src/components/Navigation.test.tsx
+PASS src/components/Collaboration.test.tsx
+FAIL src/components/Home.test.tsx
+  ● Console
+
+    console.error
+      An update to Home inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+    [0m [90m 72 |[39m     [36mreturn[39m[33m;[39m
+     [90m 73 |[39m   }
+    [31m[1m>[22m[39m[90m 74 |[39m   originalError[33m.[39mcall(console[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 75 |[39m }[33m;[39m
+     [90m 76 |[39m[0m
+
+      at console.Object.<anonymous>.console.error (src/setupTests.ts:74:17)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at setStats (node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at getStats (src/components/Home.tsx:38:9)
+
+  ● Home Component › should not have accessibility violations
+
+    expect(received).toHaveNoViolations(expected)
+
+    Expected the HTML found at $('.info-card:nth-child(1) > .info-content > h3') to have no violations:
+
+    <h3>home.interfaceLanguage</h3>
+
+    Received:
+
+    "Heading levels should only increase by one (heading-order)"
+
+    Fix any of the following:
+      Heading order invalid
+
+    You can find more information on this issue here: 
+    https://dequeuniversity.com/rules/axe/4.10/heading-order?application=axeAPI
+
+    [0m [90m 44 |[39m         [36mconst[39m { container } [33m=[39m render([33m<[39m[33mHome[39m currentUser[33m=[39m{mockUser} [33m/[39m[33m>[39m)[33m;[39m
+     [90m 45 |[39m         [36mconst[39m results [33m=[39m [36mawait[39m axe(container)[33m;[39m
+    [31m[1m>[22m[39m[90m 46 |[39m         expect(results)[33m.[39mtoHaveNoViolations()[33m;[39m
+     [90m    |[39m                         [31m[1m^[22m[39m
+     [90m 47 |[39m     })[33m;[39m
+     [90m 48 |[39m })[33m;[39m
+     [90m 49 |[39m[0m
+
+      at Object.<anonymous> (src/components/Home.test.tsx:46:25)
+
+PASS src/components/Login.test.tsx
+  ● Console
+
+    console.error
+      An update to Login inside a test was not wrapped in act(...).
+      
+      When testing, code that causes React state updates should be wrapped into act(...):
+      
+      act(() => {
+        /* fire events that update state */
+      });
+      /* assert on the output */
+      
+      This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+    [0m [90m 72 |[39m     [36mreturn[39m[33m;[39m
+     [90m 73 |[39m   }
+    [31m[1m>[22m[39m[90m 74 |[39m   originalError[33m.[39mcall(console[33m,[39m [33m...[39margs)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 75 |[39m }[33m;[39m
+     [90m 76 |[39m[0m
+
+      at console.Object.<anonymous>.console.error (src/setupTests.ts:74:17)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at setLoading (node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at handleSubmit (src/components/Login.tsx:54:7)
+
+PASS src/contexts/AccessibilityContext.test.tsx
+FAIL src/components/ChatUI.test.tsx
+  ● ChatUI Component › Message Display › displays messages when received
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 429 |[39m                     className[33m=[39m{[32m`message-bubble-row ${isOwn ? 'own' : 'other'}`[39m}
+     [90m 430 |[39m                   [33m>[39m
+    [31m[1m>[22m[39m[90m 431 |[39m                     {[33m![39misOwn [33m&&[39m [33m<[39m[33mdiv[39m className[33m=[39m[32m"message-avatar-small"[39m[33m>[39m{message[33m.[39msenderName[[35m0[39m]}[33m<[39m[33m/[39m[33mdiv[39m[33m>[39m}
+     [90m     |[39m                                                                                         [31m[1m^[22m[39m
+     [90m 432 |[39m                     [33m<[39m[33mdiv[39m className[33m=[39m[32m"message-bubble-content"[39m[33m>[39m
+     [90m 433 |[39m                       {[33m![39misOwn [33m&&[39m [33m<[39m[33mdiv[39m className[33m=[39m[32m"message-sender-name"[39m[33m>[39m{message[33m.[39msenderName}[33m<[39m[33m/[39m[33mdiv[39m[33m>[39m}
+     [90m 434 |[39m                       [33m<[39m[33mdiv[39m className[33m=[39m[32m"message-bubble"[39m[33m>[39m[0m
+
+      at map (src/components/ChatUI.tsx:431:89)
+          at Array.map (<anonymous>)
+      at ChatUI (src/components/ChatUI.tsx:409:24)
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25904:20)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom-client.development.js:7662:22)
+      at updateFunctionComponent (node_modules/react-dom/cjs/react-dom-client.development.js:10166:19)
+      at beginWork (node_modules/react-dom/cjs/react-dom-client.development.js:11778:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:209:13)
+
+  ● ChatUI Component › Message Display › scrolls to bottom when new messages arrive
+
+    TypeError: Cannot read properties of undefined (reading '0')
+
+    [0m [90m 429 |[39m                     className[33m=[39m{[32m`message-bubble-row ${isOwn ? 'own' : 'other'}`[39m}
+     [90m 430 |[39m                   [33m>[39m
+    [31m[1m>[22m[39m[90m 431 |[39m                     {[33m![39misOwn [33m&&[39m [33m<[39m[33mdiv[39m className[33m=[39m[32m"message-avatar-small"[39m[33m>[39m{message[33m.[39msenderName[[35m0[39m]}[33m<[39m[33m/[39m[33mdiv[39m[33m>[39m}
+     [90m     |[39m                                                                                         [31m[1m^[22m[39m
+     [90m 432 |[39m                     [33m<[39m[33mdiv[39m className[33m=[39m[32m"message-bubble-content"[39m[33m>[39m
+     [90m 433 |[39m                       {[33m![39misOwn [33m&&[39m [33m<[39m[33mdiv[39m className[33m=[39m[32m"message-sender-name"[39m[33m>[39m{message[33m.[39msenderName}[33m<[39m[33m/[39m[33mdiv[39m[33m>[39m}
+     [90m 434 |[39m                       [33m<[39m[33mdiv[39m className[33m=[39m[32m"message-bubble"[39m[33m>[39m[0m
+
+      at map (src/components/ChatUI.tsx:431:89)
+          at Array.map (<anonymous>)
+      at ChatUI (src/components/ChatUI.tsx:409:24)
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25904:20)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom-client.development.js:7662:22)
+      at updateFunctionComponent (node_modules/react-dom/cjs/react-dom-client.development.js:10166:19)
+      at beginWork (node_modules/react-dom/cjs/react-dom-client.development.js:11778:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:16583:35)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:244:13)
+
+PASS src/components/AccessibilitySettings.test.tsx (5.424 s)
+
+Test Suites: 2 failed, 11 passed, 13 total
+Tests:       3 failed, 118 passed, 121 total
+Snapshots:   0 total
+Time:        7.155 s
+Ran all test suites.
