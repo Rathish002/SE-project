@@ -7,7 +7,6 @@ import ExercisesContent from "./ExercisesContent";
 import ExercisesFeedback from "./ExercisesFeedback";
 import ExercisesTTSButton from "./ExercisesTTSButton";
 import { useTranslation } from "react-i18next";
-import { lessons as initialLessons } from "../data/exercisesData"; // Import local data
 
 interface Stats {
     completed: number;
@@ -25,9 +24,9 @@ interface ExercisesProps {
 
 const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lessonId, userId }) => {
     const { t } = useTranslation();
-    // Revert to using local data directly
-    const [lessons, setLessons] = useState<Lesson[]>(initialLessons);
-    // const [loading, setLoading] = useState(true); // Removed loading state
+    const [lessons, setLessons] = useState<Lesson[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [lessonIndex, setLessonIndex] = useState(0);
 
     const [stepIndex, setStepIndex] = useState(() =>
@@ -51,31 +50,34 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
     const mainCardRef = useRef<HTMLDivElement>(null);
     const stepHeaderRef = useRef<HTMLHeadingElement>(null);
 
-    // Filter lessons if lessonId is provided
+    // Fetch exercises dynamically from backend when lessonId changes
     useEffect(() => {
-        if (lessonId) {
-            // If we want to filter by lessonId from the local data
-            // Note: lessonId might be passed as an integer from the DB mapping, or string
-            // We need to match it against our new string IDs (lesson-1, lesson-2, etc.)
-
-            // Map integer IDs to string IDs if lessonId from DB is a number
-            const MOCK_MAP: Record<string, string> = {
-                "1": "lesson-1", "2": "lesson-2", "3": "lesson-3", "4": "lesson-4", "5": "lesson-5"
-            };
-
-            let searchId = lessonId.toString();
-            if (MOCK_MAP[searchId]) {
-                searchId = MOCK_MAP[searchId];
-            } else if (typeof lessonId === "number") {
-                searchId = `lesson-${lessonId}`;
+        const loadExercises = async () => {
+            if (!lessonId) return;
+            setLoading(true);
+            setError(null);
+            try {
+                // Ensure lessonId is treated as a number
+                const parsedId = typeof lessonId === "string" ? parseInt(lessonId, 10) : lessonId;
+                if (isNaN(parsedId)) {
+                    throw new Error("Invalid lesson ID");
+                }
+                const fetchedLessons = await fetchExercisesByLesson(parsedId);
+                if (fetchedLessons.length > 0) {
+                    setLessons(fetchedLessons);
+                    setLessonIndex(0);
+                } else {
+                    setError("No exercises found for this lesson.");
+                }
+            } catch (err: any) {
+                console.error("Failed to load exercises:", err);
+                setError(err.message || "Failed to load exercises");
+            } finally {
+                setLoading(false);
             }
+        };
 
-            const specificLesson = initialLessons.find(l => l.id === searchId || l.id === lessonId.toString());
-            if (specificLesson) {
-                setLessons([specificLesson]);
-                setLessonIndex(0); // Ensure we are on the first (and only) lesson in the filtered array
-            }
-        }
+        loadExercises();
     }, [lessonId]);
 
     const lesson = lessons[lessonIndex];
@@ -176,20 +178,9 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
 
         let correct = false;
 
-        // Pull the translated correct answer or options if available from locale instead of raw data
-        const localizedCorrect = t(`lessonData.${lesson.id}.steps.${stepIndex}.correct`, { defaultValue: step.correct });
-        const localizedAnswer = t(`lessonData.${lesson.id}.steps.${stepIndex}.answer`, { returnObjects: true, defaultValue: step.answer });
-
-        // 1. Check against `correct` ID/value if present
-        if (localizedCorrect) {
-            correct = answer.toLowerCase() === String(localizedCorrect).toLowerCase();
-        }
-        // 2. Fallback to `answer` array/string check
-        else if (localizedAnswer) {
-            const userAns = answer.trim().toLowerCase();
-            correct = Array.isArray(localizedAnswer)
-                ? (localizedAnswer as unknown as string[]).some((a: string) => String(a).toLowerCase() === userAns)
-                : typeof localizedAnswer === "string" && (localizedAnswer as string).toLowerCase() === userAns;
+        // Check directly against the strict string exactly returned by backend logic
+        if (step.correct) {
+            correct = answer.toLowerCase() === String(step.correct).toLowerCase();
         }
 
         setIsCorrect(correct);
@@ -215,30 +206,18 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
 
             // Save progress to backend silently
             if (userId && lessonId) {
-                // Map mock string IDs to database integer IDs
-                // This ensures we satisfy Foreign Key constraints while keeping the frontend unchanged
-                const MOCK_MAP: Record<string, number> = {
-                    "verb-1": 1, "adj-1": 2, "sent-1": 3, "pronouns-1": 4, // Language -> Greetings/Numbers/Family/Food
-                    "emo-1": 5, "emo-2": 6, // Emotions -> Activities/Evaluation? (using fallback)
-                    "social-1": 7, "social-2": 8, "social-3": 9,
-                    "daily-1": 10, "daily-2": 11,
-                    "safety-1": 12, "safety-2": 13
-                };
+                const dbExerciseId = parseInt(lessons[lessonIndex].id, 10);
 
-                const currentLessonId = lessons[lessonIndex].id;
-                // Use mapped ID or hash/fallback to ensure we send a valid INT
-                // If map fails, we try to parse int, or default to 1 to ensure SOMETHING is saved
-                // (In a real app, we'd sync seeds).
-                const dbExerciseId = MOCK_MAP[currentLessonId] || parseInt(currentLessonId) || (lessonIndex + 1);
-
-                // Save progress as 'completed step'
-                saveExerciseProgress(
-                    userId,
-                    dbExerciseId,
-                    stepIndex + 1,
-                    stepIndex + 1, // sending step as completed
-                    false // not fully completed lesson yet
-                ).catch(err => console.warn("Background save failed:", err));
+                if (!isNaN(dbExerciseId)) {
+                    // Save progress as 'completed step'
+                    saveExerciseProgress(
+                        userId,
+                        dbExerciseId,
+                        stepIndex + 1,
+                        stepIndex + 1, // sending step as completed
+                        false // not fully completed lesson yet
+                    ).catch(err => console.warn("Background save failed:", err));
+                }
             }
 
         } else {
@@ -260,19 +239,13 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
     };
 
     const nextStep = () => {
-        // Map mock string IDs to database integer IDs (reusing map logic)
-        const MOCK_MAP: Record<string, number> = {
-            "verb-1": 1, "adj-1": 2, "sent-1": 3, "pronouns-1": 4,
-            "emo-1": 5, "emo-2": 6, "social-1": 7, "social-2": 8, "social-3": 9,
-            "daily-1": 10, "daily-2": 11, "safety-1": 12, "safety-2": 13
-        };
+        const dbExerciseId = parseInt(lessons[lessonIndex].id, 10);
 
         if (stepIndex < lesson.steps.length - 1) {
             setStepIndex(stepIndex + 1);
         } else if (lessonIndex < lessons.length - 1) {
             // Save progress before switching lesson
-            if (userId) {
-                const dbExerciseId = MOCK_MAP[lessons[lessonIndex].id] || (lessonIndex + 1);
+            if (userId && !isNaN(dbExerciseId)) {
                 saveExerciseProgress(
                     userId,
                     dbExerciseId,
@@ -286,8 +259,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
             setStepIndex(0);
             setStats(prev => ({ ...prev, completed: prev.completed + 1 }));
         } else {
-            if (userId) {
-                const dbExerciseId = MOCK_MAP[lessons[lessonIndex].id] || (lessonIndex + 1);
+            if (userId && !isNaN(dbExerciseId)) {
                 saveExerciseProgress(
                     userId,
                     dbExerciseId,
@@ -360,7 +332,29 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
         );
     }
 
-    // if (loading) { return <div>Loading...</div> } // Removed loading check
+    if (loading) {
+        return (
+            <div className="lesson-container">
+                <div className="main-card loading-state">
+                    <h2>Loading exercises...</h2>
+                </div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="lesson-container">
+                <div className="main-card error-state">
+                    <h2>Error</h2>
+                    <p>{error}</p>
+                    <button className="back-btn" onClick={() => onBackToLesson ? onBackToLesson() : onNavigate?.('lessons')}>
+                        Go Back
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     if (!lesson || !step) {
         return <div>{t('exercises.noExercisesFound')}</div>;
@@ -440,7 +434,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                                         className={`tab ${idx === lessonIndex ? "active" : ""}`}
                                         onClick={() => switchLesson(idx)}
                                     >
-                                        {idx + 1}. {t(`lessonData.${l.id}.title`, { defaultValue: l.title }).split(" ")[0]}
+                                        {idx + 1}. {l.title ? l.title.split(" ")[0] : `Exercise ${idx + 1}`}
                                     </button>
                                 ))}
                             </div>
@@ -457,14 +451,14 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
 
                     <div className="step-header-row">
                         <h3 ref={stepHeaderRef} tabIndex={-1} className="step-title">
-                            {t(`lessonData.${lesson.id}.steps.${stepIndex}.instruction`, { defaultValue: step.instruction })}
+                            {t(`lessonData.lesson-${lesson.id}.steps.${stepIndex}.instruction`, { defaultValue: step.instruction })}
                         </h3>
-                        <ExercisesTTSButton text={t(`lessonData.${lesson.id}.steps.${stepIndex}.instruction`, { defaultValue: step.instruction })} />
+                        <ExercisesTTSButton text={t(`lessonData.lesson-${lesson.id}.steps.${stepIndex}.instruction`, { defaultValue: step.instruction }) as string} />
                     </div>
 
                     {/* Micro Steps (Visual Schedule) */}
                     <div className="micro-steps">
-                        {((t(`lessonData.${lesson.id}.microSteps`, { returnObjects: true, defaultValue: lesson.microSteps }) as string[]) || []).map((ms, idx) => (
+                        {(lesson.microSteps || []).map((ms, idx) => (
                             <div key={idx} className={`micro-step ${idx <= stepIndex ? "current" : ""} ${idx < stepIndex ? "completed" : ""}`}>
                                 <span className="check-icon" aria-hidden="true">
                                     {idx < stepIndex ? "✅" : idx === stepIndex ? "➡️" : "○"}
@@ -479,11 +473,11 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
                     {/* Task Content Display */}
                     <div className="task-display">
                         <div className="task-content-text">
-                            <strong>{t(`lessonData.${lesson.id}.steps.${stepIndex}.content`, { defaultValue: step.content })}</strong>
+                            <strong>{t(`lessonData.lesson-${lesson.id}.steps.${stepIndex}.content`, { defaultValue: step.content })}</strong>
                         </div>
                         {step.task && (
                             <div className="task-question">
-                                {t(`lessonData.${lesson.id}.steps.${stepIndex}.task`, { defaultValue: step.task })}
+                                {t(`lessonData.lesson-${lesson.id}.steps.${stepIndex}.task`, { defaultValue: step.task })}
                             </div>
                         )}
                     </div>
@@ -528,7 +522,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
 
                                 {hintLevel > 0 && (
                                     <div className="active-hints" role="region" aria-label={t('exercises.hints.label')}>
-                                        {((t(`lessonData.${lesson.id}.steps.${stepIndex}.hints`, { returnObjects: true, defaultValue: step.hints }) as string[]) || []).slice(0, hintLevel).map((h, i) => (
+                                        {((t(`lessonData.lesson-${lesson.id}.steps.${stepIndex}.hints`, { returnObjects: true, defaultValue: step.hints }) as string[]) || []).slice(0, hintLevel).map((h, i) => (
                                             <div key={i} className="hint-bubble">
                                                 <strong>{t('exercises.hints.hintNumber', { number: i + 1 })}:</strong> {h}
                                                 <ExercisesTTSButton text={h} label={t('exercises.hints.listenToHint')} />

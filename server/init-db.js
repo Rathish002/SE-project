@@ -1,4 +1,3 @@
-```javascript
 const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
@@ -55,7 +54,7 @@ async function initDB() {
         await client.query(migrationSql);
 
         console.log('✅ Database successfully initialized!');
-        
+
         // Log counts
         const lessonCount = await client.query('SELECT COUNT(*) FROM lessons');
         console.log('Lessons created: ' + lessonCount.rows[0].count);
@@ -69,4 +68,3 @@ async function initDB() {
 }
 
 initDB();
-```

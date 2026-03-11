@@ -1,7 +1,5 @@
 import { Lesson, LessonStep } from '../types/ExerciseTypes';
 
-import { lessons as mockLessons } from '../data/exercisesData';
-
 interface ExerciseResponse {
     exercises: any[]; // We'll refine this type based on backend response
 }
@@ -17,6 +15,11 @@ export const fetchExercisesByLesson = async (lessonId: number): Promise<Lesson[]
 
         const data = await response.json();
 
+        // If the backend returns no exercises, just return an empty array
+        if (!data.exercises || data.exercises.length === 0) {
+            return [];
+        }
+
         // Transform backend data to match frontend Lesson structure
         return data.exercises.map((ex: any) => ({
             id: ex.id.toString(),
@@ -24,7 +27,7 @@ export const fetchExercisesByLesson = async (lessonId: number): Promise<Lesson[]
             description: ex.instructions_text,
             category: 'Language',
             difficulty: 'basic',
-            microSteps: [],
+            microSteps: ["Read", "Practice", "Learn"],
             steps: ex.steps.map((step: any) => ({
                 type: 'choice',
                 content: step.prompt,
@@ -36,14 +39,10 @@ export const fetchExercisesByLesson = async (lessonId: number): Promise<Lesson[]
                 hints: [step.hint_1, step.hint_2, step.hint_3].filter(Boolean),
             }))
         }));
-    } catch (error) {
-        console.warn('Error fetching exercises from backend, falling back to mock data:', error);
-        // Fallback: Return mock lesson based on index
-        const index = lessonId - 1;
-        if (index >= 0 && index < mockLessons.length) {
-            return [mockLessons[index]];
-        }
-        return [];
+    } catch (error: any) {
+        console.error('Error fetching exercises from backend:', error);
+        const apiUrl = process.env.REACT_APP_API_URL || 'http://127.0.0.1:3001';
+        throw new Error(`[Targeting ${apiUrl}] ${error.message || 'Unknown network error'}. Please ensure the backend is running.`);
     }
 };
 
@@ -55,7 +54,7 @@ export const saveExerciseProgress = async (
     isCompleted: boolean
 ) => {
     try {
-        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+        const apiUrl = process.env.REACT_APP_API_URL || 'http://127.0.0.1:3001';
         await fetch(`${apiUrl}/exercises/progress`, {
             method: 'POST',
             headers: {
@@ -80,7 +79,7 @@ export const submitAnswer = async (
     selectedOptionId: number
 ) => {
     try {
-        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
+        const apiUrl = process.env.REACT_APP_API_URL || 'http://127.0.0.1:3001';
         const response = await fetch(`${apiUrl}/exercises/answer`, {
             method: 'POST',
             headers: {
