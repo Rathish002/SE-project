@@ -7,8 +7,13 @@ import { getAdaptiveThreshold, saveEvaluationProgress, thresholdToLabel } from "
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });
-const NLP_SERVICE_URL = "http://localhost:8000/semantic-similarity";
-const NLP_SPEECH_SERVICE_URL = "http://localhost:8000/speech-similarity";
+const rawNlpUrl = process.env.NLP_SERVICE_URL || "http://localhost:8000";
+const normalizedNlpBase = rawNlpUrl
+  .replace(/\/$/, "")
+  .replace(/\/semantic-similarity$/, "")
+  .replace(/\/speech-similarity$/, "");
+const NLP_SERVICE_URL = `${normalizedNlpBase}/semantic-similarity`;
+const NLP_SPEECH_SERVICE_URL = `${normalizedNlpBase}/speech-similarity`;
 
 /**
  * ============================================================
