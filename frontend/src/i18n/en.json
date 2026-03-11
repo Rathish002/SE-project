@@ -124,7 +124,9 @@
     },
     "navigation": {
       "previous": "Back",
-      "next": "Next"
+      "next": "Next",
+      "lessons": "Lessons",
+      "evaluateYourself": "Evaluate Yourself"
     }
   },
   "accessibility": {

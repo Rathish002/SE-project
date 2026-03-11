@@ -75,7 +75,6 @@ const FriendList: React.FC<FriendListProps> = ({ friends, currentUid, onStartCha
 
   return (
     <div className="friend-list">
-      <h3 className="friend-list-title">{t('collaboration.friends.title')}</h3>
       <div className="friend-list-items">
         {friends.map((friend) => (
           <div key={friend.uid} className="friend-item">

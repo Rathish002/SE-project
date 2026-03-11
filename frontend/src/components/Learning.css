@@ -1,765 +1,568 @@
-/* Learning Page - Clean, Focused Reading Experience
-   Modern, professional design with content-first approach */
-
 /* ========================================
-   Design Tokens
+   Learning Page - Premium Redesign
    ======================================== */
-:root {
-  --content-max-width: 800px;
-  --content-line-height: 1.8;
-  --card-shadow: 0 4px 20px rgba(15, 23, 42, 0.06);
-  --card-shadow-hover: 0 8px 30px rgba(15, 23, 42, 0.1);
-  --learning-bg: #f8fafc;
-  --learning-card-bg: #ffffff;
-  --learning-text: #1e293b;
-  --learning-text-muted: #64748b;
-  --learning-accent: #3b82f6;
-  --learning-accent-hover: #2563eb;
-  --learning-border: #e2e8f0;
-  --learning-keyword-bg: rgba(59, 130, 246, 0.08);
-  --learning-keyword-border: rgba(59, 130, 246, 0.3);
+
+.learning-container-v2 {
+  --nav-height: 72px;
+  --max-content-width: 900px;
+  --accent-primary: #3b82f6;
+  --accent-secondary: #6366f1;
+  --accent-tertiary: #8b5cf6;
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --text-primary: #1e293b;
+  --text-muted: #64748b;
+  --border-light: #e2e8f0;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
 }
 
-/* ========================================
-   Skip Link (Accessibility)
-   ======================================== */
-.skip-link {
-  position: absolute;
-  top: -40px;
-  left: 0;
-  background: var(--learning-accent);
-  color: white;
-  padding: 8px 16px;
-  text-decoration: none;
-  z-index: 100;
-  border-radius: 0 0 8px 0;
-}
-
-.skip-link:focus {
-  top: 0;
-}
-
-/* ========================================
-   Main Container
-   ======================================== */
-.learning-container {
+.learning-container-v2 {
   min-height: 100vh;
-  width: 100%;
-  background: linear-gradient(180deg, var(--learning-bg) 0%, #f1f5f9 100%);
-  color: var(--learning-text);
-  padding-bottom: 60px;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, sans-serif;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 /* ========================================
-   Minimal Header
+   Modern Navigation Header
    ======================================== */
-.lesson-header {
+.lesson-nav-header {
+  height: var(--nav-height);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-light);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 16px 40px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid var(--learning-border);
+  justify-content: space-between;
+  padding: 0 24px;
   position: sticky;
   top: 0;
-  z-index: 100;
-  width: 100%;
-  box-sizing: border-box;
+  z-index: 1000;
+  box-shadow: var(--shadow-sm);
 }
 
-.nav {
+.nav-group-left, .nav-group-right {
   display: flex;
-  gap: 12px;
   align-items: center;
+  gap: 16px;
+  flex: 1;
 }
 
-.nav-title {
-  display: none;
-  /* Hidden in clean design */
+.nav-group-right {
+  justify-content: flex-end;
 }
 
-.lesson-header button {
+.nav-group-center {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-text-btn {
   background: transparent;
-  border: none;
-  color: var(--learning-text-muted);
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 14px;
   padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
-.lesson-header button:hover {
-  background: var(--learning-border);
-  color: var(--learning-text);
+.nav-text-btn:hover:not(:disabled) {
+  background: var(--border-light);
+  color: var(--text-primary);
 }
 
-.lesson-header button:focus {
-  outline: 2px solid var(--learning-accent);
-  outline-offset: 2px;
+.nav-text-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
-/* Header Controls - Only Focus Mode */
-.controls {
+/* Progress Section */
+.progress-group {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 6px;
+  width: 100%;
+  max-width: 300px;
 }
 
-.controls label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: var(--learning-text-muted);
-  cursor: pointer;
-  padding: 8px 16px;
-  border-radius: 20px;
-  border: 1px solid var(--learning-border);
-  transition: all 0.2s ease;
-}
-
-.controls label:hover {
-  background: var(--learning-border);
-}
-
-.controls input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-  accent-color: var(--learning-accent);
-}
-
-/* Progress Indicator in Header */
-.progress-indicator {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--learning-text-muted);
-  font-weight: 500;
-}
-
-.progress-indicator .progress-bar {
-  width: 100px;
-  height: 4px;
-  background: var(--learning-border);
-  border-radius: 2px;
+.progress-bar-v2 {
+  width: 100%;
+  height: 6px;
+  background: var(--border-light);
+  border-radius: 10px;
   overflow: hidden;
 }
 
-.progress-indicator .progress-fill {
+.progress-fill-v2 {
   height: 100%;
-  background: var(--learning-accent);
-  border-radius: 2px;
-  transition: width 0.3s ease;
+  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* ========================================
-   Main Content Area
-   ======================================== */
-.lesson-main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 40px 24px;
-  gap: 32px;
-  width: 100%;
-  max-width: 900px;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-
-/* Lesson Header Section */
-.lesson-header-section {
-  text-align: center;
-  max-width: var(--content-max-width);
-  width: 100%;
-}
-
-#lessonTitle {
-  font-size: 32px;
+.progress-count {
+  font-size: 12px;
   font-weight: 700;
-  color: var(--learning-text);
-  margin: 0 0 12px 0;
-  letter-spacing: -0.5px;
-  line-height: 1.3;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
 }
 
-.definition {
-  font-size: 16px;
-  color: var(--learning-text-muted);
-  margin: 0;
-  line-height: 1.6;
-}
-
-.lesson-image {
-  max-width: 100%;
-  height: auto;
-  border-radius: 12px;
-  margin-top: 24px;
-  box-shadow: var(--card-shadow);
-}
-
-/* ========================================
-   Content Card
-   ======================================== */
-#content {
-  max-width: var(--content-max-width);
-  width: 100%;
-  background: var(--learning-card-bg);
-  border-radius: 16px;
-  padding: 48px;
-  box-shadow: var(--card-shadow);
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  font-size: 17px;
-  line-height: var(--content-line-height);
-  color: var(--learning-text);
-  outline: none;
-  transition: box-shadow 0.3s ease;
-}
-
-#content:focus {
-  box-shadow: var(--card-shadow-hover);
-}
-
-/* ========================================
-   Keyword Highlighting
-   ======================================== */
-.kw-highlight {
-  background: transparent;
-  border-bottom: 2px solid var(--learning-keyword-border);
-  padding: 0 2px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  border-radius: 0;
-}
-
-.kw-highlight:hover {
-  background: var(--learning-keyword-bg);
-  border-bottom-color: var(--learning-accent);
-}
-
-.kw-highlight:focus {
-  outline: 2px solid var(--learning-accent);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* ========================================
-   Instructions Section
-   ======================================== */
-#instructions {
-  max-width: var(--content-max-width);
-  width: 100%;
-  background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%);
-  border: 1px solid #bfdbfe;
-  border-left: 4px solid var(--learning-accent);
-  padding: 24px 32px;
-  border-radius: 12px;
-}
-
-#instructions h2 {
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--learning-text);
-  margin: 0 0 12px 0;
+/* Distraction Toggle */
+.distraction-mode-toggle {
   display: flex;
   align-items: center;
-  gap: 8px;
 }
 
-#instructions h2::before {
-  content: '📋';
-  font-size: 18px;
-}
-
-#instructionText {
-  font-size: 15px;
-  color: var(--learning-text-muted);
-  line-height: 1.6;
-}
-
-#instructions button {
-  margin-top: 16px;
-  background: var(--learning-accent);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 20px;
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left: 35px;
   cursor: pointer;
   font-size: 14px;
+  user-select: none;
   font-weight: 500;
-  transition: all 0.2s ease;
+  color: var(--text-muted);
 }
 
-#instructions button:hover {
-  background: var(--learning-accent-hover);
-}
-
-/* ========================================
-   Audio Controls (Simplified)
-   ======================================== */
-.lesson-controls {
-  max-width: var(--content-max-width);
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  padding: 0;
-  background: transparent;
-  border: none;
-}
-
-.tts-controls {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background: var(--learning-card-bg);
-  padding: 16px 24px;
-  border-radius: 40px;
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
-  border: 1px solid var(--learning-border);
-}
-
-.tts-controls button {
-  background: var(--learning-accent);
-  color: white;
-  border: none;
-  padding: 12px 24px;
-  border-radius: 24px;
+.checkbox-container input {
+  position: absolute;
+  opacity: 0;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
-.tts-controls button::before {
-  content: '🔊';
+.checkmark {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  height: 20px;
+  width: 20px;
+  background-color: var(--border-light);
+  border-radius: 4px;
+  transition: all 0.2s;
 }
 
-.tts-controls button#stopBtn::before {
-  content: '⏹';
+.checkbox-container:hover input ~ .checkmark {
+  background-color: #cbd5e1;
 }
 
-.tts-controls button#pauseBtn::before {
-  content: '⏸';
+.checkbox-container input:checked ~ .checkmark {
+  background-color: var(--accent-primary);
 }
 
-.tts-controls button:hover {
-  background: var(--learning-accent-hover);
-  transform: translateY(-1px);
-}
-
-.tts-controls button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.tts-controls label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--learning-text-muted);
-}
-
-.tts-controls input[type="range"] {
-  width: 80px;
-  accent-color: var(--learning-accent);
-}
-
-/* Hide pacing controls in clean design */
-.pacing-controls {
+.checkmark:after {
+  content: "";
+  position: absolute;
   display: none;
 }
 
-/* ========================================
-   Keywords Section (Inline)
-   ======================================== */
-.keywords-sidebar {
-  max-width: var(--content-max-width);
-  width: 100%;
-  background: var(--learning-card-bg);
-  border-radius: 12px;
-  padding: 24px 32px;
-  box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
-  border: 1px solid var(--learning-border);
+.checkbox-container input:checked ~ .checkmark:after {
+  display: block;
 }
 
-.keywords-sidebar h3 {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--learning-text);
-  margin: 0 0 16px 0;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.checkbox-container .checkmark:after {
+  left: 7px;
+  top: 3px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* ========================================
+   Main Scroll Area
+   ======================================== */
+.lesson-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lesson-document {
+  width: 100%;
+  max-width: var(--max-content-width);
+}
+
+/* Titles */
+.main-title {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.subtitle-instructions {
+  font-size: 18px;
+  color: var(--text-muted);
+  margin-bottom: 32px;
+  line-height: 1.6;
+}
+
+/* Audio Card */
+.audio-card-modern {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  margin-bottom: 40px;
+  border: 1px solid var(--border-light);
+}
+
+.audio-primary-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 24px;
 }
 
-.keywords-sidebar h3::before {
-  content: '📌';
+.btn-play-rounded {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--accent-primary);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
-.keyword-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+.btn-play-rounded.playing {
+  background: var(--accent-secondary);
+}
+
+.btn-play-rounded:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.speed-slider-group {
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
 
-.keyword-list li {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.keyword {
-  background: var(--learning-keyword-bg);
-  color: var(--learning-accent);
-  padding: 6px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  border: 1px solid var(--learning-keyword-border);
+.speed-label {
   font-size: 14px;
   font-weight: 600;
-  transition: all 0.2s ease;
-  text-align: left;
+  color: var(--text-muted);
 }
 
-.keyword:hover {
-  background: var(--learning-accent);
+.premium-range {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 120px;
+  height: 6px;
+  background: var(--border-light);
+  border-radius: 5px;
+  outline: none;
+}
+
+.premium-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  background: var(--accent-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: var(--shadow-sm);
+}
+
+/* Content Box */
+.content-box-v2 {
+  background: white;
+  padding: 48px;
+  border-radius: 20px;
+  box-shadow: var(--shadow-lg);
+  font-size: 20px;
+  line-height: 1.8;
+  color: var(--text-primary);
+  margin-bottom: 48px;
+  border: 1px solid var(--border-light);
+}
+
+/* Keyword Highlighting */
+.kw-highlight {
+  background: rgba(59, 130, 246, 0.1);
+  border-bottom: 2px solid var(--accent-primary);
+  color: var(--accent-primary);
+  padding: 0 4px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.kw-highlight:hover {
+  background: var(--accent-primary);
   color: white;
-  border-color: var(--learning-accent);
 }
 
-.keyword:focus {
-  outline: 2px solid var(--learning-accent);
-  outline-offset: 2px;
+/* Keywords Grid */
+.key-vocabulary {
+  margin-top: 64px;
 }
 
-.keyword-explanation {
-  font-size: 13px;
-  color: var(--learning-text-muted);
+.section-heading {
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-primary);
+}
+
+.heading-icon {
+  color: var(--accent-primary);
+}
+
+.keywords-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.kw-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--border-light);
+  transition: all 0.2s;
+}
+
+.kw-card:hover {
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.kw-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-primary);
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.kw-def {
+  font-size: 14px;
+  color: var(--text-muted);
   line-height: 1.5;
-  padding-left: 12px;
 }
 
-/* ========================================
-   Exercise Buttons
-   ======================================== */
-.exercises-section {
-  max-width: var(--content-max-width);
-  width: 100%;
+/* Bottom Actions */
+.completion-actions {
   display: flex;
   justify-content: center;
-  gap: 16px;
-  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 64px;
+  padding-bottom: 80px;
 }
 
-.exercises-button,
-.evaluation-button {
-  padding: 14px 32px;
-  font-size: 15px;
-  font-weight: 600;
+.btn-action {
+  padding: 16px 32px;
+  border-radius: 12px;
   color: white;
+  font-weight: 700;
+  font-size: 16px;
   border: none;
-  border-radius: 24px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+  box-shadow: var(--shadow-md);
+  min-width: 200px;
 }
 
-.exercises-button {
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+.exercises-gradient {
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
 }
 
-.exercises-button:hover {
-  background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+.evaluate-gradient {
+  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
 }
 
-.evaluation-button {
-  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+.btn-action:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 20px rgba(0,0,0,0.15);
 }
 
-.evaluation-button:hover {
-  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
-}
-
-.exercises-button:active,
-.evaluation-button:active {
+.btn-action:active {
   transform: translateY(0);
 }
 
-.exercises-button:focus,
-.evaluation-button:focus {
-  outline: 3px solid rgba(99, 102, 241, 0.4);
-  outline-offset: 2px;
-}
-
-/* ========================================
-   Navigation Footer
-   ======================================== */
-.navigation-footer {
-  max-width: var(--content-max-width);
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  padding-top: 24px;
-  border-top: 1px solid var(--learning-border);
-}
-
-.nav-button {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+/* Focus Mode Header Overlay */
+.exit-focus-overlay {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 2000;
+  background: var(--accent-primary);
+  color: white;
+  border: none;
   padding: 12px 24px;
-  background: transparent;
-  border: 1px solid var(--learning-border);
-  border-radius: 24px;
-  color: var(--learning-text-muted);
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 50px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: all 0.2s;
 }
 
-.nav-button:hover {
-  background: var(--learning-border);
-  color: var(--learning-text);
+.exit-focus-overlay:hover {
+  background: var(--accent-secondary);
+  transform: scale(1.05);
 }
 
 /* ========================================
-   Focus Mode (Distraction-Free)
+   Responsive
    ======================================== */
-.app-container.focus-mode .lesson-header {
-  background: transparent;
-  border-bottom: none;
+@media (max-width: 768px) {
+  .nav-group-center {
+    display: none;
+  }
+  
+  .content-box-v2 {
+    padding: 24px;
+    font-size: 18px;
+  }
+  
+  .main-title {
+    font-size: 28px;
+  }
+  
+  .completion-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .btn-action {
+    width: 100%;
+  }
+
+  .lesson-nav-header {
+      padding: 0 12px;
+  }
 }
 
-.app-container.focus-mode .lesson-header .nav {
-  opacity: 0.3;
+/* ========================================
+   Focus Mode Adjustments
+   ======================================== */
+.focus-mode .lesson-nav-header {
+  transform: translateY(-100%);
+  transition: transform 0.3s ease;
 }
 
-.app-container.focus-mode .lesson-header .nav:hover {
+.focus-mode .lesson-document {
+  max-width: 1000px;
+}
+
+.focus-mode .audio-card-modern,
+.focus-mode .key-vocabulary {
+  opacity: 0.1;
+  transition: opacity 0.5s;
+}
+
+.focus-mode .audio-card-modern:hover,
+.focus-mode .key-vocabulary:hover {
   opacity: 1;
 }
 
-.app-container.focus-mode .controls label:not(:last-child) {
-  display: none;
+.focus-mode .content-box-v2 {
+  box-shadow: none;
+  border-color: transparent;
+  background: transparent;
 }
 
-.app-container.focus-mode .keywords-sidebar {
-  display: none;
+/* ========================================
+   Dark Mode Overrides
+   ======================================== */
+[data-theme="dark"] .learning-container-v2 {
+  background-color: var(--lesson-bg);
+  color: var(--lesson-text-primary);
 }
 
-.app-container.focus-mode #content {
-  max-width: 90%;
-  padding: 64px;
+[data-theme="dark"] .lesson-nav-header {
+  background: rgba(30, 30, 30, 0.8);
+  border-bottom-color: var(--lesson-accent-border);
 }
 
-.app-container.focus-mode .exercises-section {
-  display: none;
+[data-theme="dark"] .nav-text-btn {
+  color: var(--lesson-text-secondary);
 }
 
-.exit-distraction {
-  position: fixed;
-  right: 24px;
-  top: 24px;
-  z-index: 1200;
-  padding: 12px 24px;
-  border-radius: 24px;
-  background: var(--learning-accent);
+[data-theme="dark"] .nav-text-btn:hover {
+  background: var(--lesson-accent-soft);
+  color: var(--lesson-text-primary);
+}
+
+[data-theme="dark"] .progress-bar-v2 {
+  background: var(--progress-bg);
+}
+
+[data-theme="dark"] .audio-card-modern,
+[data-theme="dark"] .content-box-v2,
+[data-theme="dark"] .kw-card {
+  background: var(--lesson-card-bg);
+  color: var(--lesson-text-primary);
+  border-color: var(--lesson-accent-border);
+  box-shadow: var(--lesson-shadow);
+}
+
+[data-theme="dark"] .main-title {
+  color: var(--lesson-text-primary);
+}
+
+[data-theme="dark"] .subtitle-instructions,
+[data-theme="dark"] .kw-def,
+[data-theme="dark"] .speed-label,
+[data-theme="dark"] .progress-count {
+  color: var(--lesson-text-secondary);
+}
+
+[data-theme="dark"] .section-heading {
+  color: var(--lesson-text-primary);
+}
+
+[data-theme="dark"] .kw-highlight {
+  background: var(--lesson-accent-soft);
+  border-bottom-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+[data-theme="dark"] .kw-highlight:hover {
+  background: var(--accent-primary);
   color: white;
-  border: none;
-  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  display: none;
-  transition: all 0.2s ease;
 }
 
-.exit-distraction:hover {
-  background: var(--learning-accent-hover);
-  transform: translateY(-2px);
+[data-theme="dark"] .premium-range {
+  background: var(--progress-bg);
 }
 
-.app-container.focus-mode .exit-distraction {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+[data-theme="dark"] .checkmark {
+  background-color: var(--progress-bg);
 }
 
-.exit-distraction::before {
-  content: '✕';
+[data-theme="dark"] .checkbox-container:hover input ~ .checkmark {
+  background-color: #475569;
 }
 
-/* ========================================
-   Loading State
-   ======================================== */
-.learning-content {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 50vh;
-  gap: 16px;
-  color: var(--learning-text-muted);
-}
-
-/* ========================================
-   Responsive Design
-   ======================================== */
-@media (max-width: 768px) {
-  .lesson-header {
-    padding: 12px 16px;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .controls {
-    order: -1;
-    width: 100%;
-    justify-content: flex-end;
-  }
-
-  .lesson-main {
-    padding: 24px 16px;
-    gap: 24px;
-  }
-
-  #lessonTitle {
-    font-size: 24px;
-  }
-
-  #content {
-    padding: 24px;
-    font-size: 16px;
-  }
-
-  .tts-controls {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
-    border-radius: 16px;
-    padding: 16px;
-  }
-
-  .keywords-sidebar {
-    padding: 20px;
-  }
-
-  .keyword-list {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ========================================
-   Dark Theme Support
-   ======================================== */
-[data-theme="dark"] .learning-container {
-  background: linear-gradient(180deg, var(--bg-primary) 0%, #0f0f0f 100%);
-}
-
-[data-theme="dark"] .lesson-header {
-  background: rgba(30, 30, 30, 0.95);
-  border-bottom-color: var(--border);
-}
-
-[data-theme="dark"] #content,
-[data-theme="dark"] .keywords-sidebar,
-[data-theme="dark"] .tts-controls {
-  background: var(--bg-secondary);
-  border-color: var(--border);
-  color: var(--text-primary);
-}
-
-[data-theme="dark"] #lessonTitle,
-[data-theme="dark"] .keyword-explanation {
-  color: var(--text-primary);
-}
-
-[data-theme="dark"] .definition,
-[data-theme="dark"] .tts-controls label,
-[data-theme="dark"] .controls label {
-  color: var(--text-secondary);
-}
-
-[data-theme="dark"] .controls label {
-  border-color: var(--border);
-}
-
-[data-theme="dark"] .controls label:hover {
-  background: var(--bg-secondary);
-}
-
-/* ========================================
-   Dyslexia Mode Support
-   ======================================== */
-.dyslexia-mode #content {
-  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
-  line-height: 2;
-  letter-spacing: 0.05em;
-  word-spacing: 0.1em;
-}
-
-.dyslexia-mode #lessonTitle {
-  font-family: 'OpenDyslexic', 'Comic Sans MS', sans-serif !important;
-}
-
-/* ========================================
-   High Contrast Mode Support
-   ======================================== */
-.high-contrast .learning-container {
-  background: #000000;
-}
-
-.high-contrast #content,
-.high-contrast .keywords-sidebar,
-.high-contrast .tts-controls,
-.high-contrast #instructions {
-  background: #000000;
-  border: 2px solid #ffffff;
-}
-
-.high-contrast #lessonTitle,
-.high-contrast #content {
-  color: #ffffff;
-}
-
-.high-contrast .tts-controls button,
-.high-contrast .exercises-button,
-.high-contrast .evaluation-button,
-.high-contrast .keyword {
-  background: #ffff00 !important;
-  color: #000000 !important;
-}
-
-.high-contrast .kw-highlight {
-  border-bottom-color: #ffff00;
-  color: #ffff00;
-}
-
-.high-contrast .kw-highlight:hover {
-  background: #ffff00;
-  color: #000000;
+[data-theme="dark"] .checkbox-container {
+  color: var(--lesson-text-secondary);
 }

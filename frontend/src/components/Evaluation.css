@@ -524,10 +524,127 @@
 
 /* Dark Mode Support */
 [data-theme="dark"] .evaluation-page {
-  --bg-card: #1a202c;
-  --bg-light: #2d3748;
-  --text-secondary: #a0aec0;
-  --heading-color: #e2e8f0;
+  --bg-card: #2A2A2A;
+  --bg-light: #1E1E1E;
+  --text-secondary: #B0B0B0;
+  --heading-color: #EDEDED;
+  --border-color: #3A3A3A;
+  --primary-color: #5AA9FF;
+}
+
+[data-theme="dark"] .evaluation-card,
+[data-theme="dark"] .evaluation-stats {
+  background: var(--bg-card);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .answer-input {
+  background: var(--bg-light);
+  color: var(--heading-color);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .answer-input:focus {
+  background: #1E1E1E;
+  border-color: var(--primary-color);
+}
+
+[data-theme="dark"] .score-display.excellent { background: rgba(124, 217, 146, 0.15); }
+[data-theme="dark"] .score-display.good { background: rgba(90, 169, 255, 0.15); }
+[data-theme="dark"] .score-display.fair { background: rgba(233, 184, 114, 0.15); }
+[data-theme="dark"] .score-display.needs-improvement { background: rgba(255, 107, 107, 0.15); }
+
+[data-theme="dark"] .your-answer {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .stat-item {
+  background: #1E1E1E;
+}
+
+[data-theme="dark"] .progress-bar {
+  background: #3A3A3A;
+}
+
+[data-theme="dark"] .button-secondary {
+  background: #3A3A3A;
+  border-color: #4A4A4A;
+  color: #EDEDED;
+}
+
+[data-theme="dark"] .button-secondary:hover {
+  background: #4A4A4A;
+}
+
+/* Evaluation Utility Classes */
+.section-spacing {
+  margin-top: 12px;
+}
+
+.missed-label {
+  color: #b94a48;
+}
+
+[data-theme="dark"] .missed-label {
+  color: #FF6B6B;
+}
+
+.missed-badge {
+  background-color: #fff3cd !important;
+  color: #856404 !important;
+  border: 1px solid #ffc107;
+}
+
+[data-theme="dark"] .missed-badge {
+  background-color: #45371c !important;
+  color: #FFE082 !important;
+  border-color: #6D4C41;
+}
+
+.review-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  margin-top: 6px;
+}
+
+.stop-recording-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #ffebee !important;
+  color: #c62828 !important;
+  border: 2px solid #c62828 !important;
+}
+
+[data-theme="dark"] .stop-recording-btn {
+  background-color: #311b1b !important;
+  color: #ef9a9a !important;
+  border-color: #b71c1c !important;
+}
+
+.recording-indicator {
+  color: #d32f2f;
+  font-weight: bold;
+  animation: pulse 1.5s infinite;
+}
+
+[data-theme="dark"] .recording-indicator {
+  color: #FF5252;
+}
+
+.audio-ready-indicator {
+  color: #2e7d32;
+  font-weight: bold;
+}
+
+[data-theme="dark"] .audio-ready-indicator {
+  color: #81C784;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
 }
 
 /* High Contrast Mode */

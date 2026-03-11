@@ -119,6 +119,7 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
               required
               disabled={loading || googleLoading}
               aria-label={t('auth.signup.email')}
+              data-testid="signup-email-input"
             />
           </div>
 
@@ -134,6 +135,7 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
               required
               disabled={loading || googleLoading}
               aria-label={t('auth.signup.password')}
+              data-testid="signup-password-input"
               minLength={6}
             />
           </div>
@@ -166,6 +168,7 @@ const Signup: React.FC<SignupProps> = ({ onSwitchToLogin }) => {
             className="auth-button"
             disabled={loading || googleLoading}
             aria-label={t('auth.signup.submit')}
+            data-testid="signup-button"
           >
             {loading ? t('auth.signup.submitting') : t('auth.signup.submit')}
           </button>

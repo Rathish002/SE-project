@@ -222,6 +222,14 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
     );
   }
 
+  // Get CSS class based on score
+  const getScoreClass = (score: number): string => {
+    if (score >= 0.8) return 'excellent';
+    if (score >= 0.6) return 'good';
+    if (score >= 0.4) return 'fair';
+    return 'needs-improvement';
+  };
+
   return (
     <div className="evaluation-page">
       {/* Header */}
@@ -307,22 +315,21 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
                   )}
 
                   {evaluationResult!.missedKeywords && evaluationResult!.missedKeywords.length > 0 && (
-                    <div className="missed-keywords" style={{ marginTop: '0.75rem' }}>
-                      <p className="keywords-label" style={{ color: '#b94a48' }}>
+                    <div className="missed-keywords section-spacing">
+                      <p className="keywords-label missed-label">
                         ⚠️ {'Missed Concepts'}:
                       </p>
                       <div className="keywords-list">
                         {evaluationResult!.missedKeywords.map((keyword, idx) => (
                           <span
                             key={idx}
-                            className="keyword-badge"
-                            style={{ backgroundColor: '#fff3cd', color: '#856404', borderColor: '#ffc107' }}
+                            className="keyword-badge missed-badge"
                           >
                             {keyword}
                           </span>
                         ))}
                       </div>
-                      <p style={{ fontSize: '0.82rem', color: '#6c757d', marginTop: '0.4rem' }}>
+                      <p className="review-text">
                         {'Review these concepts to improve your score.'}
                       </p>
                     </div>
@@ -361,19 +368,18 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
                   </button>
                 ) : (
                   <button
-                    className="button button-secondary"
+                    className="button button-secondary stop-recording-btn"
                     onClick={stopRecording}
                     disabled={loading}
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#ffebee', color: '#c62828', borderColor: '#c62828' }}
                   >
                     ⏹ {'Stop Recording'}
                   </button>
                 )}
 
-                {isRecording && <span className="recording-indicator" style={{ color: '#d32f2f', fontWeight: 'bold' }}>Recording...</span>}
+                {isRecording && <span className="recording-indicator">Recording...</span>}
 
                 {audioBlob && !isRecording && (
-                  <span className="audio-ready-indicator" style={{ color: '#2e7d32', fontWeight: 'bold' }}>
+                  <span className="audio-ready-indicator">
                     Audio ready to evaluate
                   </span>
                 )}
@@ -465,15 +471,5 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
     </div>
   );
 };
-
-/**
- * Get CSS class based on score
- */
-function getScoreClass(score: number): string {
-  if (score >= 0.8) return 'excellent';
-  if (score >= 0.6) return 'good';
-  if (score >= 0.4) return 'fair';
-  return 'needs-improvement';
-}
 
 export default EvaluationPage;

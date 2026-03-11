@@ -254,17 +254,19 @@
 }
 
 .menu-item:hover {
-	background: var(--accent, #0969da);
-	color: white;
+	background: var(--accent-hover, #0969da) !important;
+	color: white !important;
+	transform: translateX(4px);
 }
 
-.menu-item:hover svg {
-	stroke: white;
+.menu-item:hover * {
+	color: white !important;
+	stroke: white !important;
 }
 
 .menu-item svg {
 	color: var(--text-secondary, #57606a);
-	transition: color 0.15s;
+	transition: all 0.2s ease;
 }
 
 .menu-item.danger {
@@ -276,12 +278,14 @@
 }
 
 .menu-item.danger:hover {
-	background: #cf222e;
-	color: white;
+	background: #cf222e !important;
+	color: white !important;
+	transform: translateX(4px);
 }
 
-.menu-item.danger:hover svg {
-	stroke: white;
+.menu-item.danger:hover * {
+	color: white !important;
+	stroke: white !important;
 }
 
 
