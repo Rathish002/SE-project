@@ -230,6 +230,10 @@
       "sendError": "संदेश भेजने में त्रुटि",
       "startError": "चैट शुरू करने में त्रुटि",
       "unknownUser": "अज्ञात उपयोगकर्ता",
+      "typingOne": "{{name}} टाइप कर रहे हैं...",
+      "typingMultiple": "{{count}} लोग टाइप कर रहे हैं...",
+      "seenBy": "{{names}} ने देखा",
+      "seen": "देखा",
       "systemMessages": {
         "userJoined": "{{actor}} समूह में शामिल हुए",
         "userLeft": "{{actor}} समूह से बाहर निकल गए",

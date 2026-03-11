@@ -17,6 +17,8 @@ import {
   DocumentData,
   Timestamp,
   addDoc,
+  updateDoc,
+  deleteDoc,
   serverTimestamp,
 } from 'firebase/firestore';
 import { db, auth } from '../firebase';
@@ -61,6 +63,7 @@ export interface Conversation {
   updatedAt: Timestamp;
   archived?: boolean; // True if group is empty and archived (for audit purposes)
   lastClearedAt?: { [uid: string]: Timestamp }; // Per-user clear timestamps
+  lastReadAt?: { [uid: string]: Timestamp }; // Per-user last-read timestamps
 }
 
 /**
@@ -833,6 +836,63 @@ export async function clearChatForUser(
     },
     { merge: true }
   );
+}
+
+/**
+ * Set or clear the typing indicator for a user in a conversation.
+ * Typing entries are stored in a `typing` subcollection under the conversation.
+ */
+export async function setTypingStatus(
+  conversationId: string,
+  uid: string,
+  userName: string,
+  isTyping: boolean
+): Promise<void> {
+  const typingRef = doc(db, 'conversations', conversationId, 'typing', uid);
+  if (isTyping) {
+    await setDoc(typingRef, { isTyping: true, userName, updatedAt: serverTimestamp() });
+  } else {
+    await deleteDoc(typingRef);
+  }
+}
+
+/**
+ * Subscribe to typing events in a conversation.
+ * Filters out current user and entries older than 5 seconds.
+ */
+export function subscribeToTyping(
+  conversationId: string,
+  currentUid: string,
+  callback: (typingUserNames: string[]) => void
+): () => void {
+  const typingCol = collection(db, 'conversations', conversationId, 'typing');
+  return onSnapshot(typingCol, (snapshot: QuerySnapshot<DocumentData>) => {
+    const now = Date.now();
+    const names: string[] = [];
+    snapshot.docs.forEach((docSnap: DocumentData) => {
+      if (docSnap.id === currentUid) return;
+      const data = docSnap.data();
+      if (!data.isTyping) return;
+      const updatedAt = data.updatedAt?.toMillis?.() || 0;
+      if (updatedAt && now - updatedAt > 5000) return;
+      names.push(data.userName || 'Someone');
+    });
+    callback(names);
+  });
+}
+
+/**
+ * Mark conversation as read for the given user.
+ * Updates the `lastReadAt.<uid>` field on the conversation document.
+ */
+export async function markConversationRead(
+  conversationId: string,
+  uid: string
+): Promise<void> {
+  const conversationRef = doc(db, 'conversations', conversationId);
+  await updateDoc(conversationRef, {
+    [`lastReadAt.${uid}`]: serverTimestamp(),
+  });
 }
 
 /**

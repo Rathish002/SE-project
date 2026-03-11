@@ -18,7 +18,7 @@ import {
 import { getUserProfile, updateUserName, changePassword, changeUsername, deleteUserAccount } from '../services/userService';
 import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth } from '../firebase';
-import type { ThemeMode, FontSize, AudioSpeed } from '../types/accessibility';
+import type { ThemeMode, AudioSpeed } from '../types/accessibility';
 import './UnifiedSettings.css';
 
 interface UnifiedSettingsProps {

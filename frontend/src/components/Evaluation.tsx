@@ -29,7 +29,7 @@ const EvaluationPage: React.FC<EvaluationPageProps> = ({
   const [loading, setLoading] = useState(false);
   const [questionLoading, setQuestionLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [answers, setAnswers] = useState<{ [key: number]: EvaluationResult }>({});
+  const [_answers, setAnswers] = useState<{ [key: number]: EvaluationResult }>({});
   const [allScores, setAllScores] = useState<number[]>([]);
 
   // Audio Recording State

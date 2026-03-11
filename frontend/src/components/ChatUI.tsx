@@ -13,6 +13,9 @@ import {
   sendVideoMessage,
   sendVoiceMessage,
   sendFileMessage,
+  setTypingStatus,
+  subscribeToTyping,
+  markConversationRead,
   type Message,
   type Conversation,
 } from '../services/chatService';
@@ -53,6 +56,9 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
   const [isBlocked, setIsBlocked] = useState(false);
   const [messageStates, setMessageStates] = useState<LocalMessageState>({});
   const [translatedMessages, setTranslatedMessages] = useState<{ [messageId: string]: string }>({});
+  const [typingUsers, setTypingUsers] = useState<string[]>([]);
+  const [lastReadAt, setLastReadAt] = useState<{ [uid: string]: any }>({});
+  const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const unsubscribeMessagesRef = useRef<(() => void) | null>(null);
@@ -70,6 +76,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
     unsubscribeMessagesRef.current = subscribeToMessages(conversationId, currentUser.uid, (newMessages: Message[]) => {
       setMessages(newMessages);
       setConnectionStatus('connected');
+      markConversationRead(conversationId, currentUser.uid).catch(() => {});
     });
     return () => {
       if (unsubscribeMessagesRef.current) {
@@ -95,6 +102,10 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
             createdAt: data.createdAt,
             updatedAt: data.updatedAt,
           });
+
+          if (data.lastReadAt) {
+            setLastReadAt(data.lastReadAt);
+          }
 
           // Get presence for participants
           const participantData = await Promise.all(
@@ -125,6 +136,17 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
       }
     };
   }, [conversationId]);
+
+  // Subscribe to typing indicators
+  useEffect(() => {
+    if (!currentUser?.uid) return;
+    const unsub = subscribeToTyping(conversationId, currentUser.uid, setTypingUsers);
+    return () => {
+      unsub();
+      if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+      setTypingStatus(conversationId, currentUser.uid, '', false).catch(() => {});
+    };
+  }, [conversationId, currentUser?.uid]);
 
   // Check if other user is blocked (for direct chats only)
   useEffect(() => {
@@ -250,6 +272,10 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
     setMessageText('');
     setSending(true);
 
+    // Clear typing indicator immediately
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    setTypingStatus(conversationId, currentUser!.uid, '', false).catch(() => {});
+
     // Add temporary message with 'sending' state
     setMessageStates(prev => ({ ...prev, [tempId]: 'sending' }));
 
@@ -314,6 +340,18 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
     if (!text) return text;
     if (fromLang === toLang) return text;
     return `[${toLang}] ${text}`;
+  };
+
+  const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessageText(e.target.value);
+    if (!currentUser?.uid || !e.target.value.trim()) return;
+    setTypingStatus(conversationId, currentUser.uid, currentUser.displayName || 'Someone', true).catch(() => {});
+    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      if (currentUser?.uid) {
+        setTypingStatus(conversationId, currentUser.uid, '', false).catch(() => {});
+      }
+    }, 3000);
   };
 
   const handleTranslateMessage = async (messageId: string, text: string, originalLang: string) => {
@@ -395,8 +433,13 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                 <div className="empty-icon">✉️</div>
                 <p>{t('collaboration.chat.noMessages')}</p>
               </div>
-            ) : (
-              messages.map((message) => {
+            ) : (() => {
+              const lastOwnMsgIdx = messages.reduce(
+                (acc, m, i) => (m.senderUid === currentUser?.uid && m.type !== 'system' ? i : acc),
+                -1
+              );
+              return (
+                messages.map((message, msgIndex) => {
                 if (message.type === 'system') {
                   let systemText = message.text;
                   if (message.i18nKey) {
@@ -468,11 +511,28 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
                           {translatedMessages[message.id] ? 'Original' : 'Translate'}
                         </button>
                       )}
+                      {isOwn && msgIndex === lastOwnMsgIdx && (() => {
+                        const readers = Object.entries(lastReadAt).filter(([uid]) => uid !== currentUser?.uid);
+                        if (!readers.length) return null;
+                        return (
+                          <div className="read-receipts">
+                            {readers.map(([uid]) => {
+                              const p = participants.find(pp => pp.uid === uid);
+                              return p ? (
+                                <span key={uid} className="seen-avatar" title={`Seen by ${p.name}`}>
+                                  {p.name[0]}
+                                </span>
+                              ) : null;
+                            })}
+                          </div>
+                        );
+                      })()}
                     </div>
                   </div>
                 );
               })
-            )}
+              );
+            })()}
             <div ref={messagesEndRef} />
           </div>
         </div>
@@ -511,6 +571,17 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
         </aside>
       </div>
 
+      {typingUsers.length > 0 && (
+        <div className="typing-indicator">
+          <span className="typing-dots"><span /><span /><span /></span>
+          <span className="typing-text">
+            {typingUsers.length === 1
+              ? t('collaboration.chat.typingOne', { name: typingUsers[0] })
+              : t('collaboration.chat.typingMultiple', { count: typingUsers.length })}
+          </span>
+        </div>
+      )}
+
       <div className="chat-footer-v2">
         <div className="input-toolbar">
           <input type="file" ref={imageInputRef} accept="image/*" className="hidden-input" onChange={handleImageUpload} />
@@ -528,7 +599,7 @@ const ChatUI: React.FC<ChatUIProps> = ({ conversationId, currentUser, onBack }) 
             className="chat-textarea-v2"
             placeholder={t('collaboration.chat.inputPlaceholder')}
             value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
+            onChange={handleMessageChange}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();

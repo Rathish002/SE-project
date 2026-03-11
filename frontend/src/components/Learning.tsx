@@ -46,8 +46,6 @@ const Learning: React.FC<LearningProps> = ({
   const [isPaused, setIsPaused] = useState(false);
   const synthRef = useRef<SpeechSynthesis | null>(null);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
   // Scroll to top on lesson change
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -153,15 +151,6 @@ const Learning: React.FC<LearningProps> = ({
   const handleResume = () => {
     if (synthRef.current && synthRef.current.paused) {
       synthRef.current.resume();
-      setIsPaused(false);
-    }
-  };
-
-  // Stop TTS
-  const handleStop = () => {
-    if (synthRef.current) {
-      synthRef.current.cancel();
-      setIsPlaying(false);
       setIsPaused(false);
     }
   };

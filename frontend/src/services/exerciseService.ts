@@ -1,8 +1,4 @@
-import { Lesson, LessonStep } from '../types/ExerciseTypes';
-
-interface ExerciseResponse {
-    exercises: any[]; // We'll refine this type based on backend response
-}
+import { Lesson } from '../types/ExerciseTypes';
 
 export const fetchExercisesByLesson = async (lessonId: number): Promise<Lesson[]> => {
     try {

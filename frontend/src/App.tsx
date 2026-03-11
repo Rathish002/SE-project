@@ -22,6 +22,7 @@ import Exercises from './components/Exercises';
 import Navigation, { Page } from './components/Navigation';
 import AccessibilityOverlays from './components/AccessibilityOverlays';
 import TopBar from './components/TopBar';
+import UpdateNotificationBanner from './components/UpdateNotificationBanner';
 
 import './i18n/i18n'; // Initialize i18n
 import './App.css';
@@ -202,6 +203,7 @@ function App() {
     return (
       <AccessibilityProvider>
         <div className={`app-container ${isFocusModePage && focusMode ? 'focus-mode' : ''} ${!isSidebarOpen ? 'sidebar-closed' : ''}`}>
+          <UpdateNotificationBanner />
           {!(isFocusModePage && focusMode) && (
             <Navigation
               currentPage={currentPage}

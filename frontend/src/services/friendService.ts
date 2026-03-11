@@ -366,19 +366,22 @@ export function subscribeToFriends(
           });
         }
 
+        // Capture blockedUids reference for use in closures (avoids no-loop-func)
+        const localBlockedUids = blockedUids;
+
         // Subscribe to profile changes
         const profileUnsubscribe = onSnapshot(doc(db, 'users', friendUid), (profileSnap: any) => {
           if (profileSnap.exists()) {
             const profileData = profileSnap.data();
             const existing = currentFriends.get(friendUid);
-            if (existing && !blockedUids.has(friendUid)) {
+            if (existing && !localBlockedUids.has(friendUid)) {
               currentFriends.set(friendUid, {
                 ...existing,
                 name: profileData.name,
                 email: profileData.email,
               });
               const filteredFriends = Array.from(currentFriends.values()).filter(
-                friend => !blockedUids.has(friend.uid)
+                friend => !localBlockedUids.has(friend.uid)
               );
               callback(filteredFriends);
             }
@@ -389,14 +392,14 @@ export function subscribeToFriends(
         const presenceUnsubscribe = onSnapshot(presenceRef, (presenceSnap: any) => {
           const presenceData = presenceSnap.data();
           const existing = currentFriends.get(friendUid);
-          if (existing && !blockedUids.has(friendUid)) {
+          if (existing && !localBlockedUids.has(friendUid)) {
             currentFriends.set(friendUid, {
               ...existing,
               online: presenceData?.online || false,
               lastActive: presenceData?.lastActive,
             });
             const filteredFriends = Array.from(currentFriends.values()).filter(
-              friend => !blockedUids.has(friend.uid)
+              friend => !localBlockedUids.has(friend.uid)
             );
             callback(filteredFriends);
           }

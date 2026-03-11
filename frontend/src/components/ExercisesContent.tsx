@@ -30,9 +30,6 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
     const translatedOptions = t(`lessonData.lesson-${lessonId}.steps.${stepIndex}.options`, { returnObjects: true, defaultValue: step.options }) as string[];
     const translatedWords = t(`lessonData.lesson-${lessonId}.steps.${stepIndex}.words`, { returnObjects: true, defaultValue: step.words }) as string[];
 
-    // We only need labels from image options
-    const rawImageOptions = step.imageOptions || [];
-
     const handleOptionSelect = (val: string) => {
         if (isCorrect === true) return; // Prevent changing after correct
         setAnswer(val);

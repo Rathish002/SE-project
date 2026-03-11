@@ -230,6 +230,10 @@
       "sendError": "Error sending message",
       "startError": "Error starting chat",
       "unknownUser": "Unknown User",
+      "typingOne": "{{name}} is typing...",
+      "typingMultiple": "{{count}} people are typing...",
+      "seenBy": "Seen by {{names}}",
+      "seen": "Seen",
       "systemMessages": {
         "userJoined": "{{actor}} joined the group",
         "userLeft": "{{actor}} left the group",

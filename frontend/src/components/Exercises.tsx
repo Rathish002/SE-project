@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import "./Exercises.css";
-import { fetchExercisesByLesson, saveExerciseProgress, submitAnswer } from "../services/exerciseService";
+import { fetchExercisesByLesson, saveExerciseProgress } from "../services/exerciseService";
 import type { Lesson, LessonStep } from "../types/ExerciseTypes";
 import type { Page } from "./Navigation";
 import ExercisesContent from "./ExercisesContent";
@@ -111,7 +111,7 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
         if (stepHeaderRef.current) {
             stepHeaderRef.current.focus();
         }
-    }, [stepIndex, lessonIndex]);
+    }, [stepIndex, lessonIndex, lessons.length]);
 
     // Enter/exit fullscreen when focus mode (distractionFree) changes
     useEffect(() => {
@@ -197,7 +197,6 @@ const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lesso
         // Save progress if correct
         if (correct && lessonId) {
             // We need a userId. Let's try to get it safely.
-            const currentUser = localStorage.getItem('userParams'); // Or similar? No.
             // Ideally we'd pass `user` prop. but for now let's rely on local state updates.
         }
 
