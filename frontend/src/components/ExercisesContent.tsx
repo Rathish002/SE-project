@@ -26,9 +26,9 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
 }) => {
     const { t } = useTranslation();
 
-    // Pull translations safely
-    const localizedOptions = t(`lessonData.${lessonId}.steps.${stepIndex}.options`, { returnObjects: true, defaultValue: step.options }) as string[] | undefined;
-    const localizedWords = t(`lessonData.${lessonId}.steps.${stepIndex}.words`, { returnObjects: true, defaultValue: step.words }) as string[] | undefined;
+    // Use dynamic database strings for internal logic, but translate for display
+    const translatedOptions = t(`lessonData.lesson-${lessonId}.steps.${stepIndex}.options`, { returnObjects: true, defaultValue: step.options }) as string[];
+    const translatedWords = t(`lessonData.lesson-${lessonId}.steps.${stepIndex}.words`, { returnObjects: true, defaultValue: step.words }) as string[];
 
     // We only need labels from image options
     const rawImageOptions = step.imageOptions || [];
@@ -56,27 +56,30 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
 
     // 1. Choice (Text)
     if (step.type === "choice") {
-        const options = (t(`lessonData.${lessonId}.steps.${stepIndex}.options`, { returnObjects: true, defaultValue: step.options }) as string[]) || [];
+        const options = step.options || [];
 
         return (
             <div className="interaction-content">
                 {renderVisualPrompt()}
                 <div className="options-grid" role="radiogroup" aria-label="Answer choices">
-                    {options.map((opt) => (
-                        <button
-                            key={opt}
-                            role="radio"
-                            aria-checked={answer === opt}
-                            tabIndex={0}
-                            className={`option-btn ${answer === opt ? "selected" : ""} ${isCorrect === true && opt === step.correct ? "correct" : ""
-                                } ${isCorrect === false && answer === opt ? "incorrect" : ""}`}
-                            onClick={() => handleOptionSelect(opt)}
-                            onKeyDown={(e) => handleKeyDown(e, opt)}
-                            disabled={isCorrect === true}
-                        >
-                            {opt}
-                        </button>
-                    ))}
+                    {options.map((opt, index) => {
+                        const displayOpt = Array.isArray(translatedOptions) ? translatedOptions[index] : opt;
+                        return (
+                            <button
+                                key={opt}
+                                role="radio"
+                                aria-checked={answer === opt}
+                                tabIndex={0}
+                                className={`option-btn ${answer === opt ? "selected" : ""} ${isCorrect === true && opt === step.correct ? "correct" : ""
+                                    } ${isCorrect === false && answer === opt ? "incorrect" : ""}`}
+                                onClick={() => handleOptionSelect(opt)}
+                                onKeyDown={(e) => handleKeyDown(e, opt)}
+                                disabled={isCorrect === true}
+                            >
+                                {displayOpt}
+                            </button>
+                        );
+                    })}
                 </div>
                 <div className="action-row">
                     <button
@@ -98,8 +101,8 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
                 {renderVisualPrompt()}
                 <div className="image-options-grid" role="radiogroup" aria-label="Select an image">
                     {step.imageOptions?.map((opt: ImageOption, idx: number) => {
-                        const label = t(`lessonData.${lessonId}.steps.${stepIndex}.imageOptions.${idx}.label`, { defaultValue: opt.label });
-                        const alt = t(`lessonData.${lessonId}.steps.${stepIndex}.imageOptions.${idx}.alt`, { defaultValue: opt.alt });
+                        const label = t(`lessonData.lesson-${lessonId}.steps.${stepIndex}.imageOptions.${idx}.label`, { defaultValue: opt.label });
+                        const alt = t(`lessonData.lesson-${lessonId}.steps.${stepIndex}.imageOptions.${idx}.alt`, { defaultValue: opt.alt });
                         return (
                             <button
                                 key={opt.id}
@@ -134,7 +137,7 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
 
     // 3. Inputs (Fill / Build / Free)
     if (step.type === "fill" || step.type === "build" || step.type === "free") {
-        const words = (t(`lessonData.${lessonId}.steps.${stepIndex}.words`, { returnObjects: true, defaultValue: step.words }) as string[]) || [];
+        const words = step.words || [];
 
         return (
             <div className="interaction-content">
@@ -144,6 +147,7 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
                     <div className="word-bank">
                         {words.map((word, idx) => {
                             const isUsed = answer.includes(word);
+                            const displayWord = Array.isArray(translatedWords) ? translatedWords[idx] : word;
                             return (
                                 <button
                                     key={idx}
@@ -155,7 +159,7 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
                                     }}
                                     disabled={isCorrect === true || isUsed}
                                 >
-                                    {word}
+                                    {displayWord}
                                 </button>
                             );
                         })}
@@ -192,8 +196,8 @@ const ExercisesContent: React.FC<ExercisesContentProps> = ({
             <div className="interaction-content">
                 {renderVisualPrompt()}
                 <div className="read-content">
-                    <p>{t(`lessonData.${lessonId}.steps.${stepIndex}.task`, { defaultValue: step.task })}</p>
-                    <ExercisesTTSButton text={t(`lessonData.${lessonId}.steps.${stepIndex}.task`, { defaultValue: step.task }) as string} />
+                    <p>{t(`lessonData.lesson-${lessonId}.steps.${stepIndex}.task`, { defaultValue: step.task })}</p>
+                    <ExercisesTTSButton text={t(`lessonData.lesson-${lessonId}.steps.${stepIndex}.task`, { defaultValue: step.task }) as string} />
                 </div>
                 <div className="action-row">
                     <button className="check-btn primary" onClick={checkAnswer}>

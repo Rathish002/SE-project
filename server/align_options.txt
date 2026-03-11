@@ -1,0 +1,180 @@
+Lesson 1 Step 1
+EN Options: ["Namaste","Sorry","Goodbye","Thank you"]
+HI Options: ["नमस्ते","अलविदा","माफ़ करें","धन्यवाद"]
+EN Correct: Namaste
+HI Correct: नमस्ते
+
+Lesson 1 Step 2
+EN Options: ["Good morning","Afternoon","Good night","Good evening"]
+HI Options: ["सुप्रभात","शुभ रात्रि","शुभ संध्या","दोपहर"]
+EN Correct: Good morning
+HI Correct: सुप्रभात
+
+Lesson 1 Step 3
+EN Options: ["Good evening","Good night","Good morning","Namaste"]
+HI Options: ["शुभ रात्रि","नमस्ते","सुप्रभात","शुभ संध्या"]
+EN Correct: Good evening
+HI Correct: शुभ संध्या
+
+Lesson 1 Step 4
+EN Options: ["Namaskar","Goodbye","Thank you","Good morning"]
+HI Options: ["सुप्रभात","अलविदा","नमस्कार","शुक्रिया"]
+EN Correct: Namaskar
+HI Correct: नमस्कार
+
+Lesson 1 Step 5
+EN Options: ["To fight","To connect","To sleep","To run away"]
+HI Options: ["भागने के लिए","लड़ने के लिए","जुड़ने के लिए","सोने के लिए"]
+EN Correct: To connect
+HI Correct: जुड़ने के लिए
+
+Lesson 1 Step 6
+EN Options: ["Maybe","Never","No","Yes"]
+HI Options: ["कभी नहीं","नहीं","हाँ","शायद"]
+EN Correct: Yes
+HI Correct: हाँ
+
+Lesson 2 Step 1
+EN Options: ["One","Hundred","Ten","Zero"]
+HI Options: ["शून्य","दस","सौ","एक"]
+EN Correct: One
+HI Correct: एक
+
+Lesson 2 Step 2
+EN Options: ["Five","Three","Six","Two"]
+HI Options: ["दो","छः","तीन","पाँच"]
+EN Correct: Five
+HI Correct: पाँच
+
+Lesson 2 Step 3
+EN Options: ["One","Hundred","Ten","Twenty"]
+HI Options: ["दस","एक","बीस","सौ"]
+EN Correct: Ten
+HI Correct: दस
+
+Lesson 2 Step 4
+EN Options: ["Thirty","Ten","Fifty","Forty"]
+HI Options: ["तीस","चालीस","दस","पचास"]
+EN Correct: Thirty
+HI Correct: तीस
+
+Lesson 2 Step 5
+EN Options: ["Watch TV","Go to sleep","Read books","Count objects"]
+HI Options: ["वस्तुओं को गिनें","किताबें पढ़ें","सो जाएँ","टीवी देखें"]
+EN Correct: Count objects
+HI Correct: वस्तुओं को गिनें
+
+Lesson 2 Step 6
+EN Options: ["For running","For playing","For eating","For counting and measuring"]
+HI Options: ["खेलने के लिए","दौड़ने के लिए","खाने के लिए","गिनने और मापने के लिए"]
+EN Correct: For counting and measuring
+HI Correct: गिनने और मापने के लिए
+
+Lesson 3 Step 1
+EN Options: ["Uncle","Mother","Grandmother","Grandfather"]
+HI Options: ["माँ","दादी","चाचा","दादा"]
+EN Correct: Mother
+HI Correct: माँ
+
+Lesson 3 Step 2
+EN Options: ["Brother","Sister","Grandmother","Father"]
+HI Options: ["भाई","पिता","दादी","बहन"]
+EN Correct: Grandmother
+HI Correct: दादी
+
+Lesson 3 Step 3
+EN Options: ["Nowhere","Only in cities","Only in India","In every culture"]
+HI Options: ["केवल शहरों में","हर संस्कृति में","कहीं नहीं","केवल भारत में"]
+EN Correct: In every culture
+HI Correct: हर संस्कृति में
+
+Lesson 3 Step 4
+EN Options: ["Neighbors","Teachers","Friends","Aunt and Uncle"]
+HI Options: ["दोस्त","पड़ोसी","चाची और चाचा","शिक्षक"]
+EN Correct: Aunt and Uncle
+HI Correct: चाची और चाचा
+
+Lesson 3 Step 5
+EN Options: ["Uncle","Friend","Father","Grandfather"]
+HI Options: ["पिता","दादा","चाचा","दोस्त"]
+EN Correct: Father
+HI Correct: पिता
+
+Lesson 3 Step 6
+EN Options: ["Communicate about personal life","In getting a job","In earning money","In playing"]
+HI Options: ["व्यक्तिगत जीवन के बारे में संवाद","खेलने में","नौकरी पाने में","पैसे कमाने में"]
+EN Correct: Communicate about personal life
+HI Correct: व्यक्तिगत जीवन के बारे में संवाद
+
+Lesson 4 Step 1
+EN Options: ["Five","Four","Two","Three"]
+HI Options: ["चार","दो","पाँच","तीन"]
+EN Correct: Three
+HI Correct: तीन
+
+Lesson 4 Step 2
+EN Options: ["Object","Adjective","Subject","Verb"]
+HI Options: ["कर्ता","कर्म","क्रिया","विशेषण"]
+EN Correct: Subject
+HI Correct: कर्ता
+
+Lesson 4 Step 3
+EN Options: ["Verb","Noun","Object","Subject"]
+HI Options: ["संज्ञा","कर्ता","क्रिया","कर्म"]
+EN Correct: Verb
+HI Correct: क्रिया
+
+Lesson 4 Step 4
+EN Options: ["eat","rice","am","I"]
+HI Options: ["हूँ","मैं","चावल","खाता हूँ"]
+EN Correct: I
+HI Correct: मैं
+
+Lesson 4 Step 5
+EN Options: ["a","book","reads","She"]
+HI Options: ["वह","किताब","पढ़ती","है"]
+EN Correct: book
+HI Correct: किताब
+
+Lesson 4 Step 6
+EN Options: ["are","football","They","play"]
+HI Options: ["फुटबॉल","खेलते हैं","वे","हैं"]
+EN Correct: play
+HI Correct: खेलते हैं
+
+Lesson 5 Step 1
+EN Options: ["Bitter","Salty","Unhealthy","Sweet and healthy"]
+HI Options: ["अस्वास्थ्यकर","मीठा और स्वास्थ्यवर्धक","कड़वा","नमकीन"]
+EN Correct: Sweet and healthy
+HI Correct: मीठा और स्वास्थ्यवर्धक
+
+Lesson 5 Step 2
+EN Options: ["Water","Apple","Books","Friend"]
+HI Options: ["दोस्त","पानी","सेब","किताबें"]
+EN Correct: Books
+HI Correct: किताबें
+
+Lesson 5 Step 3
+EN Options: ["Teacher","Books","Apple","Water"]
+HI Options: ["किताबें","पानी","सेब","शिक्षक"]
+EN Correct: Water
+HI Correct: पानी
+
+Lesson 5 Step 4
+EN Options: ["Teacher","Friend","Book","Apple"]
+HI Options: ["दोस्त","किताब","शिक्षक","सेब"]
+EN Correct: Teacher
+HI Correct: शिक्षक
+
+Lesson 5 Step 5
+EN Options: ["Water","Friend","Teacher","Book"]
+HI Options: ["दोस्त","शिक्षक","किताब","पानी"]
+EN Correct: Friend
+HI Correct: दोस्त
+
+Lesson 5 Step 6
+EN Options: ["Better communication","Satisfying hunger","Feeling sleepy","Quenching thirst"]
+HI Options: ["नींद आना","बेहतर संवाद","भूख मिटना","प्यास बुझना"]
+EN Correct: Better communication
+HI Correct: बेहतर संवाद
+

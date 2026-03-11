@@ -181,39 +181,42 @@ export const fetchLesson = async (
 ): Promise<LessonData> => {
   // Try backend API first
   try {
-    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:3001';
-    console.log(`Fetching lesson ${lessonId} from ${apiUrl}/lesson/${lessonId}`);
-    
+    const apiUrl = process.env.REACT_APP_API_URL || 'http://127.0.0.1:3001';
+    console.log(`[TIMEOUT-DEBUG] Fetching lesson ${lessonId} from ${apiUrl}/lesson/${lessonId}`);
+
     const response = await fetch(`${apiUrl}/lesson/${lessonId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
+      signal: AbortSignal.timeout(3000)
     });
-    
+
+    console.log(`[TIMEOUT-DEBUG] Response for ${lessonId} status: ${response.status}`);
+
     if (response.ok) {
       const data = await response.json();
       console.log(`Successfully fetched lesson ${lessonId}:`, data);
-      
+
       // Map database fields to lesson object
       const lesson = data.lesson;
       const mappedLesson: Lesson = {
         id: lesson.id,
         title: lesson.title,
         // Use text_content from database, fallback to content if it exists
-        content: learningDirection === 'hi-to-en' 
+        content: learningDirection === 'hi-to-en'
           ? (lesson.english_text_content || lesson.text_content || '')
           : (lesson.text_content || lesson.content || ''),
         instructions: lesson.instructions || `Read slowly and practice. Use the Play button to listen. Toggle Dyslexia font or High Contrast for readability.`,
         image_url: lesson.image_url,
       };
-      
+
       // Map keywords - handle the typo in database column name
       const keywords: Keyword[] = (data.keywords || []).map((kw: any) => ({
         keyword: kw.keyword,
         explanation: kw.explanation || kw.expanation || '', // Handle both correct spelling and typo
       }));
-      
+
       return {
         lesson: mappedLesson,
         keywords: keywords,

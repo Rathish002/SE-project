@@ -9,7 +9,7 @@ import preferencesRoutes from "./routes/preferences";
 import userRoutes from "./routes/user";
 import { firebaseAuth } from "./middleware/firebaseAuth";
 
-dotenv.config();
+dotenv.config({ override: true });
 
 const app = express();
 app.use(express.json());
