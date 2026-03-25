@@ -18,6 +18,9 @@ jest.mock('../services/chatService', () => ({
   sendVideoMessage: jest.fn(),
   sendVoiceMessage: jest.fn(),
   sendFileMessage: jest.fn(),
+  setTypingStatus: jest.fn().mockResolvedValue(undefined),
+  subscribeToTyping: jest.fn(() => jest.fn()),
+  markConversationRead: jest.fn().mockResolvedValue(undefined),
 }));
 
 // Mock firestore (additional to global mock in setupTests)
@@ -68,6 +71,9 @@ describe('ChatUI Component', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (chatService.subscribeToMessages as jest.Mock).mockReturnValue(jest.fn());
+    (chatService.subscribeToTyping as jest.Mock).mockReturnValue(jest.fn());
+    (chatService.markConversationRead as jest.Mock).mockReturnValue(Promise.resolve());
+    (chatService.setTypingStatus as jest.Mock).mockReturnValue(Promise.resolve());
   });
 
   describe('Message Input', () => {
@@ -184,14 +190,16 @@ describe('ChatUI Component', () => {
         {
           id: 'msg-1',
           text: 'Hello',
-          senderId: 'sender-1',
+          senderUid: 'sender-1',
+          senderName: 'Sender',
           timestamp: new Date(),
           conversationId,
         },
         {
           id: 'msg-2',
           text: 'Hi there',
-          senderId: mockUser.uid,
+          senderUid: mockUser.uid,
+          senderName: 'Test User',
           timestamp: new Date(),
           conversationId,
         },
@@ -228,7 +236,8 @@ describe('ChatUI Component', () => {
         {
           id: 'msg-1',
           text: 'Old message',
-          senderId: 'sender-1',
+          senderUid: 'sender-1',
+          senderName: 'Sender',
           timestamp: new Date(),
           conversationId,
         },

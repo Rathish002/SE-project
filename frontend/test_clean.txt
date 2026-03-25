@@ -1,0 +1,871 @@
+PASS src/App.test.tsx
+  ??? shows login when user is signed out (48 ms)
+System.Management.Automation.RemoteException
+  console.warn
+    react-i18next:: You will need to pass in an i18next instance by using initReactI18next
+
+      24 |
+      25 | const Exercises: React.FC<ExercisesProps> = ({ onNavigate, onBackToLesson, lessonId, userId }) => {
+    > 26 |     const { t } = useTranslation();
+         |                                 ^
+      27 |     const [lessons, setLessons] = useState<Lesson[]>([]);
+      28 |     const [loading, setLoading] = useState(true);
+      29 |     const [error, setError] = useState<string | null>(null);
+
+      at warn (node_modules/react-i18next/dist/commonjs/utils.js:18:13)
+      at warnOnce (node_modules/react-i18next/dist/commonjs/utils.js:28:3)
+      at useTranslation (node_modules/react-i18next/dist/commonjs/useTranslation.js:29:25)
+      at Exercises (src/components/Exercises.tsx:26:33)
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25904:20)
+      at renderWithHooks (node_modules/react-dom/cjs/react-dom-client.development.js:7662:22)
+      at updateFunctionComponent (node_modules/react-dom/cjs/react-dom-client.development.js:10166:19)
+      at beginWork (node_modules/react-dom/cjs/react-dom-client.development.js:11778:18)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at performUnitOfWork (node_modules/react-dom/cjs/react-dom-client.development.js:17641:22)
+      at workLoopSync (node_modules/react-dom/cjs/react-dom-client.development.js:17469:41)
+      at renderRootSync (node_modules/react-dom/cjs/react-dom-client.development.js:17450:11)
+      at performWorkOnRoot (node_modules/react-dom/cjs/react-dom-client.development.js:16504:11)
+      at performWorkOnRootViaSchedulerTask (node_modules/react-dom/cjs/react-dom-client.development.js:18957:7)
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/Exercises.test.tsx:57:15)
+
+  console.error
+    Error: Not implemented: window.scrollTo
+        at module.exports (C:\SE\SE-project\frontend\node_modules\jsdom\lib\jsdom\browser\not-implemented.js:9:17)
+        at scrollTo (C:\SE\SE-project\frontend\node_modules\jsdom\lib\jsdom\browser\Window.js:866:7)
+        at C:\SE\SE-project\frontend\src\components\Learning.tsx:51:12
+        at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:25989:20)
+        at runWithFiberInDEV (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+        at commitHookEffectListMount (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:13249:29)
+        at commitHookPassiveMountEffects (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:13336:11)
+        at commitPassiveMountOnFiber (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:15484:13)
+        at recursivelyTraversePassiveMountEffects (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:15439:11)
+        at commitPassiveMountOnFiber (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:15519:11)
+        at flushPassiveEffects (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:18432:9)
+        at C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:17923:15
+        at flushActQueue (C:\SE\SE-project\frontend\node_modules\react\cjs\react.development.js:590:34)
+        at Object.<anonymous>.process.env.NODE_ENV.exports.act (C:\SE\SE-project\frontend\node_modules\react\cjs\react.development.js:884:10)
+        at C:\SE\SE-project\frontend\node_modules\@testing-library\react\dist\act-compat.js:46:25
+        at renderRoot (C:\SE\SE-project\frontend\node_modules\@testing-library\react\dist\pure.js:189:26)
+        at render (C:\SE\SE-project\frontend\node_modules\@testing-library\react\dist\pure.js:291:10)
+        at Object.<anonymous> (C:\SE\SE-project\frontend\src\components\Learning.test.tsx:50:15)
+        at Promise.then.completed (C:\SE\SE-project\frontend\node_modules\jest-circus\build\utils.js:391:28)
+        at new Promise (<anonymous>)
+        at callAsyncCircusFn (C:\SE\SE-project\frontend\node_modules\jest-circus\build\utils.js:316:10)
+        at _callCircusTest (C:\SE\SE-project\frontend\node_modules\jest-circus\build\run.js:218:40)
+        at processTicksAndRejections (node:internal/process/task_queues:105:5)
+        at _runTest (C:\SE\SE-project\frontend\node_modules\jest-circus\build\run.js:155:3)
+        at _runTestsForDescribeBlock (C:\SE\SE-project\frontend\node_modules\jest-circus\build\run.js:66:9)
+        at _runTestsForDescribeBlock (C:\SE\SE-project\frontend\node_modules\jest-circus\build\run.js:60:9)
+        at run (C:\SE\SE-project\frontend\node_modules\jest-circus\build\run.js:25:3)
+        at runAndTransformResultsToJestFormat (C:\SE\SE-project\frontend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapterInit.js:170:21)
+        at jestAdapter (C:\SE\SE-project\frontend\node_modules\jest-circus\build\legacy-code-todo-rewrite\jestAdapter.js:82:19)
+        at runTestInternal (C:\SE\SE-project\frontend\node_modules\jest-runner\build\runTest.js:389:16)
+        at runTest (C:\SE\SE-project\frontend\node_modules\jest-runner\build\runTest.js:475:34)
+        at Object.worker (C:\SE\SE-project\frontend\node_modules\jest-runner\build\testWorker.js:133:12) undefined
+
+      49 |   // Scroll to top on lesson change
+      50 |   useEffect(() => {
+    > 51 |     window.scrollTo(0, 0);
+         |            ^
+      52 |   }, [lessonId]);
+      53 |
+      54 |   // Load lesson and total count
+
+      at VirtualConsole.<anonymous> (node_modules/jsdom/lib/jsdom/virtual-console.js:29:45)
+      at module.exports (node_modules/jsdom/lib/jsdom/browser/not-implemented.js:12:26)
+      at scrollTo (node_modules/jsdom/lib/jsdom/browser/Window.js:866:7)
+      at src/components/Learning.tsx:51:12
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/Learning.test.tsx:50:15)
+
+PASS src/components/Learning.test.tsx
+  Learning Component
+    ??? renders "Go to Exercises" button and handles click (282 ms)
+System.Management.Automation.RemoteException
+PASS src/components/Exercises.test.tsx
+  Exercises Component Tests
+    ??? renders loading state initially (267 ms)
+    ??? renders the first step correctly after loading (28 ms)
+    ??? calculates and displays progress after loading (17 ms)
+    ??? renders focus mode toggle after loading (18 ms)
+System.Management.Automation.RemoteException
+  console.log
+    Available lesson IDs: [ 1 ]
+
+      at loadLessons (src/components/LessonSelection.tsx:49:17)
+
+  console.log
+    Loaded lessons: [
+      {
+        id: 1,
+        title: 'Test Lesson',
+        description: 'This is a test lesson content....'
+      }
+    ]
+
+      at loadLessons (src/components/LessonSelection.tsx:67:17)
+
+  console.error
+    An update to LessonSelection inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      66 |         const filteredLessons = loadedLessons.filter((lesson) => lesson !== null);
+      67 |         console.log('Loaded lessons:', filteredLessons);
+    > 68 |         setLessons(filteredLessons as LessonInfo[]);
+         |         ^
+      69 |       } catch (error) {
+      70 |         console.error('Error loading lessons:', error);
+      71 |       } finally {
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at setLessons (node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at loadLessons (src/components/LessonSelection.tsx:68:9)
+
+  console.error
+    An update to LessonSelection inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      70 |         console.error('Error loading lessons:', error);
+      71 |       } finally {
+    > 72 |         setLoading(false);
+         |         ^
+      73 |       }
+      74 |     };
+      75 |     loadLessons();
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at setLoading (node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at loadLessons (src/components/LessonSelection.tsx:72:9)
+
+  console.log
+    Available lesson IDs: [ 1 ]
+
+      at loadLessons (src/components/LessonSelection.tsx:49:17)
+
+  console.log
+    Loaded lessons: [
+      {
+        id: 1,
+        title: 'Test Lesson',
+        description: 'This is a test lesson content....'
+      }
+    ]
+
+      at loadLessons (src/components/LessonSelection.tsx:67:17)
+
+  console.log
+    Available lesson IDs: [ 1 ]
+
+      at loadLessons (src/components/LessonSelection.tsx:49:17)
+
+  console.log
+    Loaded lessons: [
+      {
+        id: 1,
+        title: 'Test Lesson',
+        description: 'This is a test lesson content....'
+      }
+    ]
+
+      at loadLessons (src/components/LessonSelection.tsx:67:17)
+
+PASS src/contexts/AccessibilityContext.test.tsx
+  AccessibilityContext
+    Provider and Hook
+      ??? provides default preferences on mount (55 ms)
+      ??? loads preferences from storage on mount (13 ms)
+      ??? throws error when useAccessibility is used outside provider (87 ms)
+    Theme Management
+      ??? provides initial light theme (7 ms)
+      ??? updates theme to dark (20 ms)
+      ??? applies theme to document element (14 ms)
+    Font Size Management
+      ??? provides initial font size (9 ms)
+      ??? updates font size (14 ms)
+      ??? applies font size CSS variables to document (53 ms)
+    Audio Speed Management
+      ??? provides initial audio speed (9 ms)
+      ??? updates audio speed (21 ms)
+    Contrast Mode
+      ??? contrast mode is initially disabled (12 ms)
+      ??? enables contrast mode (18 ms)
+      ??? applies high-contrast class to document (6 ms)
+    Reduced Motion
+      ??? reduced motion is initially disabled (12 ms)
+      ??? enables reduced motion (25 ms)
+      ??? applies reduced-motion class to document (16 ms)
+    Dyslexia Font
+      ??? dyslexia font is initially disabled (9 ms)
+      ??? enables dyslexia font (22 ms)
+      ??? applies dyslexia-font class to document (16 ms)
+    Distraction Free Mode
+      ??? distraction free mode is initially disabled (4 ms)
+      ??? enables distraction free mode (7 ms)
+    Blue Light Filter
+      ??? blue light filter is initially disabled (6 ms)
+      ??? enables blue light filter (14 ms)
+    Reading Mask
+      ??? reading mask is initially disabled (5 ms)
+      ??? enables reading mask (10 ms)
+    Reset to Defaults
+      ??? resets all preferences to defaults (31 ms)
+    Multiple Preference Updates
+      ??? allows multiple preferences to be updated independently (16 ms)
+      ??? maintains independent state for each preference (15 ms)
+System.Management.Automation.RemoteException
+  console.log
+    Available lesson IDs: []
+
+      at loadLessons (src/components/LessonSelection.tsx:49:17)
+
+  console.log
+    Loaded lessons: []
+
+      at loadLessons (src/components/LessonSelection.tsx:67:17)
+
+PASS src/components/LessonSelection.test.tsx
+  LessonSelection Component
+    ??? renders loading state initially (171 ms)
+    ??? renders lesson list after loading (35 ms)
+    ??? calls onSelectLesson when start button is clicked (37 ms)
+    ??? renders empty state if no lessons available (40 ms)
+System.Management.Automation.RemoteException
+FAIL src/components/ChatUI.test.tsx
+  ChatUI Component
+    Message Input
+      ?? renders message input field (68 ms)
+      ?? updates message text on user input (10 ms)
+      ?? sends message on Enter key press (15 ms)
+      ?? adds newline on Shift+Enter (10 ms)
+      ?? clears input after sending message (11 ms)
+    Message Display
+      ?? subscribes to messages on mount (5 ms)
+      ?? displays messages when received (4 ms)
+      ?? scrolls to bottom when new messages arrive (7 ms)
+    Media Uploads
+      ?? handles image upload (6 ms)
+      ?? handles video upload (4 ms)
+      ?? handles voice message recording (4 ms)
+    Connection Status
+      ?? displays connected status initially (4 ms)
+      ?? handles reconnection scenario (5 ms)
+    User Interactions
+      ?? calls onBack when back button is clicked (4 ms)
+      ??? handles null currentUser gracefully (58 ms)
+    Error Handling
+      ?? handles send message error (5 ms)
+      ?? unsubscribes from messages on unmount (5 ms)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Message Input ??? renders message input field
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.subscribeToTyping) is not a function
+System.Management.Automation.RemoteException
+      141 |   useEffect(() => {
+      142 |     if (!currentUser?.uid) return;
+    > 143 |     const unsub = subscribeToTyping(conversationId, currentUser.uid, setTypingUsers);
+          |                                    ^
+      144 |     return () => {
+      145 |       unsub();
+      146 |       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+System.Management.Automation.RemoteException
+      at src/components/ChatUI.tsx:143:36
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:75:13)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Message Input ??? updates message text on user input
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.subscribeToTyping) is not a function
+System.Management.Automation.RemoteException
+      141 |   useEffect(() => {
+      142 |     if (!currentUser?.uid) return;
+    > 143 |     const unsub = subscribeToTyping(conversationId, currentUser.uid, setTypingUsers);
+          |                                    ^
+      144 |     return () => {
+      145 |       unsub();
+      146 |       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+System.Management.Automation.RemoteException
+      at src/components/ChatUI.tsx:143:36
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:87:13)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Message Input ??? sends message on Enter key press
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.subscribeToTyping) is not a function
+System.Management.Automation.RemoteException
+      141 |   useEffect(() => {
+      142 |     if (!currentUser?.uid) return;
+    > 143 |     const unsub = subscribeToTyping(conversationId, currentUser.uid, setTypingUsers);
+          |                                    ^
+      144 |     return () => {
+      145 |       unsub();
+      146 |       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+System.Management.Automation.RemoteException
+      at src/components/ChatUI.tsx:143:36
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:103:13)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Message Input ??? adds newline on Shift+Enter
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.subscribeToTyping) is not a function
+System.Management.Automation.RemoteException
+      141 |   useEffect(() => {
+      142 |     if (!currentUser?.uid) return;
+    > 143 |     const unsub = subscribeToTyping(conversationId, currentUser.uid, setTypingUsers);
+          |                                    ^
+      144 |     return () => {
+      145 |       unsub();
+      146 |       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+System.Management.Automation.RemoteException
+      at src/components/ChatUI.tsx:143:36
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:126:13)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Message Input ??? clears input after sending message
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.subscribeToTyping) is not a function
+System.Management.Automation.RemoteException
+      141 |   useEffect(() => {
+      142 |     if (!currentUser?.uid) return;
+    > 143 |     const unsub = subscribeToTyping(conversationId, currentUser.uid, setTypingUsers);
+          |                                    ^
+      144 |     return () => {
+      145 |       unsub();
+      146 |       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+System.Management.Automation.RemoteException
+      at src/components/ChatUI.tsx:143:36
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:147:13)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Message Display ??? subscribes to messages on mount
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.subscribeToTyping) is not a function
+System.Management.Automation.RemoteException
+      141 |   useEffect(() => {
+      142 |     if (!currentUser?.uid) return;
+    > 143 |     const unsub = subscribeToTyping(conversationId, currentUser.uid, setTypingUsers);
+          |                                    ^
+      144 |     return () => {
+      145 |       unsub();
+      146 |       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+System.Management.Automation.RemoteException
+      at src/components/ChatUI.tsx:143:36
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:167:13)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Message Display ??? displays messages when received
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.markConversationRead) is not a function
+System.Management.Automation.RemoteException
+      77 |       setMessages(newMessages);
+      78 |       setConnectionStatus('connected');
+    > 79 |       markConversationRead(conversationId, currentUser.uid).catch(() => {});
+         |                           ^
+      80 |     });
+      81 |     return () => {
+      82 |       if (unsubscribeMessagesRef.current) {
+System.Management.Automation.RemoteException
+      at callback (src/components/ChatUI.tsx:79:27)
+      at src/components/ChatUI.test.tsx:204:11
+      at src/components/ChatUI.tsx:76:57
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:209:13)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Message Display ??? scrolls to bottom when new messages arrive
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.markConversationRead) is not a function
+System.Management.Automation.RemoteException
+      77 |       setMessages(newMessages);
+      78 |       setConnectionStatus('connected');
+    > 79 |       markConversationRead(conversationId, currentUser.uid).catch(() => {});
+         |                           ^
+      80 |     });
+      81 |     return () => {
+      82 |       if (unsubscribeMessagesRef.current) {
+System.Management.Automation.RemoteException
+      at callback (src/components/ChatUI.tsx:79:27)
+      at src/components/ChatUI.test.tsx:239:11
+      at src/components/ChatUI.tsx:76:57
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:244:13)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Media Uploads ??? handles image upload
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.subscribeToTyping) is not a function
+System.Management.Automation.RemoteException
+      141 |   useEffect(() => {
+      142 |     if (!currentUser?.uid) return;
+    > 143 |     const unsub = subscribeToTyping(conversationId, currentUser.uid, setTypingUsers);
+          |                                    ^
+      144 |     return () => {
+      145 |       unsub();
+      146 |       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+System.Management.Automation.RemoteException
+      at src/components/ChatUI.tsx:143:36
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:263:13)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Media Uploads ??? handles video upload
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.subscribeToTyping) is not a function
+System.Management.Automation.RemoteException
+      141 |   useEffect(() => {
+      142 |     if (!currentUser?.uid) return;
+    > 143 |     const unsub = subscribeToTyping(conversationId, currentUser.uid, setTypingUsers);
+          |                                    ^
+      144 |     return () => {
+      145 |       unsub();
+      146 |       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+System.Management.Automation.RemoteException
+      at src/components/ChatUI.tsx:143:36
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:284:13)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Media Uploads ??? handles voice message recording
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.subscribeToTyping) is not a function
+System.Management.Automation.RemoteException
+      141 |   useEffect(() => {
+      142 |     if (!currentUser?.uid) return;
+    > 143 |     const unsub = subscribeToTyping(conversationId, currentUser.uid, setTypingUsers);
+          |                                    ^
+      144 |     return () => {
+      145 |       unsub();
+      146 |       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+System.Management.Automation.RemoteException
+      at src/components/ChatUI.tsx:143:36
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:298:13)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Connection Status ??? displays connected status initially
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.subscribeToTyping) is not a function
+System.Management.Automation.RemoteException
+      141 |   useEffect(() => {
+      142 |     if (!currentUser?.uid) return;
+    > 143 |     const unsub = subscribeToTyping(conversationId, currentUser.uid, setTypingUsers);
+          |                                    ^
+      144 |     return () => {
+      145 |       unsub();
+      146 |       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+System.Management.Automation.RemoteException
+      at src/components/ChatUI.tsx:143:36
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:312:13)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Connection Status ??? handles reconnection scenario
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.markConversationRead) is not a function
+System.Management.Automation.RemoteException
+      77 |       setMessages(newMessages);
+      78 |       setConnectionStatus('connected');
+    > 79 |       markConversationRead(conversationId, currentUser.uid).catch(() => {});
+         |                           ^
+      80 |     });
+      81 |     return () => {
+      82 |       if (unsubscribeMessagesRef.current) {
+System.Management.Automation.RemoteException
+      at callback (src/components/ChatUI.tsx:79:27)
+      at src/components/ChatUI.test.tsx:328:11
+      at src/components/ChatUI.tsx:76:57
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:333:34)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? User Interactions ??? calls onBack when back button is clicked
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.subscribeToTyping) is not a function
+System.Management.Automation.RemoteException
+      141 |   useEffect(() => {
+      142 |     if (!currentUser?.uid) return;
+    > 143 |     const unsub = subscribeToTyping(conversationId, currentUser.uid, setTypingUsers);
+          |                                    ^
+      144 |     return () => {
+      145 |       unsub();
+      146 |       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+System.Management.Automation.RemoteException
+      at src/components/ChatUI.tsx:143:36
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:348:13)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Error Handling ??? handles send message error
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.subscribeToTyping) is not a function
+System.Management.Automation.RemoteException
+      141 |   useEffect(() => {
+      142 |     if (!currentUser?.uid) return;
+    > 143 |     const unsub = subscribeToTyping(conversationId, currentUser.uid, setTypingUsers);
+          |                                    ^
+      144 |     return () => {
+      145 |       unsub();
+      146 |       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+System.Management.Automation.RemoteException
+      at src/components/ChatUI.tsx:143:36
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:386:13)
+System.Management.Automation.RemoteException
+  ??? ChatUI Component ??? Error Handling ??? unsubscribes from messages on unmount
+System.Management.Automation.RemoteException
+    TypeError: (0 , _chatService.subscribeToTyping) is not a function
+System.Management.Automation.RemoteException
+      141 |   useEffect(() => {
+      142 |     if (!currentUser?.uid) return;
+    > 143 |     const unsub = subscribeToTyping(conversationId, currentUser.uid, setTypingUsers);
+          |                                    ^
+      144 |     return () => {
+      145 |       unsub();
+      146 |       if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+System.Management.Automation.RemoteException
+      at src/components/ChatUI.tsx:143:36
+      at Object.react_stack_bottom_frame (node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at commitHookEffectListMount (node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:15519:11)
+      at flushPassiveEffects (node_modules/react-dom/cjs/react-dom-client.development.js:18432:9)
+      at node_modules/react-dom/cjs/react-dom-client.development.js:17923:15
+      at flushActQueue (node_modules/react/cjs/react.development.js:590:34)
+      at Object.<anonymous>.process.env.NODE_ENV.exports.act (node_modules/react/cjs/react.development.js:884:10)
+      at node_modules/@testing-library/react/dist/act-compat.js:46:25
+      at renderRoot (node_modules/@testing-library/react/dist/pure.js:189:26)
+      at render (node_modules/@testing-library/react/dist/pure.js:291:10)
+      at Object.<anonymous> (src/components/ChatUI.test.tsx:408:33)
+System.Management.Automation.RemoteException
+  console.error
+    An update to AccessibilitySettings inside a test was not wrapped in act(...).
+    
+    When testing, code that causes React state updates should be wrapped into act(...):
+    
+    act(() => {
+      /* fire events that update state */
+    });
+    /* assert on the output */
+    
+    This ensures that you're testing the behavior the user would see in the browser. Learn more at https://react.dev/link/wrap-tests-with-act
+
+      32 |     saveCurrentPreferences();
+      33 |     setShowSaveMessage(true);
+    > 34 |     setTimeout(() => setShowSaveMessage(false), 3000);
+         |                      ^
+      35 |   };
+      36 |
+      37 |   const handleReset = () => {
+
+      at node_modules/react-dom/cjs/react-dom-client.development.js:18758:19
+      at runWithFiberInDEV (node_modules/react-dom/cjs/react-dom-client.development.js:874:13)
+      at warnIfUpdatesNotWrappedWithActDEV (node_modules/react-dom/cjs/react-dom-client.development.js:18757:9)
+      at scheduleUpdateOnFiber (node_modules/react-dom/cjs/react-dom-client.development.js:16409:11)
+      at dispatchSetStateInternal (node_modules/react-dom/cjs/react-dom-client.development.js:9170:13)
+      at setShowSaveMessage (node_modules/react-dom/cjs/react-dom-client.development.js:9127:7)
+      at src/components/AccessibilitySettings.tsx:34:22
+      at callTimer (node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:729:24)
+      at doTickInner (node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:1289:29)
+      at doTick (node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:1370:20)
+      at Object.tick (node_modules/@sinonjs/fake-timers/src/fake-timers-src.js:1378:20)
+      at FakeTimers.advanceTimersByTime (node_modules/@jest/fake-timers/build/modernFakeTimers.js:101:19)
+      at Object.<anonymous> (src/components/AccessibilitySettings.test.tsx:294:12)
+
+PASS src/components/AccessibilitySettings.test.tsx
+  AccessibilitySettings Component
+    Rendering
+      ??? renders component with title and subtitle (53 ms)
+      ??? renders all section headers (30 ms)
+      ??? renders all action buttons (15 ms)
+      ??? renders back button when onBack prop is provided (8 ms)
+      ??? does not render back button when onBack prop is not provided (11 ms)
+    Theme Selection
+      ??? renders theme options (9 ms)
+      ??? highlights active theme button (59 ms)
+      ??? calls updateTheme when theme button is clicked (37 ms)
+      ??? theme buttons have correct aria-pressed attribute (34 ms)
+    Font Size Controls
+      ??? renders font size options (14 ms)
+      ??? highlights active font size button (24 ms)
+      ??? calls updateFontSize when font size button is clicked (24 ms)
+      ??? renders preview text for font size (6 ms)
+    Audio Speed Controls
+      ??? renders audio speed button options (71 ms)
+      ??? highlights active audio speed button (18 ms)
+      ??? calls updateAudioSpeed when speed button is clicked (23 ms)
+      ??? renders audio speed slider (11 ms)
+      ??? calls updateAudioSpeed when slider is adjusted (11 ms)
+      ??? displays current audio speed value (8 ms)
+    Contrast Mode Toggle
+      ??? renders contrast mode checkbox (10 ms)
+      ??? checkbox is unchecked by default (13 ms)
+      ??? calls updateContrastMode when checkbox is toggled (15 ms)
+      ??? displays correct status text for contrast mode (6 ms)
+      ??? displays enabled text when contrast mode is active (11 ms)
+    Save Settings
+      ??? shows save success message when save is clicked (29 ms)
+      ??? hides save message after 3 seconds (88 ms)
+    Reset Settings
+      ??? shows confirmation dialog when reset is clicked (30 ms)
+      ??? calls resetToDefaults when reset is confirmed (24 ms)
+      ??? does not reset when confirmation is cancelled (24 ms)
+      ??? shows reset success message when reset is confirmed (23 ms)
+    Settings Summary
+      ??? displays current theme in summary (5 ms)
+      ??? displays current font size in summary (6 ms)
+      ??? displays current audio speed in summary (6 ms)
+      ??? displays current contrast mode status in summary (5 ms)
+    Back Button Functionality
+      ??? calls onBack callback when back button is clicked (17 ms)
+    Keyboard Navigation
+      ??? all buttons are keyboard accessible (18 ms)
+      ??? checkbox is keyboard accessible (8 ms)
+      ??? slider is keyboard accessible (11 ms)
+    Accessibility Compliance (WCAG)
+      ??? should not have any accessibility violations (92 ms)
+      ??? should have proper heading hierarchy (18 ms)
+      ??? section elements are used for semantic structure (5 ms)
+      ??? all interactive elements have proper labels (22 ms)
+    State Management
+      ??? reflects updated preferences in UI (22 ms)
+      ??? handles multiple rapid preference changes (37 ms)
+    Edge Cases
+      ??? handles missing translation keys gracefully (6 ms)
+      ??? handles context updates when component is unmounted (19 ms)
+System.Management.Automation.RemoteException
+Test Suites: 1 failed, 6 passed, 7 total
+Tests:       16 failed, 86 passed, 102 total
+Snapshots:   0 total
+Time:        4.407 s, estimated 5 s
+Ran all test suites.

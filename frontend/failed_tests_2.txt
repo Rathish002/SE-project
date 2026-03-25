@@ -1,0 +1,126 @@
+FAIL: ChatUI Component Message Input renders message input field
+ERROR: TypeError: unsub is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:145:7
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:26001:13)
+    at runWithFiberInDEV (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListUnmount (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:13316:17)
+    at commitHo
+---
+FAIL: ChatUI Component Message Input updates message text on user input
+ERROR: TypeError: Cannot read properties of undefined (reading 'catch')
+    at handleMessageChange (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:348:97)
+    at executeDispatch (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at processDispatchQueue (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development
+---
+FAIL: ChatUI Component Message Input sends message on Enter key press
+ERROR: TypeError: Cannot read properties of undefined (reading 'catch')
+    at handleMessageChange (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:348:97)
+    at executeDispatch (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at processDispatchQueue (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development
+---
+FAIL: ChatUI Component Message Input adds newline on Shift+Enter
+ERROR: TypeError: Cannot read properties of undefined (reading 'catch')
+    at handleMessageChange (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:348:97)
+    at executeDispatch (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at processDispatchQueue (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development
+---
+FAIL: ChatUI Component Message Input clears input after sending message
+ERROR: TypeError: Cannot read properties of undefined (reading 'catch')
+    at handleMessageChange (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:348:97)
+    at executeDispatch (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at processDispatchQueue (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development
+---
+FAIL: ChatUI Component Message Display subscribes to messages on mount
+ERROR: TypeError: unsub is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:145:7
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:26001:13)
+    at runWithFiberInDEV (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListUnmount (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:13316:17)
+    at commitHo
+---
+FAIL: ChatUI Component Message Display displays messages when received
+ERROR: TypeError: Cannot read properties of undefined (reading 'catch')
+    at callback (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:79:60)
+    at C:\SE\SE-project\frontend\src\components\ChatUI.test.tsx:207:11
+    at C:\SE\SE-project\frontend\node_modules\jest-mock\build\index.js:449:39
+    at C:\SE\SE-project\frontend\node_modules\jest-mock\build\index.js:457:13
+    at mockConstructor (C:\SE\SE-project\frontend\node_modules\jest-mock\build\index.js:170:19)
+    at C:\SE\SE-project\frontend\src
+---
+FAIL: ChatUI Component Message Display scrolls to bottom when new messages arrive
+ERROR: TypeError: Cannot read properties of undefined (reading 'catch')
+    at callback (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:79:60)
+    at C:\SE\SE-project\frontend\src\components\ChatUI.test.tsx:242:11
+    at C:\SE\SE-project\frontend\node_modules\jest-mock\build\index.js:449:39
+    at C:\SE\SE-project\frontend\node_modules\jest-mock\build\index.js:457:13
+    at mockConstructor (C:\SE\SE-project\frontend\node_modules\jest-mock\build\index.js:170:19)
+    at C:\SE\SE-project\frontend\src
+---
+FAIL: ChatUI Component Media Uploads handles image upload
+ERROR: TypeError: unsub is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:145:7
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:26001:13)
+    at runWithFiberInDEV (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListUnmount (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:13316:17)
+    at commitHo
+---
+FAIL: ChatUI Component Media Uploads handles video upload
+ERROR: TypeError: unsub is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:145:7
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:26001:13)
+    at runWithFiberInDEV (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListUnmount (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:13316:17)
+    at commitHo
+---
+FAIL: ChatUI Component Media Uploads handles voice message recording
+ERROR: TypeError: unsub is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:145:7
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:26001:13)
+    at runWithFiberInDEV (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListUnmount (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:13316:17)
+    at commitHo
+---
+FAIL: ChatUI Component Connection Status displays connected status initially
+ERROR: TypeError: unsub is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:145:7
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:26001:13)
+    at runWithFiberInDEV (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListUnmount (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:13316:17)
+    at commitHo
+---
+FAIL: ChatUI Component Connection Status handles reconnection scenario
+ERROR: TypeError: Cannot read properties of undefined (reading 'catch')
+    at callback (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:79:60)
+    at C:\SE\SE-project\frontend\src\components\ChatUI.test.tsx:331:11
+    at C:\SE\SE-project\frontend\node_modules\jest-mock\build\index.js:449:39
+    at C:\SE\SE-project\frontend\node_modules\jest-mock\build\index.js:457:13
+    at mockConstructor (C:\SE\SE-project\frontend\node_modules\jest-mock\build\index.js:170:19)
+    at C:\SE\SE-project\frontend\src
+---
+FAIL: ChatUI Component User Interactions calls onBack when back button is clicked
+ERROR: TypeError: unsub is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:145:7
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:26001:13)
+    at runWithFiberInDEV (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListUnmount (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:13316:17)
+    at commitHo
+---
+FAIL: ChatUI Component Error Handling handles send message error
+ERROR: TypeError: Cannot read properties of undefined (reading 'catch')
+    at handleMessageChange (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:348:97)
+    at executeDispatch (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:19116:9)
+    at runWithFiberInDEV (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at processDispatchQueue (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development
+---
+FAIL: ChatUI Component Error Handling unsubscribes from messages on unmount
+ERROR: TypeError: unsub is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:145:7
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:26001:13)
+    at runWithFiberInDEV (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:874:13)
+    at commitHookEffectListUnmount (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:13316:17)
+    at commitHo
+---
