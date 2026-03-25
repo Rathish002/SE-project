@@ -1,0 +1,80 @@
+FAIL: ChatUI Component Message Input renders message input field
+ERROR: TypeError: (0 , _chatService.subscribeToTyping) is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:143:36
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\no
+---
+FAIL: ChatUI Component Message Input updates message text on user input
+ERROR: TypeError: (0 , _chatService.subscribeToTyping) is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:143:36
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\no
+---
+FAIL: ChatUI Component Message Input sends message on Enter key press
+ERROR: TypeError: (0 , _chatService.subscribeToTyping) is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:143:36
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\no
+---
+FAIL: ChatUI Component Message Input adds newline on Shift+Enter
+ERROR: TypeError: (0 , _chatService.subscribeToTyping) is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:143:36
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\no
+---
+FAIL: ChatUI Component Message Input clears input after sending message
+ERROR: TypeError: (0 , _chatService.subscribeToTyping) is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:143:36
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\no
+---
+FAIL: ChatUI Component Message Display subscribes to messages on mount
+ERROR: TypeError: (0 , _chatService.subscribeToTyping) is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:143:36
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\no
+---
+FAIL: ChatUI Component Message Display displays messages when received
+ERROR: TypeError: (0 , _chatService.markConversationRead) is not a function
+    at callback (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:79:27)
+    at C:\SE\SE-project\frontend\src\components\ChatUI.
+---
+FAIL: ChatUI Component Message Display scrolls to bottom when new messages arrive
+ERROR: TypeError: (0 , _chatService.markConversationRead) is not a function
+    at callback (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:79:27)
+    at C:\SE\SE-project\frontend\src\components\ChatUI.
+---
+FAIL: ChatUI Component Media Uploads handles image upload
+ERROR: TypeError: (0 , _chatService.subscribeToTyping) is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:143:36
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\no
+---
+FAIL: ChatUI Component Media Uploads handles video upload
+ERROR: TypeError: (0 , _chatService.subscribeToTyping) is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:143:36
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\no
+---
+FAIL: ChatUI Component Media Uploads handles voice message recording
+ERROR: TypeError: (0 , _chatService.subscribeToTyping) is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:143:36
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\no
+---
+FAIL: ChatUI Component Connection Status displays connected status initially
+ERROR: TypeError: (0 , _chatService.subscribeToTyping) is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:143:36
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\no
+---
+FAIL: ChatUI Component Connection Status handles reconnection scenario
+ERROR: TypeError: (0 , _chatService.markConversationRead) is not a function
+    at callback (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:79:27)
+    at C:\SE\SE-project\frontend\src\components\ChatUI.
+---
+FAIL: ChatUI Component User Interactions calls onBack when back button is clicked
+ERROR: TypeError: (0 , _chatService.subscribeToTyping) is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:143:36
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\no
+---
+FAIL: ChatUI Component Error Handling handles send message error
+ERROR: TypeError: (0 , _chatService.subscribeToTyping) is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:143:36
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\no
+---
+FAIL: ChatUI Component Error Handling unsubscribes from messages on unmount
+ERROR: TypeError: (0 , _chatService.subscribeToTyping) is not a function
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:143:36
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\no
+---

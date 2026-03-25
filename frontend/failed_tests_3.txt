@@ -1,0 +1,18 @@
+FAIL: ChatUI Component Message Display displays messages when received
+ERROR: TypeError: Cannot read properties of undefined (reading '0')
+    at map (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:464:89)
+    at Array.map (<anonymous>)
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:442:26
+    at ChatUI (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:535:14)
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:25904:20)
+    at renderWithHooks (C:\SE\SE-project\frontend\node_modul
+---
+FAIL: ChatUI Component Message Display scrolls to bottom when new messages arrive
+ERROR: TypeError: Cannot read properties of undefined (reading '0')
+    at map (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:464:89)
+    at Array.map (<anonymous>)
+    at C:\SE\SE-project\frontend\src\components\ChatUI.tsx:442:26
+    at ChatUI (C:\SE\SE-project\frontend\src\components\ChatUI.tsx:535:14)
+    at Object.react_stack_bottom_frame (C:\SE\SE-project\frontend\node_modules\react-dom\cjs\react-dom-client.development.js:25904:20)
+    at renderWithHooks (C:\SE\SE-project\frontend\node_modul
+---
